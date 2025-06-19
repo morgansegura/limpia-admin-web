@@ -1,0 +1,9 @@
+@reference 'tailwindcss';
+
+.dashboard-title {
+  @apply text-2xl font-semibold mb-4;
+}
+
+.dashboard-description {
+  @apply text-muted-foreground;
+}
