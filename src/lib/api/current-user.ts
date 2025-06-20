@@ -1,4 +1,4 @@
-import { User } from "@/context/auth-context";
+import { User } from "@/types/user.types";
 import { apiFetch } from ".";
 
 export async function currentUser() {

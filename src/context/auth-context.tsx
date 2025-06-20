@@ -7,11 +7,17 @@ import { currentUser } from "@/lib/api/current-user";
 
 import type { User } from "@/types/user.types";
 
-const AuthContext = createContext<{
+type AuthContextType = {
   user: User | null;
   loading: boolean;
   refetchUser: () => Promise<void>;
-}>({ user: null, loading: true, refetchUser: async () => {} });
+};
+
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  loading: true,
+  refetchUser: async () => {},
+});
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);

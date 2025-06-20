@@ -1,12 +1,4 @@
-export type Role =
-  | "SUPER_ADMIN"
-  | "BRANCH_MANAGER"
-  | "SUPPORT_AGENT"
-  | "SALES_AGENT"
-  | "MARKETER"
-  | "TRAINER"
-  | "TEAM_MANAGER"
-  | "FIELD_WORKER";
+import { Role } from "@/constants/roles";
 
 export interface User {
   id: string;

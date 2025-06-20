@@ -22,6 +22,7 @@ import type { Customer } from "@/types/customer.types";
 import { CustomerTable } from "@/components/features/customer/customer-table/customer-table";
 import { CustomerForm } from "@/components/features/customer/customer-form/customer-form";
 import { Protected } from "@/components/protected/protected";
+import { ROLES } from "@/constants/roles";
 
 export default function CustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -57,10 +58,8 @@ export default function CustomersPage() {
     await fetchCustomers();
   };
 
-  console.log({ customers });
-
   return (
-    <Protected>
+    <Protected allowedRoles={[ROLES.SUPER_ADMIN, ROLES.BRANCH_MANAGER]}>
       <div className="flex flex-col gap-4 p-4">
         <div className="flex justify-between items-center">
           <h1 className="text-xl font-semibold">Customers</h1>
