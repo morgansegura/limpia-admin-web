@@ -6,7 +6,7 @@ import { getToken } from "@/lib/auth";
 import { Sidebar } from "@/components/layout/sidebar/sidebar";
 import { Topbar } from "@/components/layout/topbar/topbar";
 
-const AUTH_ROUTES = ["/sign-in", "/reset-password"];
+const AUTH_ROUTES = ["/login"];
 
 export function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -20,7 +20,7 @@ export function ProtectedLayout({ children }: { children: React.ReactNode }) {
     const isLoggedIn = !!token;
 
     if (!isLoggedIn && !isAuthPage) {
-      router.replace("/sign-in");
+      router.replace("/login");
     }
 
     setLoading(false);

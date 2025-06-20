@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { loginUser } from "@/lib/api/sign-in";
+import { loginUser } from "@/lib/api/login";
 
-import "./sign-in.css";
+import "./login.css";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -26,14 +26,14 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-24 border p-6 rounded shadow">
-      <h2 className="text-2xl font-semibold mb-4">Sign In</h2>
-      {error && <p className="text-red-600 mb-2">{error}</p>}
-      <form onSubmit={handleLogin} className="space-y-4">
+    <div className="login">
+      <h2 className="login-title">Sign In</h2>
+      {error && <p className="login-error">{error}</p>}
+      <form onSubmit={handleLogin} className="login-form">
         <input
           type="email"
           placeholder="Email"
-          className="w-full border px-3 py-2 rounded"
+          className="login-input"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -41,15 +41,12 @@ export default function SignInPage() {
         <input
           type="password"
           placeholder="Password"
-          className="w-full border px-3 py-2 rounded"
+          className="login-input"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <button
-          type="submit"
-          className="w-full bg-black text-white py-2 rounded hover:bg-gray-800"
-        >
+        <button type="submit" className="login-button">
           Sign In
         </button>
       </form>

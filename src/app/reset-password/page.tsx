@@ -16,7 +16,7 @@ export default function ResetPasswordPage() {
 
   useEffect(() => {
     if (!token) {
-      router.replace("/sign-in");
+      router.replace("/login");
     }
   }, [token]);
 

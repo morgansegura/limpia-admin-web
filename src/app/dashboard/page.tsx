@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import "./dashboard.css";
 
 export default async function DashboardPage() {
-  redirect("/sign-in");
+  redirect("/loginin");
 
   return (
     <div className="dashboard">
