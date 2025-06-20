@@ -19,7 +19,9 @@ export default function SignInPage() {
 
     try {
       await loginUser(email, password);
-      router.push("/dashboard");
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 100);
     } catch (err: any) {
       setError(err.message || "Login failed");
     }

@@ -7,5 +7,5 @@ type Customer = {
 };
 
 export async function fetchCustomers() {
-  return apiFetch<Customer[]>("api/customers");
+  return apiFetch<Customer[]>("/customers");
 }

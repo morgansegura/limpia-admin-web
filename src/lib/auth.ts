@@ -1,18 +1,16 @@
 "use client";
 
-export function getToken(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem("access_token");
+export function hasToken(): boolean {
+  if (typeof document === "undefined") return false;
+  return document.cookie.includes("access_token");
 }
 
-export function setToken(token: string) {
-  if (typeof window !== "undefined") {
-    localStorage.setItem("access_token", token);
-  }
+export function setToken(_: string) {
+  // Intentionally left blank — token is set by server
 }
 
 export function clearToken() {
-  if (typeof window !== "undefined") {
-    localStorage.removeItem("access_token");
+  if (typeof document !== "undefined") {
+    document.cookie = "access_token=; Max-Age=0; path=/";
   }
 }

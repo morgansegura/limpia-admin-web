@@ -5,14 +5,13 @@ export async function apiFetch<T>(
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
   const token = process.env.NEXT_PUBLIC_API_TOKEN;
 
-  const res = await fetch(`${baseUrl}/api${path}`, {
+  const res = await fetch(`${baseUrl}${path}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
       ...(options.headers || {}),
     },
-    credentials: "include",
     cache: "no-store",
   });
 
