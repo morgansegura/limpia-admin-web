@@ -5,7 +5,7 @@ export async function apiFetch<T>(
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
   const token = process.env.NEXT_PUBLIC_API_TOKEN;
 
-  const res = await fetch(`${baseUrl}${path}`, {
+  const res = await fetch(`${baseUrl}/api${path}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",
