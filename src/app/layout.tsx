@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 import { AuthProvider } from "@/context/auth-context";
 
 import "./layout.css";
-import { ProtectedLayout } from "@/components/layout/protected-layout/protected-layout";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,9 +23,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={cn(inter.className)}>
-        <AuthProvider>
-          <ProtectedLayout>{children}</ProtectedLayout>
-        </AuthProvider>
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

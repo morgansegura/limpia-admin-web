@@ -1,5 +1,7 @@
+import { apiFetch } from ".";
+
 export async function logout() {
-  await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`, {
+  await apiFetch<{ message: string }>(`/auth/logout`, {
     method: "POST",
     credentials: "include",
   });

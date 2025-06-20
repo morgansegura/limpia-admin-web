@@ -33,8 +33,11 @@ export default function ResetPasswordPage() {
     }
 
     try {
-      const res = await resetPassword(token, newPassword);
-      setMessage(res.message);
+      await resetPassword(token, newPassword);
+      setMessage("Password successsfully reset!");
+      setTimeout(() => {
+        router.replace("/login");
+      }, 1000);
     } catch (err: any) {
       setError(err.message || "Something went wrong");
     }

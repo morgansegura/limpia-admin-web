@@ -1,3 +1,5 @@
+"use client";
+
 import { logout } from "@/lib/api/logout";
 
 export function Topbar() {
