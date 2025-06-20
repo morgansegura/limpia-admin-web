@@ -1,22 +1,32 @@
 export async function apiFetch<T>(
   path: string,
   options: RequestInit = {},
-): Promise<T> {
+  opts: { throwOnError?: boolean } = { throwOnError: true },
+): Promise<T | null> {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-  const token = process.env.NEXT_PUBLIC_API_TOKEN;
 
   const res = await fetch(`${baseUrl}/api${path}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-      ...(options.headers || {}),
+      ...(options.headers || {}), // allow custom headers if needed
     },
-    credentials: "include",
+    credentials: "include", // this sends your secure cookie
     cache: "no-store",
   });
 
-  if (!res.ok) throw new Error(`API Error: ${res.statusText}`);
+  if (!res.ok) {
+    if (opts.throwOnError) {
+      throw new Error(`API Error: ${res.status} ${res.statusText}`);
+    } else {
+      return null;
+    }
+  }
 
-  return res.json();
+  try {
+    return await res.json();
+  } catch (err) {
+    if (opts.throwOnError) throw err;
+    return null;
+  }
 }

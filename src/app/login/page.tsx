@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { loginUser } from "@/lib/api/login";
 
 import "./login.css";
+import { requestResetPassword } from "@/lib/api/request-reset-password";
+import Link from "next/link";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -52,6 +54,9 @@ export default function SignInPage() {
           Sign In
         </button>
       </form>
+      <div className="login-form-footer">
+        <Link href="/reset-password">Forgot Password</Link>
+      </div>
     </div>
   );
 }

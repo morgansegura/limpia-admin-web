@@ -1,7 +1,7 @@
 // lib/auth/use-auth.ts
 "use client";
 
-import { hasToken } from "@/lib/auth";
+import { currentUser } from "@/lib/api/current-user";
 import { createContext, useContext, useEffect, useState } from "react";
 
 export type Role =
@@ -34,43 +34,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = () =>
-      document.cookie
-        .split(";")
-        .some((cookie) => cookie.trim().startsWith("access_token="));
-
-    if (process.env.NODE_ENV === "development") {
-      // console.log("[auth] token:", token);
-    }
-
-    if (!token) {
-      // No token at all — skip fetch
-      setUser(null);
-      setLoading(false);
-      return;
-    }
-
     async function fetchUser() {
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/users/me`,
-          {
-            credentials: "include",
-            cache: "no-store",
-          },
-        );
+      const user = await currentUser();
 
-        if (res.ok) {
-          const data: User = await res.json();
-          setUser(data);
-        } else {
-          setUser(null); // unauthenticated
-        }
-      } catch {
-        setUser(null); // silent fail
-      } finally {
-        setLoading(false);
-      }
+      setUser(user);
+      setLoading(false);
     }
 
     fetchUser();
