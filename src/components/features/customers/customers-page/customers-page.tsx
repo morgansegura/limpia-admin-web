@@ -4,25 +4,22 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 
-import { useAuth } from "@/context/auth-context";
-
-import { Plus, Pencil, Eye } from "lucide-react";
+import { Plus } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { useRouter } from "next/navigation";
 
-import "./customers.css";
+import { CustomerTable } from "@/components/features/customers/customer-table/customer-table";
+import { CustomerForm } from "@/components/features/customers/customer-form/customer-form";
+import { DashboardLayout } from "@/components/layout/dashboard-layout/dashboard-layout";
+
+import "./customers-page.css";
 
 import type { Customer } from "@/types/customer.types";
-import { CustomerTable } from "@/components/features/customer/customer-table/customer-table";
-import { CustomerForm } from "@/components/features/customer/customer-form/customer-form";
-import { Protected } from "@/components/protected/protected";
-import { ROLES } from "@/constants/roles";
 
 export default function CustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -59,12 +56,12 @@ export default function CustomersPage() {
   };
 
   return (
-    <Protected allowedRoles={[ROLES.SUPER_ADMIN, ROLES.BRANCH_MANAGER]}>
-      <div className="flex flex-col gap-4 p-4">
-        <div className="flex justify-between items-center">
-          <h1 className="text-xl font-semibold">Customers</h1>
+    <DashboardLayout>
+      <div className="customers-page">
+        <div className="customers-page-title-bar">
+          <h1 className="customers-page-title">Customers</h1>
           <Button onClick={handleAdd}>
-            <Plus className="w-4 h-4 mr-2" />
+            <Plus className="customers-page-icon" />
             Add Customer
           </Button>
         </div>
@@ -89,6 +86,6 @@ export default function CustomersPage() {
           </DialogContent>
         </Dialog>
       </div>
-    </Protected>
+    </DashboardLayout>
   );
 }

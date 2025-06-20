@@ -1,5 +1,17 @@
 @reference 'tailwindcss';
 
+.dashboard-container {
+  @apply w-full flex;
+}
+
+.dashboard-content {
+  @apply flex flex-col flex-1;
+}
+
+.dashboard-main {
+  @apply p-6;
+}
+
 .dashboard-title {
   @apply text-2xl font-semibold mb-4;
 }

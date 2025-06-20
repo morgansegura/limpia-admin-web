@@ -1,0 +1,17 @@
+@reference 'tailwindcss';
+
+.customers-page {
+  @apply flex flex-col gap-4 p-4;
+}
+
+.customers-page-title-bar {
+  @apply flex justify-between items-center;
+}
+
+.customers-page-title {
+  @apply text-xl font-semibold;
+}
+
+.customers-page-icon {
+  @apply w-4 h-4 mr-2;
+}

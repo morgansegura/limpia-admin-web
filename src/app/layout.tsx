@@ -23,7 +23,9 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={cn(inter.className)}>
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <div className="layout-body">{children}</div>
+        </AuthProvider>
       </body>
     </html>
   );

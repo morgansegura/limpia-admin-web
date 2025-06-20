@@ -3,11 +3,3 @@
 .layout-body {
   @apply flex min-h-screen bg-gray-50 text-gray-900;
 }
-
-.layout {
-  @apply flex flex-col flex-1;
-}
-
-.layout-main {
-  @apply p-6;
-}
