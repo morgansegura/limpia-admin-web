@@ -5,5 +5,5 @@
 }
 
 .dashboard-description {
-  @apply text-muted-foreground;
+  @apply text-gray-500;
 }
