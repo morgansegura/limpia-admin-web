@@ -1,28 +1,11 @@
 // lib/auth/use-auth.ts
 "use client";
 
-import { currentUser } from "@/lib/api/current-user";
 import { createContext, useContext, useEffect, useState } from "react";
 
-export type Role =
-  | "SUPER_ADMIN"
-  | "BRANCH_MANAGER"
-  | "SUPPORT_AGENT"
-  | "SALES_AGENT"
-  | "MARKETER"
-  | "TRAINER"
-  | "TEAM_MANAGER"
-  | "FIELD_WORKER";
+import { currentUser } from "@/lib/api/current-user";
 
-export interface User {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: Role;
-  organizationId?: string;
-  avatarUrl?: string;
-}
+import type { User } from "@/types/user.types";
 
 const AuthContext = createContext<{
   user: User | null;
