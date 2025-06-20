@@ -1,5 +1,5 @@
 @reference 'tailwindcss';
 
 .layout-body {
-  @apply flex min-h-screen bg-gray-50 text-gray-900;
+  @apply flex justify-center items-start min-h-screen bg-gray-50 text-gray-900;
 }

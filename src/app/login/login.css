@@ -1,7 +1,7 @@
 @reference 'tailwindcss';
 
 .login {
-  @apply max-w-md mx-auto mt-24 border pt-8 pb-10 px-8 rounded-xl shadow-md;
+  @apply self-center max-w-md mx-auto border pt-8 pb-10 px-8 rounded-xl shadow-md;
 }
 
 .login-title {

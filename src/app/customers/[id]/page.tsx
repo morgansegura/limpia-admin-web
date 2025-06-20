@@ -4,22 +4,27 @@ import { Metadata } from "next";
 
 import { getCustomerById } from "@/lib/api/customers";
 
+import { Protected } from "@/components/protected/protected";
+import { ROLES } from "@/constants/roles";
+import { CustomerDetail } from "@/components/features/customers/customer-detail/customer-detail";
 import { CustomerDetailPage } from "@/components/features/customers/customer-detail-page/customer-detail-page";
 
 export const metadata: Metadata = {
   title: "Customer Detail | Limpia Admin",
 };
 
-type Props = {
-  params: { id: string };
+type CustomerDetailDashboardPageProps = {
+  params: Promise<{ id: string }>;
 };
 
-export default async function CustomerDetailDashboardPage({ params }: Props) {
-  const { id } = params;
+export default async function CustomerDetailDashboardPage({
+  params,
+}: CustomerDetailDashboardPageProps) {
+  const { id } = await params;
 
-  const customer = await getCustomerById(id);
-
-  if (!customer) return notFound();
-
-  return <CustomerDetailPage customer={customer} />;
+  return (
+    <Protected allowedRoles={[ROLES.SUPER_ADMIN, ROLES.BRANCH_MANAGER]}>
+      <CustomerDetailPage id={id} />
+    </Protected>
+  );
 }

@@ -1,7 +1,7 @@
 @reference 'tailwindcss';
 
 .sidebar {
-  @apply w-64 bg-white border-r hidden md:block;
+  @apply w-64 bg-white border-r hidden md:block h-screen;
 }
 
 .sidebar-label {

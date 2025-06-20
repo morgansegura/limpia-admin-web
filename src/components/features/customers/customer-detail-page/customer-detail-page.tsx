@@ -1,21 +1,27 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { getCustomerById } from "@/lib/api/customers";
 import { CustomerDetail } from "@/components/features/customers/customer-detail/customer-detail";
-
-import { Protected } from "@/components/protected/protected";
-
-import { ROLES } from "@/constants/roles";
-
 import { Customer } from "@/types/customer.types";
 
-export type CustomerDetailPageProps = {
-  customer: Customer;
+type CustomerDetailPageProps = {
+  id: string;
 };
 
-export function CustomerDetailPage({ customer }: CustomerDetailPageProps) {
-  const allowedRoles = [ROLES.SUPER_ADMIN, ROLES.BRANCH_MANAGER];
+export function CustomerDetailPage({ id }: CustomerDetailPageProps) {
+  const [customer, setCustomer] = useState<Customer | null>(null);
 
-  return (
-    <Protected allowedRoles={allowedRoles}>
-      <CustomerDetail customer={customer} />
-    </Protected>
-  );
+  useEffect(() => {
+    async function load() {
+      const data = await getCustomerById(id);
+      setCustomer(data);
+    }
+    load();
+  }, [id]);
+
+  if (!customer) return;
+
+  return <CustomerDetail customer={customer} />;
 }
