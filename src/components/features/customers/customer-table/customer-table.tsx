@@ -9,12 +9,13 @@ type CustomerTableProps = {
   onEdit?: (customer: Customer) => void;
 };
 
-export function CustomerTable({ customers }: CustomerTableProps) {
+export function CustomerTable({ customers, onView }: CustomerTableProps) {
   return (
     <DataTable
       columns={customerColumns}
       data={customers}
       searchKey="name"
+      rowOnClick={(row) => onView(row.id)}
       placeholder="Search customers..."
     />
   );

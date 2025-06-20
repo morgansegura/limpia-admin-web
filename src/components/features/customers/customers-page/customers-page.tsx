@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -8,10 +10,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import TypographyH1 from "@/components/typography-h1";
 
-import { Plus } from "lucide-react";
 import { apiFetch } from "@/lib/api";
-import { useRouter } from "next/navigation";
 
 import { CustomerTable } from "@/components/features/customers/customer-table/customer-table";
 import { CustomerForm } from "@/components/features/customers/customer-form/customer-form";
@@ -59,7 +60,7 @@ export default function CustomersPage() {
     <DashboardLayout>
       <div className="customers-page">
         <div className="customers-page-title-bar">
-          <h1 className="customers-page-title">Customers</h1>
+          <TypographyH1>Customers</TypographyH1>
           <Button onClick={handleAdd}>
             <Plus className="customers-page-icon" />
             Add Customer

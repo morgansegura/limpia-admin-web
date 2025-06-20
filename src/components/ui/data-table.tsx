@@ -86,7 +86,11 @@ export function DataTable<TData, TValue>({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id} onClick={() => rowOnClick?.(row.original)}>
+              <TableRow
+                key={row.id}
+                onClick={() => rowOnClick?.(row.original)}
+                className="cursor-pointer"
+              >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
