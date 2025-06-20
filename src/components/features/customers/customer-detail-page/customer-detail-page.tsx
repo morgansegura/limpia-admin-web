@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
 import { getCustomerById } from "@/lib/api/customers";
 import { CustomerDetail } from "@/components/features/customers/customer-detail/customer-detail";
 import { Customer } from "@/types/customer.types";

@@ -48,8 +48,10 @@ export function CustomerForm({ customer, onSuccess }: Props) {
       }
 
       onSuccess();
-    } catch (err: any) {
-      setError(err.message || "Failed to save customer");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "Failed to save customer");
+      }
     } finally {
       setSubmitting(false);
     }

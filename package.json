@@ -6,7 +6,10 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "typecheck": "tsc --project tsconfig.json --noEmit",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "lint": "next lint",
+    "verify": "pnpm lint && pnpm format && pnpm typecheck"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.14",

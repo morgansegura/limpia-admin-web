@@ -18,7 +18,7 @@ export default function ResetPasswordPage() {
     if (!token) {
       router.replace("/login");
     }
-  }, [token]);
+  }, [token, router]);
 
   if (!token) return null;
 
@@ -38,8 +38,10 @@ export default function ResetPasswordPage() {
       setTimeout(() => {
         router.replace("/login");
       }, 1000);
-    } catch (err: any) {
-      setError(err.message || "Something went wrong");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "Something went wrong");
+      }
     }
   };
 

@@ -3,7 +3,13 @@ import { customerColumns } from "./customer-table.columns";
 
 import { Customer } from "@/types/customer.types";
 
-export function CustomerTable({ customers }: { customers: Customer[] }) {
+type CustomerTableProps = {
+  customers: Customer[];
+  onView: (id: string) => void;
+  onEdit?: (customer: Customer) => void;
+};
+
+export function CustomerTable({ customers }: CustomerTableProps) {
   return (
     <DataTable
       columns={customerColumns}

@@ -31,8 +31,10 @@ export default function SignInPage() {
       await loginUser(email, password);
       await refetchUser();
       router.push("/dashboard");
-    } catch (err: any) {
-      setError(err.message || "Login failed");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "Login failed");
+      }
     }
   };
 

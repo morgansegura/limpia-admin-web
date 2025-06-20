@@ -27,6 +27,7 @@ type Props<TData, TValue> = {
   data: TData[];
   searchKey?: keyof TData;
   placeholder?: string;
+  rowOnClick?: (row: TData) => void;
 };
 
 export function DataTable<TData, TValue>({
@@ -34,6 +35,7 @@ export function DataTable<TData, TValue>({
   data,
   searchKey,
   placeholder = "Search...",
+  rowOnClick,
 }: Props<TData, TValue>) {
   const [globalFilter, setGlobalFilter] = useState("");
 
@@ -84,7 +86,7 @@ export function DataTable<TData, TValue>({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id}>
+              <TableRow key={row.id} onClick={() => rowOnClick?.(row.original)}>
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

@@ -1,13 +1,11 @@
 import React from "react";
-import { notFound } from "next/navigation";
+
 import { Metadata } from "next";
 
-import { getCustomerById } from "@/lib/api/customers";
-
 import { Protected } from "@/components/protected/protected";
-import { ROLES } from "@/constants/roles";
-import { CustomerDetail } from "@/components/features/customers/customer-detail/customer-detail";
 import { CustomerDetailPage } from "@/components/features/customers/customer-detail-page/customer-detail-page";
+
+import { ROLES } from "@/constants/roles";
 
 export const metadata: Metadata = {
   title: "Customer Detail | Limpia Admin",

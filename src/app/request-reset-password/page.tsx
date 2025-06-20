@@ -18,8 +18,10 @@ export default function RequestResetPasswordPage() {
     try {
       await requestResetPassword(email);
       setSuccess(true);
-    } catch (err) {
-      setError("Network error");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "Network error");
+      }
     } finally {
       setSubmitting(false);
     }
