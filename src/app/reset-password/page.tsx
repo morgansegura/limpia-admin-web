@@ -1,11 +1,12 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { resetPassword } from "@/lib/api/reset-password";
-import router from "next/router";
 
 export default function ResetPasswordPage() {
+  const router = useRouter();
+
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
 
@@ -17,7 +18,9 @@ export default function ResetPasswordPage() {
     if (!token) {
       router.replace("/sign-in");
     }
-  }, [token, router]);
+  }, [token]);
+
+  if (!token) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

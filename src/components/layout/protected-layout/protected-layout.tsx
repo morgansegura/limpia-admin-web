@@ -1,20 +1,44 @@
 "use client";
 
-import { useAuth } from "@/hooks/use-auth";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { getToken } from "@/lib/auth";
+import { Sidebar } from "@/components/layout/sidebar/sidebar";
+import { Topbar } from "@/components/layout/topbar/topbar";
 
-export default function ProtectedLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const { isAuthenticated } = useAuth();
+const AUTH_ROUTES = ["/sign-in", "/reset-password"];
+
+export function ProtectedLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
+
+  const isAuthPage = AUTH_ROUTES.some((route) => pathname?.startsWith(route));
 
   useEffect(() => {
-    if (!isAuthenticated) router.replace("/login");
-  }, [isAuthenticated]);
+    const token = getToken();
+    const isLoggedIn = !!token;
 
-  return isAuthenticated ? <>{children}</> : null;
+    if (!isLoggedIn && !isAuthPage) {
+      router.replace("/sign-in");
+    }
+
+    setLoading(false);
+  }, [pathname]);
+
+  if (loading) return null;
+
+  const isLoggedIn = !!getToken();
+
+  return isLoggedIn && !isAuthPage ? (
+    <div className="layout-body">
+      <Sidebar />
+      <div className="layout">
+        <Topbar />
+        <main className="layout-main">{children}</main>
+      </div>
+    </div>
+  ) : (
+    <>{children}</>
+  );
 }
