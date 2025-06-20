@@ -25,23 +25,20 @@ export function ProtectedLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (loading) return;
 
-    // ✅ If user is not logged in and on a protected route, redirect to login
-    if (!user && !isPublic) {
+    const isReset = pathname.startsWith("/reset-password");
+    const isLogin = pathname === "/login";
+    const isPublic = isLogin || isReset;
+
+    const shouldRedirectToDashboard = user && (isLogin || isReset);
+    const shouldRedirectToLogin =
+      !user && (!isPublic || (isReset && !hasResetToken));
+
+    if (shouldRedirectToLogin) {
       router.replace("/login");
     }
 
-    // ✅ If user is logged in and on login/reset, redirect to dashboard
-    if (user && pathname === "/login") {
+    if (shouldRedirectToDashboard) {
       router.replace("/dashboard");
-    }
-
-    if (user && pathname.startsWith("/reset-password")) {
-      router.replace("/dashboard");
-    }
-
-    // ✅ If NOT logged in and /reset-password has no token, redirect to login
-    if (!user && pathname.startsWith("/reset-password") && !hasResetToken) {
-      router.replace("/login");
     }
   }, [user, loading, pathname, hasResetToken]);
 

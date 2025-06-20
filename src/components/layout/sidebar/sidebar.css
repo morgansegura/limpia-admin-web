@@ -1,17 +1,17 @@
 @reference 'tailwindcss';
 
-.sideabar {
+.sidebar {
   @apply w-64 bg-white border-r hidden md:block;
 }
 
-.sideabar-label {
+.sidebar-label {
   @apply p-4 font-bold text-xl;
 }
 
-.sideabar-nav {
+.sidebar-nav {
   @apply space-y-1 px-4;
 }
 
-.sideabar-nav-item {
+.sidebar-nav-item {
   @apply flex items-center gap-3 p-2 rounded hover:bg-gray-100 text-sm font-medium;
 }
