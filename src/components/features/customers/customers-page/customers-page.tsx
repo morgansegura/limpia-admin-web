@@ -72,20 +72,6 @@ export default function CustomersPage() {
           onEdit={handleEdit}
           onView={(id) => router.push(`/customers/${id}`)}
         />
-
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>
-                {editingCustomer ? "Edit Customer" : "Add Customer"}
-              </DialogTitle>
-            </DialogHeader>
-            <CustomerForm
-              customer={editingCustomer}
-              onSuccess={handleSuccess}
-            />
-          </DialogContent>
-        </Dialog>
       </div>
     </DashboardLayout>
   );

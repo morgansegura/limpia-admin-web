@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { getCustomerById } from "@/lib/api/customers";
 import { CustomerDetail } from "@/components/features/customers/customer-detail/customer-detail";
+import { DashboardLayout } from "@/components/layout/dashboard-layout/dashboard-layout";
+
 import { Customer } from "@/types/customer.types";
 
 type CustomerDetailPageProps = {
@@ -22,5 +24,9 @@ export function CustomerDetailPage({ id }: CustomerDetailPageProps) {
 
   if (!customer) return;
 
-  return <CustomerDetail customer={customer} />;
+  return (
+    <DashboardLayout>
+      <CustomerDetail customer={customer} />
+    </DashboardLayout>
+  );
 }

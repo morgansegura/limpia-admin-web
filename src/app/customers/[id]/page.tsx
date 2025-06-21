@@ -3,7 +3,7 @@ import React from "react";
 import { Metadata } from "next";
 
 import { Protected } from "@/components/protected/protected";
-import { CustomerDetailPage } from "@/components/features/customers/customer-detail-page/customer-detail-page";
+import { CustomerDetailPage } from "@/components/features/customers/customer-detail/customer-detail-page";
 
 import { ROLES } from "@/constants/roles";
 

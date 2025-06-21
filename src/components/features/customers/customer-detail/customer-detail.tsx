@@ -1,39 +1,76 @@
-import { DashboardLayout } from "@/components/layout/dashboard-layout/dashboard-layout";
+"use client";
 
-import "./customer-detail.css";
+import { useState } from "react";
+import { Customer } from "@/types/customer.types";
+import { apiFetch } from "@/lib/api";
+import { Button } from "@/components/ui/button";
+import { CustomerInfoSection } from "./sections/customer-info-section";
+import { CustomerAddressSection } from "./sections/customer-address-section";
+import { CustomerPreferencesSection } from "./sections/customer-preferences-section";
 
-import type { Customer } from "@/types/customer.types";
-
-export type CustomerDetailProps = {
+interface Props {
   customer: Customer;
-};
+}
 
-export function CustomerDetail({ customer }: CustomerDetailProps) {
+export function CustomerDetail({ customer: initialCustomer }: Props) {
+  const [customer, setCustomer] = useState(initialCustomer);
+  const [form, setForm] = useState({ ...initialCustomer });
+  const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const updateField = (key: string, value: any) => {
+    setForm({ ...form, [key]: value });
+  };
+
+  const handleSave = async () => {
+    setLoading(true);
+    await apiFetch(`/customers/${customer.id}`, {
+      method: "PUT",
+      body: JSON.stringify(form),
+    });
+    setCustomer(form);
+    setIsEditing(false);
+    setLoading(false);
+  };
+
+  const handleCancel = () => {
+    setForm(customer);
+    setIsEditing(false);
+  };
+
   return (
-    <DashboardLayout>
-      <div className="customer-detail">
-        <h1 className="customer-detail__title">{customer.name}</h1>
-        <p>
-          <strong>Email:</strong> {customer.email}
-        </p>
-        <p>
-          <strong>Phone:</strong> {customer.phone}
-        </p>
-        <p>
-          <strong>Address:</strong> `${customer.street} ${customer.city} $
-          {customer.state} ${customer.zip} ${customer?.unit}`
-        </p>
-        <p>
-          <strong>Created:</strong>{" "}
-          {new Date(customer.createdAt).toLocaleDateString()}
-        </p>
-
-        <div className="customer-detail__actions">
-          {/* Placeholder buttons for edit/delete */}
-          <button className="btn">Edit</button>
-          <button className="btn btn--danger">Delete</button>
-        </div>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Customer Detail</h1>
+        {!isEditing ? (
+          <Button onClick={() => setIsEditing(true)}>Edit</Button>
+        ) : (
+          <div className="flex gap-2">
+            <Button onClick={handleSave} disabled={loading}>
+              Save
+            </Button>
+            <Button variant="outline" onClick={handleCancel}>
+              Cancel
+            </Button>
+          </div>
+        )}
       </div>
-    </DashboardLayout>
+
+      <CustomerInfoSection
+        form={form}
+        isEditing={isEditing}
+        onChange={updateField}
+      />
+      <CustomerAddressSection
+        form={form}
+        isEditing={isEditing}
+        onChange={updateField}
+      />
+      <CustomerPreferencesSection
+        form={form}
+        isEditing={isEditing}
+        onChange={updateField}
+      />
+    </div>
   );
 }
