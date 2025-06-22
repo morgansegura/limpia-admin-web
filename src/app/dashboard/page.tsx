@@ -1,3 +1,5 @@
+"use client";
+
 import { DashboardLayout } from "@/components/layout/dashboard-layout/dashboard-layout";
 import { Protected } from "@/components/protected/protected";
 

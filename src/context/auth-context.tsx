@@ -7,7 +7,7 @@ import { currentUser } from "@/lib/api/current-user";
 
 import type { User } from "@/types/user.types";
 
-type AuthContextType = {
+export type AuthContextType = {
   user: User | null;
   loading: boolean;
   refetchUser: () => Promise<void>;

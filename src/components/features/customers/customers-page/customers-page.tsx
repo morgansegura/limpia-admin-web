@@ -4,18 +4,12 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+
 import TypographyH1 from "@/components/typography-h1";
 
 import { apiFetch } from "@/lib/api";
 
 import { CustomerTable } from "@/components/features/customers/customer-table/customer-table";
-import { CustomerForm } from "@/components/features/customers/customer-form/customer-form";
 import { DashboardLayout } from "@/components/layout/dashboard-layout/dashboard-layout";
 
 import "./customers-page.css";
