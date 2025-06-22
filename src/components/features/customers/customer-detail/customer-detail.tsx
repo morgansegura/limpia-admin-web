@@ -12,8 +12,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DetailSection } from "../../detail-section/detail-section";
 import { FieldConfig } from "@/types/forms.types";
 
-import TypographyMuted from "@/components/typography-muted";
-
 interface Props {
   customer: Customer;
 }
@@ -43,7 +41,20 @@ export function CustomerDetail({ customer: initialCustomer }: Props) {
     setForm(customer);
     setIsEditing(false);
   };
-
+  const customerEstimateFields: FieldConfig<
+    Pick<Customer, "squareFootage" | "priceEstimate">
+  >[] = [
+    {
+      key: "squareFootage",
+      label: "Estimated Square Footage",
+      type: "text",
+    },
+    {
+      key: "priceEstimate",
+      label: "Estimated Price",
+      type: "text",
+    },
+  ];
   const customerDetailsFields: FieldConfig<
     Pick<Customer, EditableCustomerField>
   >[] = [
@@ -62,47 +73,12 @@ export function CustomerDetail({ customer: initialCustomer }: Props) {
       label: "Phone",
       type: "text",
     },
-    {
-      key: "street",
-      label: "Street",
-      type: "text",
-    },
-    {
-      key: "unit",
-      label: "Unit #",
-      type: "text",
-    },
-    {
-      key: "city",
-      label: "City",
-      type: "text",
-    },
-    {
-      key: "state",
-      label: "State",
-      type: "text",
-    },
   ];
 
   const customerLocationFields: FieldConfig<
     Pick<Customer, EditableCustomerField>
   >[] = [
     {
-      key: "name",
-      label: "Name",
-      type: "text",
-    },
-    {
-      key: "email",
-      label: "Email",
-      type: "text",
-    },
-    {
-      key: "phone",
-      label: "Phone",
-      type: "text",
-    },
-    {
       key: "street",
       label: "Street",
       type: "text",
@@ -121,6 +97,19 @@ export function CustomerDetail({ customer: initialCustomer }: Props) {
       key: "state",
       label: "State",
       type: "text",
+    },
+    {
+      key: "cleaningType",
+      label: "Cleaning Type",
+      type: "select",
+      options: [
+        { label: "Base", value: "BASE" },
+        { label: "Move Out", value: "MOVE_OUT" },
+        { label: "Move In", value: "MOVE_IN" },
+        { label: "Airbnb", value: "AIRBNB" },
+        { label: "Deep", value: "DEEP" },
+        { label: "Office", value: "OFFICE" },
+      ],
     },
   ];
 
@@ -218,6 +207,20 @@ export function CustomerDetail({ customer: initialCustomer }: Props) {
       <div className="dashboard-layout-sections">
         <Card className="dashboard-layout-section">
           <CardHeader className="dashboard-layout-section-header">
+            <CardTitle>Estimate Details</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <DetailSection
+              form={form}
+              isEditing={false} // Always read-only
+              onChange={() => {}}
+              fields={customerEstimateFields}
+            />
+          </CardContent>
+        </Card>
+
+        <Card className="dashboard-layout-section">
+          <CardHeader className="dashboard-layout-section-header">
             <CardTitle>Contact Information</CardTitle>
           </CardHeader>
           <CardContent>
@@ -231,7 +234,7 @@ export function CustomerDetail({ customer: initialCustomer }: Props) {
         </Card>
         <Card className="dashboard-layout-section">
           <CardHeader className="dashboard-layout-section-header">
-            <CardTitle>Location Details</CardTitle>
+            <CardTitle>Property Details</CardTitle>
           </CardHeader>
           <CardContent>
             <DetailSection

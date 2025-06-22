@@ -11,6 +11,7 @@ export interface Customer {
   state: string;
   zip: string;
   squareFootage?: number;
+  priceEstimate?: number;
   homeType?: string;
   bedrooms?: number;
   bathrooms?: number;
@@ -21,6 +22,7 @@ export interface Customer {
   alarmSystemInstructions?: string;
 
   cleaningNotes?: string;
+  cleaningType: CleaningType;
   preferredTimeOfDay?: string;
   preferredDays: DayOfWeek[];
   preferredCleanerId?: string;
@@ -54,6 +56,8 @@ export type EditableCustomerField = keyof Pick<
   | "state"
   | "zip"
   | "squareFootage"
+  | "cleaningType"
+  | "priceEstimate"
   | "homeType"
   | "bedrooms"
   | "bathrooms"
@@ -92,3 +96,9 @@ export type DayOfWeek = [
 ];
 
 export type DAYS_OF_THE_WEEK = DayOfWeek[];
+
+export type CleaningType = [
+  "BASE" | "MOVE_OUT" | "MOVE_IN" | "AIRBNB" | "DEEP" | "OFFICE",
+];
+
+export type CLEANING_TYPE = CleaningType[];
