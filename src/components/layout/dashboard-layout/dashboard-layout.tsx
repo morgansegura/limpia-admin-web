@@ -34,6 +34,7 @@ export function DashboardLayout({ children, className }: DashboardLayoutProps) {
       )}
     >
       <DashboardLayoutSidebar />
+
       <div className="dashboard-layout-container">
         <DashboardLayoutHeader
           open={open}

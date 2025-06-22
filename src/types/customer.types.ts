@@ -49,6 +49,7 @@ export type EditableCustomerField = keyof Pick<
   | "email"
   | "phone"
   | "unit"
+  | "street"
   | "city"
   | "state"
   | "zip"

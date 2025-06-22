@@ -53,8 +53,8 @@ export default function CustomersPage() {
   return (
     <DashboardLayout>
       <div className="customers-page">
-        <div className="customers-page-title-bar">
-          <TypographyH1>Customers</TypographyH1>
+        <div className="dashboard-header-toolbar">
+          <h2 className="dashboard-layout-title">Customers</h2>
           <Button onClick={handleAdd}>
             <Plus className="customers-page-icon" />
             Add Customer

@@ -1,14 +1,5 @@
-import TypographySmall from "@/components/typography-small";
 import { Input } from "@/components/ui/input";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 
 import { Customer, EditableCustomerField } from "@/types/customer.types";
@@ -20,31 +11,25 @@ interface Props {
 }
 
 export function CustomerInfoSection({ form, isEditing, onChange }: Props) {
+  const noPreference = "No preference listed";
+
   return (
     <>
-      <div className="px-6 pt-3">
-        <h3 className="text-base/7 font-semibold text-gray-900">
-          Applicant Information
-        </h3>
-        <p className="mt-1 max-w-2xl text-sm/6 text-gray-500">
-          Personal details and application.
-        </p>
-      </div>
-      <div className="mt-6 border-t border-gray-100">
-        <dl className="divide-y divide-gray-100">
+      <div className="border-t border-neutral-100">
+        <div className="divide-y divide-neutral-100 ">
           {(["name", "email", "phone"] as EditableCustomerField[]).map(
             (key, index) => (
               <div
                 className={cn(
-                  "py-6 sm:grid sm:grid-cols-3 sm:gap-4 px-6",
-                  index % 2 ? "bg-gray-50" : "bg-white",
+                  "py-4 sm:grid sm:grid-cols-3 sm:gap-4",
+                  index % 2 ? "bg-neutral-50 " : "bg-white",
                 )}
                 key={key}
               >
-                <dt className="text-sm/6 font-medium text-gray-900">
+                <div className="px-4 text-sm/6 font-medium text-neutral-900">
                   {key[0].toUpperCase() + key.slice(1)}
-                </dt>
-                <dd className="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
+                </div>
+                <div className="pl-4 text-sm/6 text-neutral-700 sm:col-span-2 ">
                   {isEditing ? (
                     <Input
                       name={key}
@@ -52,13 +37,13 @@ export function CustomerInfoSection({ form, isEditing, onChange }: Props) {
                       onChange={(e) => onChange(key, e.target.value)}
                     />
                   ) : (
-                    <p>{form[key] || "—"}</p>
+                    <p>{form[key] || noPreference}</p>
                   )}
-                </dd>
+                </div>
               </div>
             ),
           )}
-        </dl>
+        </div>
       </div>
     </>
   );
