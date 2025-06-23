@@ -18,6 +18,7 @@ import { ValueAddedServiceForm } from "../value-added-service-form/value-added-s
 import { ValueAddedService } from "@/types/valye-added-services.types";
 import { apiFetch } from "@/lib/api";
 import { Job } from "@/types/job.types";
+import { CustomerSearchSelect } from "@/components/features/customers/customer-search-selector/customer-search-selector";
 
 export function JobCreateForm() {
   const searchParams = useSearchParams();
@@ -98,10 +99,18 @@ export function JobCreateForm() {
           <CardTitle>Job Details</CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input
-            placeholder="Customer ID"
+          <CustomerSearchSelect
             value={form.customerId}
-            onChange={(e) => handleChange("customerId", e.target.value)}
+            onSelect={(customer) =>
+              setForm((prev) => ({
+                ...prev,
+                customerId: customer.id,
+                street: customer.street,
+                city: customer.city,
+                state: customer.state,
+                zip: customer.zip,
+              }))
+            }
           />
           <Input
             type="datetime-local"
