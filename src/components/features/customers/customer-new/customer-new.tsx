@@ -25,6 +25,7 @@ const initialForm: Partial<Customer> = {
   state: "",
   zip: "",
   preferredDays: [],
+  cleaningType: "BASE",
 };
 
 export function CustomerNewPage() {
@@ -43,6 +44,18 @@ export function CustomerNewPage() {
         method: "POST",
         body: JSON.stringify(form),
       });
+
+      if (
+        !form.name ||
+        !form.email ||
+        !form.street ||
+        !form.state ||
+        !form.zip
+      ) {
+        toast.error("Please fill in all required fields.");
+        setLoading(false);
+        return;
+      }
 
       if (!created) {
         toast.error("Failed to create customer");
