@@ -1,4 +1,5 @@
 export type Job = {
+  [x: string]: any;
   id: string;
   customerId: string;
   cleaningType: string;

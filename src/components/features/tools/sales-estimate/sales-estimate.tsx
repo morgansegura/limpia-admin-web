@@ -15,16 +15,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { apiFetch } from "@/lib/api";
 import { CLEANING_TYPE_OPTIONS, Customer } from "@/types/customer.types";
+import { Switch } from "@/components/ui/switch";
 
 export default function SalesEstimatePage() {
   const router = useRouter();
 
-  const [form, setForm] = useState<Partial<Customer>>({
+  const [form, setForm] = useState<
+    Partial<Customer> & { isRecurring?: boolean }
+  >({
     street: "",
     city: "",
     state: "",
     zip: "",
     cleaningType: "BASE",
+    isRecurring: false,
   });
 
   const [loading, setLoading] = useState(false);
@@ -34,7 +38,7 @@ export default function SalesEstimatePage() {
     source: string;
   }>(null);
 
-  const handleChange = (key: string, value: string) => {
+  const handleChange = (key: string, value: any) => {
     setForm({ ...form, [key]: value });
   };
 
@@ -116,6 +120,20 @@ export default function SalesEstimatePage() {
               ))}
             </SelectContent>
           </Select>
+
+          <div className="flex items-center space-x-4">
+            <label htmlFor="recurring-switch" className="text-sm font-medium">
+              Recurring Job
+            </label>
+            <Switch
+              id="recurring-switch"
+              checked={form.isRecurring}
+              onCheckedChange={(checked) =>
+                handleChange("isRecurring", checked)
+              }
+            />
+          </div>
+
           <Button
             className="w-full md:col-span-2"
             onClick={handleEstimate}
@@ -151,6 +169,7 @@ export default function SalesEstimatePage() {
                   zip: form.zip ?? "",
                   cleaningType: form.cleaningType ?? "BASE",
                   estimatedPrice: String(estimate?.price ?? 0),
+                  isRecurring: String(form.isRecurring ?? false),
                 }).toString();
 
                 router.push(`/jobs/new?${query}`);

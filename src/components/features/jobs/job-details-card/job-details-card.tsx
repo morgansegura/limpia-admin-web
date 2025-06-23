@@ -1,32 +1,30 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { apiFetch } from "@/lib/api";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
-  SelectContent,
-  SelectItem,
   SelectTrigger,
   SelectValue,
+  SelectContent,
+  SelectItem,
 } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-
-import { CLEANING_TYPE_OPTIONS } from "@/types/customer.types";
-import { ValueAddedServiceForm } from "../value-added-service-form/value-added-service-form";
-import { ValueAddedService } from "@/types/valye-added-services.types";
-import { User } from "@/types/user.types";
-import { Customer } from "@/types/customer.types";
-import { Job } from "@/types/job.types";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
 import { Combobox } from "@/components/ui/combobox";
 
-const DISCOUNT_PERCENT_OPTIONS = ["5", "10", "15", "20"]; // Cap control
+import { CLEANING_TYPE_OPTIONS, Customer } from "@/types/customer.types";
+import { User } from "@/types/user.types";
+import { ValueAddedService } from "@/types/valye-added-services.types";
+import { Job } from "@/types/job.types";
+import { ValueAddedServiceForm } from "../value-added-service-form/value-added-service-form";
 
 export function JobCreateForm() {
   const router = useRouter();
@@ -35,19 +33,21 @@ export function JobCreateForm() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [valueServices, setValueServices] = useState<ValueAddedService[]>([]);
-  const isRecurringFromEstimate = searchParams.get("isRecurring") === "true";
 
   const [form, setForm] = useState({
     customerId: "",
     assignedToId: "",
-    scheduledAt: new Date().toISOString().slice(0, 16),
-    cleaningType: searchParams.get("cleaningType") ?? "BASE",
     street: searchParams.get("street") ?? "",
     city: searchParams.get("city") ?? "",
     state: searchParams.get("state") ?? "",
     zip: searchParams.get("zip") ?? "",
-    isRecurring: isRecurringFromEstimate,
+    cleaningType: searchParams.get("cleaningType") ?? "BASE",
     squareFootage: 0,
+    price: searchParams.get("estimatedPrice")
+      ? Number(searchParams.get("estimatedPrice"))
+      : undefined,
+    scheduledAt: new Date().toISOString().slice(0, 16),
+    isRecurring: searchParams.get("isRecurring") === "true",
     recurrenceType: "",
     recurrenceEndDate: "",
     discountAmount: "",
@@ -58,10 +58,6 @@ export function JobCreateForm() {
     internalNotes: "",
     customerNotes: "",
   });
-
-  const [estimate, setEstimate] = useState<number | null>(
-    Number(searchParams.get("estimatedPrice")) || null,
-  );
 
   const [submitting, setSubmitting] = useState(false);
 
@@ -89,6 +85,7 @@ export function JobCreateForm() {
         body: JSON.stringify({
           ...form,
           squareFootage: Number(form.squareFootage),
+          price: form.price ?? undefined,
           discountAmount: form.discountAmount
             ? Number(form.discountAmount)
             : undefined,
@@ -113,21 +110,11 @@ export function JobCreateForm() {
     }
   };
 
-  const calculatedPrice = () => {
-    let base = estimate ?? 0;
-    if (form.discountPercent)
-      base -= (base * Number(form.discountPercent)) / 100;
-    if (form.discountAmount) base -= Number(form.discountAmount);
-    if (form.manualPriceOverride) return Number(form.manualPriceOverride);
-    return base;
-  };
-
   return (
     <div className="space-y-4">
       <div className="dashboard-header-toolbar">
         <h2 className="dashboard-layout-title">Create New Job</h2>
       </div>
-
       <Card>
         <CardHeader>
           <CardTitle>Job Details</CardTitle>
@@ -139,7 +126,7 @@ export function JobCreateForm() {
               value: c.id,
             }))}
             value={form.customerId}
-            onChange={(id) => handleChange("customerId", id)}
+            onChange={(val) => handleChange("customerId", val)}
             placeholder="Search customer..."
           />
 
@@ -182,27 +169,6 @@ export function JobCreateForm() {
           </Select>
 
           <Input
-            placeholder="Street Address"
-            value={form.street}
-            onChange={(e) => handleChange("street", e.target.value)}
-          />
-          <Input
-            placeholder="City"
-            value={form.city}
-            onChange={(e) => handleChange("city", e.target.value)}
-          />
-          <Input
-            placeholder="State"
-            value={form.state}
-            onChange={(e) => handleChange("state", e.target.value)}
-          />
-          <Input
-            placeholder="Zip"
-            value={form.zip}
-            onChange={(e) => handleChange("zip", e.target.value)}
-          />
-
-          <Input
             placeholder="Square Footage"
             type="number"
             value={form.squareFootage}
@@ -213,8 +179,9 @@ export function JobCreateForm() {
             <Switch
               checked={form.isRecurring}
               onCheckedChange={(val) => handleChange("isRecurring", val)}
+              id="recurring-switch"
             />
-            <label>Recurring Job</label>
+            <label htmlFor="recurring-switch">Recurring Job</label>
           </div>
 
           {form.isRecurring && (
@@ -232,6 +199,7 @@ export function JobCreateForm() {
                   <SelectItem value="MONTHLY">Monthly</SelectItem>
                 </SelectContent>
               </Select>
+
               <Input
                 type="date"
                 placeholder="Recurrence End Date"
@@ -242,6 +210,12 @@ export function JobCreateForm() {
               />
             </>
           )}
+
+          {form.price && (
+            <div className="md:col-span-2">
+              <strong>Estimated Price:</strong> ${form.price}
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -250,35 +224,23 @@ export function JobCreateForm() {
           <CardTitle>Promotions & Pricing</CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Select
-            value={form.discountPercent}
-            onValueChange={(val) => handleChange("discountPercent", val)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="% Discount" />
-            </SelectTrigger>
-            <SelectContent>
-              {DISCOUNT_PERCENT_OPTIONS.map((val) => (
-                <SelectItem key={val} value={val}>
-                  {val}%
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
           <Input
             type="number"
-            placeholder="Flat Discount ($)"
+            placeholder="Flat Discount"
             value={form.discountAmount}
             onChange={(e) => handleChange("discountAmount", e.target.value)}
           />
-
+          <Input
+            type="number"
+            placeholder="Percent Discount"
+            value={form.discountPercent}
+            onChange={(e) => handleChange("discountPercent", e.target.value)}
+          />
           <Input
             placeholder="Gift Card Code"
             value={form.giftCardCode}
             onChange={(e) => handleChange("giftCardCode", e.target.value)}
           />
-
           <Input
             type="number"
             placeholder="Manual Price Override"
@@ -289,16 +251,11 @@ export function JobCreateForm() {
           />
 
           <div className="flex items-center space-x-2">
-            <Switch
+            <Checkbox
               checked={form.usedReferral}
               onCheckedChange={(val) => handleChange("usedReferral", val)}
             />
             <label>Customer Used Referral</label>
-          </div>
-
-          <div className="md:col-span-2">
-            <strong>Final Estimated Price:</strong> $
-            {calculatedPrice().toFixed(2)}
           </div>
         </CardContent>
       </Card>

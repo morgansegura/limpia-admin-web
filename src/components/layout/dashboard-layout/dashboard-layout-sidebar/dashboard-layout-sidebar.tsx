@@ -26,6 +26,11 @@ export function DashboardLayoutSidebar() {
       href: "/jobs",
       label: "Jobs",
     },
+    {
+      icon: <BriefcaseBusinessIcon />,
+      href: "/toolts",
+      label: "Jobs",
+    },
   ];
 
   function Sidebar({ className }: { className?: string }) {
