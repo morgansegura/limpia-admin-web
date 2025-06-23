@@ -1,19 +1,37 @@
 import { apiFetch } from "@/lib/api";
 import { ValueAddedService } from "@/types/valye-added-services.types";
 
-export async function createValueAddedService(
-  data: Partial<ValueAddedService>,
-) {
-  return await apiFetch<ValueAddedService>("/value-added-services", {
+export async function createValueAddedService(input: {
+  name: string;
+  duration: number;
+  jobId: string;
+}) {
+  return apiFetch<ValueAddedService>("/value-added-services", {
     method: "POST",
-    body: JSON.stringify(data),
+    body: JSON.stringify({
+      name: input.name,
+      duration: input.duration,
+      estimatedMinutes: input.duration,
+      jobId: input.jobId,
+    }),
   });
 }
 
-export async function getValueAddedServices(jobId: string) {
-  return await apiFetch<ValueAddedService[]>(
-    `/value-added-services?jobId=${jobId}`,
-    {},
-    { throwOnError: false },
-  );
+export async function deleteValueAddedService(id: string) {
+  return apiFetch(`/value-added-services/${id}`, {
+    method: "DELETE",
+  });
+}
+
+export async function updateValueAddedService(
+  id: string,
+  data: Partial<{
+    name: string;
+    duration: number;
+  }>,
+) {
+  return apiFetch(`/value-added-services/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
 }
