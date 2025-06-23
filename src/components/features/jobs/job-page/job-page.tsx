@@ -52,7 +52,15 @@ export function JobPage({ jobId }: Props) {
           ))}
 
           <h3>Value-Added Services</h3>
-          <ValueAddedServiceForm jobId={jobId} onCreated={handleNewService} />
+          <ValueAddedServiceForm
+            jobId={jobId}
+            onCreated={(newService) =>
+              setValueServices((prev) => [
+                ...prev,
+                newService as ValueAddedService,
+              ])
+            }
+          />
           <ValueAddedServiceList jobId={jobId} />
         </CardContent>
       </Card>
