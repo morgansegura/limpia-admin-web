@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { AuthProvider } from "@/context/auth-context";
 
 import "./layout.css";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,6 +26,7 @@ export default async function RootLayout({
       <body className={cn(inter.className)}>
         <AuthProvider>
           <div className="layout-body">{children}</div>
+          <Toaster />
         </AuthProvider>
       </body>
     </html>

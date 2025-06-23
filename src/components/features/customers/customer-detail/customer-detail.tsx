@@ -3,153 +3,97 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ChevronRightIcon, HouseIcon } from "lucide-react";
+import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/api";
 
-import { Customer, EditableCustomerField } from "@/types/customer.types";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DetailSection } from "../../detail-section/detail-section";
-import { FieldConfig } from "@/types/forms.types";
+
+import {
+  customerAccessFields,
+  customerBillingFields,
+  customerDetailsFields,
+  customerEstimateFields,
+  customerInternalFields,
+  customerLocationFields,
+  customerPreferenceFields,
+} from "./details";
+
+import { Customer } from "@/types/customer.types";
 
 interface Props {
   customer: Customer;
 }
 
 export function CustomerDetail({ customer: initialCustomer }: Props) {
-  const [customer, setCustomer] = useState(initialCustomer);
-  const [form, setForm] = useState({ ...initialCustomer });
-  const [isEditing, setIsEditing] = useState(false);
+  const [customer, setCustomer] = useState<Customer>(initialCustomer);
+  const [form, setForm] = useState<Customer>({ ...initialCustomer });
   const [loading, setLoading] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
-  const updateField = (key: string, value: any) => {
+  const updateField = (key: keyof Customer, value: any) => {
     setForm({ ...form, [key]: value });
   };
 
+  const isDirty = JSON.stringify(form) !== JSON.stringify(customer);
+
   const handleSave = async () => {
     setLoading(true);
-    await apiFetch(`/customers/${customer.id}`, {
-      method: "PUT",
-      body: JSON.stringify(form),
-    });
-    setCustomer(form);
-    setIsEditing(false);
-    setLoading(false);
+    try {
+      const updated = await apiFetch<Customer>(`/customers/${customer.id}`, {
+        method: "PUT",
+        body: JSON.stringify(form),
+      });
+
+      if (!updated) {
+        toast.error("Failed to update customer");
+        return;
+      }
+
+      setCustomer(updated);
+      setForm(updated);
+      setIsEditing(false);
+      toast.success("Customer updated successfully");
+    } catch (error) {
+      toast.error("Failed to update customer");
+      console.error("Error updating customer:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this customer? This action cannot be undone.",
+    );
+    if (!confirmDelete) return;
+
+    setLoading(true);
+    try {
+      await apiFetch(`/customers/${customer.id}`, {
+        method: "DELETE",
+      });
+      toast.success("Customer deleted successfully");
+      window.location.href = "/customers";
+    } catch (error) {
+      toast.error("Failed to delete customer");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCancel = () => {
     setForm(customer);
     setIsEditing(false);
   };
-  const customerEstimateFields: FieldConfig<
-    Pick<Customer, "squareFootage" | "priceEstimate">
-  >[] = [
-    {
-      key: "squareFootage",
-      label: "Estimated Square Footage",
-      type: "text",
-    },
-    {
-      key: "priceEstimate",
-      label: "Estimated Price",
-      type: "text",
-    },
-  ];
-  const customerDetailsFields: FieldConfig<
-    Pick<Customer, EditableCustomerField>
-  >[] = [
-    {
-      key: "name",
-      label: "Name",
-      type: "text",
-    },
-    {
-      key: "email",
-      label: "Email",
-      type: "text",
-    },
-    {
-      key: "phone",
-      label: "Phone",
-      type: "text",
-    },
-  ];
-
-  const customerLocationFields: FieldConfig<
-    Pick<Customer, EditableCustomerField>
-  >[] = [
-    {
-      key: "street",
-      label: "Street",
-      type: "text",
-    },
-    {
-      key: "unit",
-      label: "Unit #",
-      type: "text",
-    },
-    {
-      key: "city",
-      label: "City",
-      type: "text",
-    },
-    {
-      key: "state",
-      label: "State",
-      type: "text",
-    },
-    {
-      key: "cleaningType",
-      label: "Cleaning Type",
-      type: "select",
-      options: [
-        { label: "Base", value: "BASE" },
-        { label: "Move Out", value: "MOVE_OUT" },
-        { label: "Move In", value: "MOVE_IN" },
-        { label: "Airbnb", value: "AIRBNB" },
-        { label: "Deep", value: "DEEP" },
-        { label: "Office", value: "OFFICE" },
-      ],
-    },
-  ];
-
-  const customerPreferenceFields: FieldConfig<
-    Pick<Customer, EditableCustomerField>
-  >[] = [
-    {
-      key: "preferredTimeOfDay",
-      label: "Preferred Time",
-      type: "radio",
-      options: [
-        { label: "Morning", value: "morning" },
-        { label: "Afternoon", value: "afternoon" },
-      ],
-    },
-    {
-      key: "preferredDays",
-      label: "Preferred Days",
-      type: "multi-select",
-      options: [
-        { label: "Sunday", value: "Sunday" },
-        { label: "Monday", value: "Monday" },
-        { label: "Tuesday", value: "Tuesday" },
-        { label: "Wednesday", value: "Wednesday" },
-        { label: "Thursday", value: "Thursday" },
-        { label: "Friday", value: "Friday" },
-        { label: "Saturday", value: "Saturday" },
-      ],
-    },
-    {
-      key: "hasPets",
-      label: "Has Pets",
-      type: "switch",
-    },
-  ];
 
   return (
     <div className="customer-detail">
       <div className="dashboard-header-toolbar">
-        {/* Breadcrubms */}
+        {/* Breadcrumbs */}
         <nav className="breadcrumbs">
           <div className="breadcrumb">
             <Link href="/dashboard" className="breadcrumb-item">
@@ -166,31 +110,38 @@ export function CustomerDetail({ customer: initialCustomer }: Props) {
           <div className="breadcrumb">
             <ChevronRightIcon className="breadcrumb-icon" />
             <div className="breadcrumb-item">
-              <span>{customer["name"]}</span>
+              <span>{customer.name}</span>
             </div>
           </div>
         </nav>
 
         <div className="dashboard-header-button-block">
-          {!isEditing ? (
-            <Button onClick={() => setIsEditing(true)}>Edit</Button>
-          ) : (
-            <>
-              <Button onClick={handleSave} disabled={loading}>
-                Save
+          <div className="flex items-center gap-2">
+            {!isEditing ? (
+              <Button size="sm" onClick={() => setIsEditing(true)}>
+                Edit
               </Button>
-              <Button variant="outline" onClick={handleCancel}>
-                Cancel
-              </Button>
-            </>
-          )}
+            ) : (
+              <>
+                <Button
+                  size="sm"
+                  onClick={handleSave}
+                  disabled={loading || !isDirty}
+                >
+                  Save
+                </Button>
+                <Button size="sm" variant="outline" onClick={handleCancel}>
+                  Cancel
+                </Button>
+              </>
+            )}
+          </div>
         </div>
       </div>
-      <div className="dashboard-layout-heading-block">
-        {/* Title Block */}
-        <div className="dashboard-layout-title-block">
-          <h2 className="dashboard-layout-title">{customer["name"]}</h2>
 
+      <div className="dashboard-layout-heading-block">
+        <div className="dashboard-layout-title-block">
+          <h2 className="dashboard-layout-title">{customer.name}</h2>
           <div className="dashboard-layout-description-small">
             <span>Customer ID:</span>
             <ChevronRightIcon className="w-4" />
@@ -205,59 +156,39 @@ export function CustomerDetail({ customer: initialCustomer }: Props) {
       </div>
 
       <div className="dashboard-layout-sections">
-        <Card className="dashboard-layout-section">
-          <CardHeader className="dashboard-layout-section-header">
-            <CardTitle>Estimate Details</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <DetailSection
-              form={form}
-              isEditing={false} // Always read-only
-              onChange={() => {}}
-              fields={customerEstimateFields}
-            />
-          </CardContent>
-        </Card>
-
-        <Card className="dashboard-layout-section">
-          <CardHeader className="dashboard-layout-section-header">
-            <CardTitle>Contact Information</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <DetailSection
-              form={form}
-              isEditing={isEditing}
-              onChange={updateField}
-              fields={customerDetailsFields}
-            />
-          </CardContent>
-        </Card>
-        <Card className="dashboard-layout-section">
-          <CardHeader className="dashboard-layout-section-header">
-            <CardTitle>Property Details</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <DetailSection
-              form={form}
-              isEditing={isEditing}
-              onChange={updateField}
-              fields={customerLocationFields}
-            />
-          </CardContent>
-        </Card>
-        <Card className="dashboard-layout-section">
-          <CardHeader className="dashboard-layout-section-header">
-            <CardTitle>Preference Details</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <DetailSection
-              form={form}
-              isEditing={isEditing}
-              onChange={updateField}
-              fields={customerPreferenceFields}
-            />
-          </CardContent>
-        </Card>
+        {[
+          { fields: customerDetailsFields, title: "Contact Information" },
+          { fields: customerLocationFields, title: "Property Details" },
+          { fields: customerEstimateFields, title: "Cleaning & Estimate" },
+          { fields: customerAccessFields, title: "Access & Home Notes" },
+          { fields: customerPreferenceFields, title: "Preferences" },
+          { fields: customerBillingFields, title: "Billing" },
+          { fields: customerInternalFields, title: "Internal / CRM" },
+        ].map(({ fields, title }, index: number) => (
+          <Card className="dashboard-layout-section" key={index}>
+            <CardHeader className="dashboard-layout-section-header">
+              <CardTitle>{title}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <DetailSection
+                form={form}
+                isEditing={isEditing}
+                onChange={updateField}
+                fields={fields}
+              />
+            </CardContent>
+          </Card>
+        ))}
+        <div className="flex w-full justify-end">
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={handleDelete}
+            disabled={loading}
+          >
+            Delete User
+          </Button>
+        </div>
       </div>
     </div>
   );
