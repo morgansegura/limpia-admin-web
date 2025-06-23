@@ -9,8 +9,9 @@ import { apiFetch } from "@/lib/api";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DetailSection } from "../../detail-section/detail-section";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+import { DetailSection } from "@/components/features/detail-section/detail-section";
 import {
   customerAccessFields,
   customerBillingFields,
@@ -142,7 +143,7 @@ export function CustomerDetail({ customer: initialCustomer }: Props) {
       <div className="dashboard-layout-heading-block">
         <div className="dashboard-layout-title-block">
           <h2 className="dashboard-layout-title">{customer.name}</h2>
-          <div className="dashboard-layout-description-small">
+          <div className="dashboard-layout-description-small -mb-1.5">
             <span>Customer ID:</span>
             <ChevronRightIcon className="w-4" />
             {customer.id}
@@ -156,29 +157,75 @@ export function CustomerDetail({ customer: initialCustomer }: Props) {
       </div>
 
       <div className="dashboard-layout-sections">
-        {[
-          { fields: customerDetailsFields, title: "Contact Information" },
-          { fields: customerLocationFields, title: "Property Details" },
-          { fields: customerEstimateFields, title: "Cleaning & Estimate" },
-          { fields: customerAccessFields, title: "Access & Home Notes" },
-          { fields: customerPreferenceFields, title: "Preferences" },
-          { fields: customerBillingFields, title: "Billing" },
-          { fields: customerInternalFields, title: "Internal / CRM" },
-        ].map(({ fields, title }, index: number) => (
-          <Card className="dashboard-layout-section" key={index}>
-            <CardHeader className="dashboard-layout-section-header">
-              <CardTitle>{title}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <DetailSection
-                form={form}
-                isEditing={isEditing}
-                onChange={updateField}
-                fields={fields}
-              />
-            </CardContent>
-          </Card>
-        ))}
+        <Tabs defaultValue="account">
+          <TabsList>
+            <TabsTrigger value="contact">Customer Information</TabsTrigger>
+            <TabsTrigger value="property">Property Details</TabsTrigger>
+            <TabsTrigger value="account">Account Information</TabsTrigger>
+          </TabsList>
+          <TabsContent value="contact" className="grid gap-4">
+            {[
+              { fields: customerDetailsFields, title: "Contact Information" },
+              { fields: customerPreferenceFields, title: "Preferences" },
+              { fields: customerEstimateFields, title: "Cleaning & Estimate" },
+            ].map(({ fields, title }, index: number) => (
+              <Card className="dashboard-layout-section" key={index}>
+                <CardHeader className="dashboard-layout-section-header">
+                  <CardTitle>{title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <DetailSection
+                    form={form}
+                    isEditing={isEditing}
+                    onChange={updateField}
+                    fields={fields}
+                  />
+                </CardContent>
+              </Card>
+            ))}
+          </TabsContent>
+          <TabsContent value="property" className="grid gap-4">
+            {[
+              { fields: customerLocationFields, title: "Property Details" },
+              { fields: customerAccessFields, title: "Access & Home Notes" },
+            ].map(({ fields, title }, index: number) => (
+              <Card className="dashboard-layout-section" key={index}>
+                <CardHeader className="dashboard-layout-section-header">
+                  <CardTitle>{title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <DetailSection
+                    form={form}
+                    isEditing={isEditing}
+                    onChange={updateField}
+                    fields={fields}
+                  />
+                </CardContent>
+              </Card>
+            ))}
+          </TabsContent>
+          <TabsContent value="account" className="grid gap-4">
+            {[
+              { fields: customerBillingFields, title: "Billing" },
+              { fields: customerInternalFields, title: "Internal / CRM" },
+            ].map(({ fields, title }, index: number) => (
+              <Card className="dashboard-layout-section" key={index}>
+                <CardHeader className="dashboard-layout-section-header">
+                  <CardTitle>{title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <DetailSection
+                    form={form}
+                    isEditing={isEditing}
+                    onChange={updateField}
+                    fields={fields}
+                  />
+                </CardContent>
+              </Card>
+            ))}
+          </TabsContent>
+        </Tabs>
+
         <div className="flex w-full justify-end">
           <Button
             variant="destructive"
