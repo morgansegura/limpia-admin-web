@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,8 @@ import { apiFetch } from "@/lib/api";
 import { CLEANING_TYPE_OPTIONS, Customer } from "@/types/customer.types";
 
 export default function SalesEstimatePage() {
+  const router = useRouter();
+
   const [form, setForm] = useState<Partial<Customer>>({
     street: "",
     city: "",
@@ -140,9 +143,20 @@ export default function SalesEstimatePage() {
             </div>
             <Button
               variant="outline"
-              onClick={() => toast("Create customer flow coming soon!")}
+              onClick={() => {
+                const query = new URLSearchParams({
+                  street: form.street ?? "",
+                  city: form.city ?? "",
+                  state: form.state ?? "",
+                  zip: form.zip ?? "",
+                  cleaningType: form.cleaningType ?? "BASE",
+                  estimatedPrice: String(estimate?.price ?? 0),
+                }).toString();
+
+                router.push(`/jobs/new?${query}`);
+              }}
             >
-              Create Customer from Estimate
+              Create Job from Estimate
             </Button>
           </CardContent>
         </Card>

@@ -1,27 +1,22 @@
 import { Metadata } from "next";
 
-import { JobPage } from "@/components/features/jobs/job-page/job-page";
 import { Protected } from "@/components/protected/protected";
 
 import { ROLES } from "@/constants/roles";
 import { DashboardLayout } from "@/components/layout/dashboard-layout/dashboard-layout";
+import { JobCreateForm } from "@/components/features/jobs/job-create-form/job-create-form";
 
 export const metadata: Metadata = {
-  title: "Customer Detail | Limpia Admin",
+  title: "Create New Job | Limpia Admin",
 };
-type JobDashboardPageProps = {
-  params: Promise<{ id: string }>;
-};
-export default async function JobDashboardPage({
-  params,
-}: JobDashboardPageProps) {
-  const { id } = await params;
+
+export default function JobNewDashboardPage() {
   const allowedRoles = [ROLES.SUPER_ADMIN, ROLES.BRANCH_MANAGER];
 
   return (
     <Protected allowedRoles={allowedRoles}>
       <DashboardLayout>
-        <JobPage jobId={id} />
+        <JobCreateForm />
       </DashboardLayout>
     </Protected>
   );
