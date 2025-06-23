@@ -18,7 +18,7 @@ import {
 import { Switch } from "@radix-ui/react-switch";
 
 type Props<T extends object, K extends keyof T = keyof T> = {
-  form: T | null;
+  form: Partial<T>;
   isEditing: boolean;
   onChange: (key: K, value: unknown) => void;
   fields: FieldConfig<Pick<T, K>>[];

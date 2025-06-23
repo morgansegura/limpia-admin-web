@@ -97,8 +97,21 @@ export type DayOfWeek = [
 
 export type DAYS_OF_THE_WEEK = DayOfWeek[];
 
-export type CleaningType = [
-  "BASE" | "MOVE_OUT" | "MOVE_IN" | "AIRBNB" | "DEEP" | "OFFICE",
-];
+export type CleaningType =
+  | "BASE"
+  | "MOVE_OUT"
+  | "MOVE_IN"
+  | "AIRBNB"
+  | "DEEP"
+  | "OFFICE";
 
 export type CLEANING_TYPE = CleaningType[];
+
+export const CLEANING_TYPE_OPTIONS: CleaningType[] = [
+  "BASE",
+  "MOVE_OUT",
+  "MOVE_IN",
+  "AIRBNB",
+  "DEEP",
+  "OFFICE",
+];

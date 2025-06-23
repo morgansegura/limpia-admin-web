@@ -6,7 +6,6 @@ import { Customer } from "@/types/customer.types";
 type CustomerTableProps = {
   customers: Customer[];
   onView: (id: string) => void;
-  onEdit?: (customer: Customer) => void;
 };
 
 export function CustomerTable({ customers, onView }: CustomerTableProps) {

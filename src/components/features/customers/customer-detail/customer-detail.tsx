@@ -23,6 +23,7 @@ import {
 } from "./details";
 
 import { Customer } from "@/types/customer.types";
+import { useRouter } from "next/navigation";
 
 interface Props {
   customer: Customer;
@@ -33,6 +34,8 @@ export function CustomerDetail({ customer: initialCustomer }: Props) {
   const [form, setForm] = useState<Customer>({ ...initialCustomer });
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+
+  const router = useRouter();
 
   const updateField = (key: keyof Customer, value: any) => {
     setForm({ ...form, [key]: value });
@@ -77,7 +80,7 @@ export function CustomerDetail({ customer: initialCustomer }: Props) {
         method: "DELETE",
       });
       toast.success("Customer deleted successfully");
-      window.location.href = "/customers";
+      router.replace("/customers");
     } catch (error) {
       toast.error("Failed to delete customer");
       console.error(error);

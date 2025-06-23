@@ -1,6 +1,6 @@
 "use client";
 
-import CustomerPage from "@/components/features/customers/customers-page/customers-page";
+import { CustomersPage } from "@/components/features/customers/customers-page/customers-page";
 import { Protected } from "@/components/protected/protected";
 
 import { ROLES } from "@/constants/roles";
@@ -10,7 +10,7 @@ export default function CustomersDashboardPage() {
 
   return (
     <Protected allowedRoles={allowedRoles}>
-      <CustomerPage />
+      <CustomersPage />
     </Protected>
   );
 }

@@ -5,8 +5,6 @@ import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-import TypographyH1 from "@/components/typography-h1";
-
 import { apiFetch } from "@/lib/api";
 
 import { CustomerTable } from "@/components/features/customers/customer-table/customer-table";
@@ -16,10 +14,8 @@ import "./customers-page.css";
 
 import type { Customer } from "@/types/customer.types";
 
-export default function CustomersPage() {
+export function CustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
-  const [open, setOpen] = useState(false);
-  const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
   const router = useRouter();
 
   const fetchCustomers = async () => {
@@ -36,18 +32,7 @@ export default function CustomersPage() {
   }, []);
 
   const handleAdd = () => {
-    setEditingCustomer(null);
-    setOpen(true);
-  };
-
-  const handleEdit = (customer: Customer) => {
-    setEditingCustomer(customer);
-    setOpen(true);
-  };
-
-  const handleSuccess = async () => {
-    setOpen(false);
-    await fetchCustomers();
+    router.push("/customers/new");
   };
 
   return (
@@ -63,7 +48,6 @@ export default function CustomersPage() {
 
         <CustomerTable
           customers={customers}
-          onEdit={handleEdit}
           onView={(id) => router.push(`/customers/${id}`)}
         />
       </div>
