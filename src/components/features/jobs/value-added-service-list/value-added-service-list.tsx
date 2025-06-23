@@ -26,7 +26,7 @@ export function ValueAddedServiceList({ jobId }: Props) {
   useEffect(() => {
     async function fetch() {
       const data = await apiFetch<ValueAddedService[]>(
-        `/jobs/${jobId}/value-added-services`,
+        `/value-added-services/job/${jobId}`,
       );
       setServices(data ?? []);
     }
