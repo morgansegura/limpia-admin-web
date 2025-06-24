@@ -1,5 +1,8 @@
 import {
   BriefcaseBusinessIcon,
+  BrushCleaningIcon,
+  CogIcon,
+  CornerDownRightIcon,
   HomeIcon,
   NotebookTabsIcon,
 } from "lucide-react";
@@ -22,14 +25,29 @@ export function DashboardLayoutSidebar() {
       label: "Customers",
     },
     {
-      icon: <BriefcaseBusinessIcon />,
+      icon: <CornerDownRightIcon />,
+      href: "/customers/new",
+      label: "New Customer",
+    },
+    {
+      icon: <BrushCleaningIcon />,
       href: "/jobs",
       label: "Jobs",
     },
     {
-      icon: <BriefcaseBusinessIcon />,
-      href: "/toolts",
-      label: "Jobs",
+      icon: <CornerDownRightIcon />,
+      href: "/jobs/new",
+      label: "New Job",
+    },
+    {
+      icon: <CogIcon />,
+      href: "/sales-estimate",
+      label: "Tools",
+    },
+    {
+      icon: <CornerDownRightIcon />,
+      href: "/sales-estimate",
+      label: "Sales Estimate",
     },
   ];
 

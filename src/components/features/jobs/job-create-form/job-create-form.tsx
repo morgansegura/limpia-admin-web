@@ -38,7 +38,9 @@ export function JobCreateForm() {
   const isRecurringFromEstimate = searchParams.get("isRecurring") === "true";
 
   const [form, setForm] = useState({
+    title: "",
     customerId: "",
+    price: 0,
     assignedToId: "",
     scheduledAt: new Date().toISOString().slice(0, 16),
     cleaningType: searchParams.get("cleaningType") ?? "BASE",
@@ -123,221 +125,223 @@ export function JobCreateForm() {
   };
 
   return (
-    <div className="space-y-4">
+    <div>
       <div className="dashboard-header-toolbar">
         <h2 className="dashboard-layout-title">Create New Job</h2>
+
+        <Button onClick={handleSubmit} disabled={submitting}>
+          Create Job
+        </Button>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Job Details</CardTitle>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Combobox
-            items={customers.map((c) => ({
-              label: `${c.name} (${c.email})`,
-              value: c.id,
-            }))}
-            value={form.customerId}
-            onChange={(id) => handleChange("customerId", id)}
-            placeholder="Search customer..."
-          />
-
-          <Select
-            value={form.assignedToId}
-            onValueChange={(val) => handleChange("assignedToId", val)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Assign To" />
-            </SelectTrigger>
-            <SelectContent>
-              {users.map((u) => (
-                <SelectItem key={u.id} value={u.id}>
-                  {u.firstName} {u.lastName}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Input
-            type="datetime-local"
-            value={form.scheduledAt}
-            onChange={(e) => handleChange("scheduledAt", e.target.value)}
-          />
-
-          <Select
-            value={form.cleaningType}
-            onValueChange={(val) => handleChange("cleaningType", val)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Cleaning Type" />
-            </SelectTrigger>
-            <SelectContent>
-              {CLEANING_TYPE_OPTIONS.map((type) => (
-                <SelectItem key={type} value={type}>
-                  {type}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Input
-            placeholder="Street Address"
-            value={form.street}
-            onChange={(e) => handleChange("street", e.target.value)}
-          />
-          <Input
-            placeholder="City"
-            value={form.city}
-            onChange={(e) => handleChange("city", e.target.value)}
-          />
-          <Input
-            placeholder="State"
-            value={form.state}
-            onChange={(e) => handleChange("state", e.target.value)}
-          />
-          <Input
-            placeholder="Zip"
-            value={form.zip}
-            onChange={(e) => handleChange("zip", e.target.value)}
-          />
-
-          <Input
-            placeholder="Square Footage"
-            type="number"
-            value={form.squareFootage}
-            onChange={(e) => handleChange("squareFootage", e.target.value)}
-          />
-
-          <div className="flex items-center space-x-2">
-            <Switch
-              checked={form.isRecurring}
-              onCheckedChange={(val) => handleChange("isRecurring", val)}
+      <div className="py-6 px-4 lg:px-6 space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Job Details</CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Combobox
+              items={customers.map((c) => ({
+                label: `${c.name} (${c.email})`,
+                value: c.id,
+              }))}
+              value={form.customerId}
+              onChange={(id) => handleChange("customerId", id)}
+              placeholder="Search customer..."
             />
-            <label>Recurring Job</label>
-          </div>
 
-          {form.isRecurring && (
-            <>
-              <Select
-                value={form.recurrenceType}
-                onValueChange={(val) => handleChange("recurrenceType", val)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Recurrence Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="WEEKLY">Weekly</SelectItem>
-                  <SelectItem value="BIWEEKLY">Biweekly</SelectItem>
-                  <SelectItem value="MONTHLY">Monthly</SelectItem>
-                </SelectContent>
-              </Select>
-              <Input
-                type="date"
-                placeholder="Recurrence End Date"
-                value={form.recurrenceEndDate}
-                onChange={(e) =>
-                  handleChange("recurrenceEndDate", e.target.value)
-                }
+            <Select
+              value={form.assignedToId}
+              onValueChange={(val) => handleChange("assignedToId", val)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Assign To" />
+              </SelectTrigger>
+              <SelectContent>
+                {users.map((u) => (
+                  <SelectItem key={u.id} value={u.id}>
+                    {u.firstName} {u.lastName}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Input
+              type="datetime-local"
+              value={form.scheduledAt}
+              onChange={(e) => handleChange("scheduledAt", e.target.value)}
+            />
+
+            <Select
+              value={form.cleaningType}
+              onValueChange={(val) => handleChange("cleaningType", val)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Cleaning Type" />
+              </SelectTrigger>
+              <SelectContent>
+                {CLEANING_TYPE_OPTIONS.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Input
+              placeholder="Street Address"
+              value={form.street}
+              onChange={(e) => handleChange("street", e.target.value)}
+            />
+            <Input
+              placeholder="City"
+              value={form.city}
+              onChange={(e) => handleChange("city", e.target.value)}
+            />
+            <Input
+              placeholder="State"
+              value={form.state}
+              onChange={(e) => handleChange("state", e.target.value)}
+            />
+            <Input
+              placeholder="Zip"
+              value={form.zip}
+              onChange={(e) => handleChange("zip", e.target.value)}
+            />
+
+            <Input
+              placeholder="Square Footage"
+              type="number"
+              value={form.squareFootage}
+              onChange={(e) => handleChange("squareFootage", e.target.value)}
+            />
+
+            <div className="flex items-center space-x-2">
+              <Switch
+                checked={form.isRecurring}
+                onCheckedChange={(val) => handleChange("isRecurring", val)}
               />
-            </>
-          )}
-        </CardContent>
-      </Card>
+              <label>Recurring Job</label>
+            </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Promotions & Pricing</CardTitle>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Select
-            value={form.discountPercent}
-            onValueChange={(val) => handleChange("discountPercent", val)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="% Discount" />
-            </SelectTrigger>
-            <SelectContent>
-              {DISCOUNT_PERCENT_OPTIONS.map((val) => (
-                <SelectItem key={val} value={val}>
-                  {val}%
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            {form.isRecurring && (
+              <>
+                <Select
+                  value={form.recurrenceType}
+                  onValueChange={(val) => handleChange("recurrenceType", val)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Recurrence Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="WEEKLY">Weekly</SelectItem>
+                    <SelectItem value="BIWEEKLY">Biweekly</SelectItem>
+                    <SelectItem value="MONTHLY">Monthly</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Input
+                  type="date"
+                  placeholder="Recurrence End Date"
+                  value={form.recurrenceEndDate}
+                  onChange={(e) =>
+                    handleChange("recurrenceEndDate", e.target.value)
+                  }
+                />
+              </>
+            )}
+          </CardContent>
+        </Card>
 
-          <Input
-            type="number"
-            placeholder="Flat Discount ($)"
-            value={form.discountAmount}
-            onChange={(e) => handleChange("discountAmount", e.target.value)}
-          />
+        <Card>
+          <CardHeader>
+            <CardTitle>Promotions & Pricing</CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Select
+              value={form.discountPercent}
+              onValueChange={(val) => handleChange("discountPercent", val)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="% Discount" />
+              </SelectTrigger>
+              <SelectContent>
+                {DISCOUNT_PERCENT_OPTIONS.map((val) => (
+                  <SelectItem key={val} value={val}>
+                    {val}%
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-          <Input
-            placeholder="Gift Card Code"
-            value={form.giftCardCode}
-            onChange={(e) => handleChange("giftCardCode", e.target.value)}
-          />
-
-          <Input
-            type="number"
-            placeholder="Manual Price Override"
-            value={form.manualPriceOverride}
-            onChange={(e) =>
-              handleChange("manualPriceOverride", e.target.value)
-            }
-          />
-
-          <div className="flex items-center space-x-2">
-            <Switch
-              checked={form.usedReferral}
-              onCheckedChange={(val) => handleChange("usedReferral", val)}
+            <Input
+              type="number"
+              placeholder="Flat Discount ($)"
+              value={form.discountAmount}
+              onChange={(e) => handleChange("discountAmount", e.target.value)}
             />
-            <label>Customer Used Referral</label>
-          </div>
 
-          <div className="md:col-span-2">
-            <strong>Final Estimated Price:</strong> $
-            {calculatedPrice().toFixed(2)}
-          </div>
-        </CardContent>
-      </Card>
+            <Input
+              placeholder="Gift Card Code"
+              value={form.giftCardCode}
+              onChange={(e) => handleChange("giftCardCode", e.target.value)}
+            />
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Notes</CardTitle>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 gap-4">
-          <Textarea
-            placeholder="Internal Notes"
-            value={form.internalNotes}
-            onChange={(e) => handleChange("internalNotes", e.target.value)}
-          />
-          <Textarea
-            placeholder="Customer Notes"
-            value={form.customerNotes}
-            onChange={(e) => handleChange("customerNotes", e.target.value)}
-          />
-        </CardContent>
-      </Card>
+            <Input
+              type="number"
+              placeholder="Manual Price Override"
+              value={form.manualPriceOverride}
+              onChange={(e) =>
+                handleChange("manualPriceOverride", e.target.value)
+              }
+            />
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Value-Added Services</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ValueAddedServiceForm
-            jobId="new-job-temp"
-            onCreated={(s) =>
-              setValueServices((prev) => [...prev, s as ValueAddedService])
-            }
-          />
-        </CardContent>
-      </Card>
+            <div className="flex items-center space-x-2">
+              <Switch
+                checked={form.usedReferral}
+                onCheckedChange={(val) => handleChange("usedReferral", val)}
+              />
+              <label>Customer Used Referral</label>
+            </div>
 
-      <Button onClick={handleSubmit} disabled={submitting}>
-        Create Job
-      </Button>
+            <div className="md:col-span-2">
+              <strong>Final Estimated Price:</strong> $
+              {calculatedPrice().toFixed(2)}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Notes</CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 gap-4">
+            <Textarea
+              placeholder="Internal Notes"
+              value={form.internalNotes}
+              onChange={(e) => handleChange("internalNotes", e.target.value)}
+            />
+            <Textarea
+              placeholder="Customer Notes"
+              value={form.customerNotes}
+              onChange={(e) => handleChange("customerNotes", e.target.value)}
+            />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Value-Added Services</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ValueAddedServiceForm
+              jobId="new-job-temp"
+              onCreated={(s) =>
+                setValueServices((prev) => [...prev, s as ValueAddedService])
+              }
+            />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

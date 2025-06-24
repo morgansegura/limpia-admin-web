@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { BellIcon, ChevronDownIcon, MenuIcon } from "lucide-react";
 

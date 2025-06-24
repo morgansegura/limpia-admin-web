@@ -5,17 +5,15 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-
-import { FieldConfig } from "@/types/forms.types";
-
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@radix-ui/react-select";
-import { Switch } from "@radix-ui/react-switch";
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { FieldConfig } from "@/types/forms.types";
 
 type Props<T extends object, K extends keyof T = keyof T> = {
   form: Partial<T>;
@@ -37,19 +35,21 @@ export function DetailSection<T extends object, K extends keyof T = keyof T>({
   return (
     <>
       {title && <h2 className="text-lg font-semibold">{title}</h2>}
-      {fields.map(({ key, label, type, options }, index) => {
+      {fields.map(({ key, label, type, options, disabled }, index) => {
         const value = form?.[key];
+
+        const inputClass = disabled ? "opacity-50 pointer-events-none" : "";
 
         return (
           <div key={String(key)} className="border-t border-neutral-100">
             <div
               className={cn(
                 "py-4 grid sm:grid-cols-3 gap-2 items-center",
-                index % 2 ? "bg-neutral-50 " : "bg-white",
+                index % 2 ? "bg-neutral-50" : "bg-white",
               )}
             >
               <div className="px-4 text-sm/6 font-medium text-neutral-900">
-                <Label className="divide-y divide-neutral-100">{label}</Label>
+                <Label>{label}</Label>
               </div>
 
               <div className="pl-4 text-sm/6 text-neutral-700 sm:col-span-2">
@@ -57,10 +57,37 @@ export function DetailSection<T extends object, K extends keyof T = keyof T>({
                   <Skeleton className="h-10 w-full rounded-md" />
                 ) : isEditing ? (
                   <>
-                    {type === "text" && (
+                    {(type === "text" ||
+                      type === "email" ||
+                      type === "tel" ||
+                      type === "currency") && (
                       <Input
+                        type={type === "currency" ? "number" : type}
+                        inputMode={type === "currency" ? "decimal" : undefined}
                         value={value ? String(value) : ""}
                         onChange={(e) => onChange(key, e.target.value)}
+                        className={inputClass}
+                        disabled={disabled}
+                      />
+                    )}
+
+                    {type === "number" && (
+                      <Input
+                        type="number"
+                        value={value ? String(value) : ""}
+                        onChange={(e) => onChange(key, Number(e.target.value))}
+                        className={inputClass}
+                        disabled={disabled}
+                      />
+                    )}
+
+                    {type === "date" && (
+                      <Input
+                        type="date"
+                        value={value ? String(value).slice(0, 10) : ""}
+                        onChange={(e) => onChange(key, e.target.value)}
+                        className={inputClass}
+                        disabled={disabled}
                       />
                     )}
 
@@ -68,24 +95,28 @@ export function DetailSection<T extends object, K extends keyof T = keyof T>({
                       <Textarea
                         value={value ? String(value) : ""}
                         onChange={(e) => onChange(key, e.target.value)}
+                        className={inputClass}
+                        disabled={disabled}
                       />
                     )}
 
                     {type === "switch" && (
-                      <>
-                        <Switch
-                          checked={Boolean(value)}
-                          onCheckedChange={(checked) => onChange(key, checked)}
-                        />
-                      </>
+                      <Switch
+                        checked={Boolean(value)}
+                        onCheckedChange={(checked) => onChange(key, checked)}
+                        disabled={disabled}
+                      />
                     )}
 
                     {type === "select" && options && (
                       <Select
                         value={value ? String(value) : ""}
-                        onValueChange={(v) => onChange(key, v)}
+                        onValueChange={(val) => onChange(key, val)}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger
+                          className={inputClass}
+                          disabled={disabled}
+                        >
                           <SelectValue placeholder="Select an option" />
                         </SelectTrigger>
                         <SelectContent>
@@ -117,6 +148,7 @@ export function DetailSection<T extends object, K extends keyof T = keyof T>({
                                       );
                                   onChange(key, newVal);
                                 }}
+                                disabled={disabled}
                               />
                               <span className="text-sm">{opt.label}</span>
                             </label>
@@ -134,18 +166,40 @@ export function DetailSection<T extends object, K extends keyof T = keyof T>({
                             key={opt.value}
                             className="flex items-center space-x-2"
                           >
-                            <RadioGroupItem value={opt.value} id={opt.value} />
+                            <RadioGroupItem
+                              value={opt.value}
+                              id={opt.value}
+                              disabled={disabled}
+                            />
                             <Label htmlFor={opt.value}>{opt.label}</Label>
                           </div>
                         ))}
                       </RadioGroup>
+                    )}
+
+                    {![
+                      "text",
+                      "number",
+                      "textarea",
+                      "switch",
+                      "select",
+                      "multi-select",
+                      "radio",
+                      "date",
+                      "email",
+                      "tel",
+                      "currency",
+                    ].includes(type) && (
+                      <p className="text-red-500 text-sm">
+                        Unknown field type: <code>{type}</code>
+                      </p>
                     )}
                   </>
                 ) : (
                   <p className="text-sm font-medium">
                     {Array.isArray(value)
                       ? value.join(", ")
-                      : String(value ?? "No preference selected")}
+                      : String(value ?? "—")}
                   </p>
                 )}
               </div>

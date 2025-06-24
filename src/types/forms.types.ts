@@ -2,8 +2,14 @@ export type FieldType =
   | "text"
   | "textarea"
   | "select"
+  | "number"
   | "switch"
   | "multi-select"
+  | "datetime"
+  | "date"
+  | "tel"
+  | "email"
+  | "currency"
   | "radio";
 
 export type FieldOption = {
@@ -16,4 +22,6 @@ export interface FieldConfig<T> {
   label: string;
   type: FieldType;
   options?: FieldOption[]; // only for select
+  required?: boolean;
+  disabled?: boolean;
 }

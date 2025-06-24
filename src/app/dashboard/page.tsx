@@ -1,6 +1,7 @@
 "use client";
 
 import { DashboardLayout } from "@/components/layout/dashboard-layout/dashboard-layout";
+import { Logo } from "@/components/layout/logo/logo";
 import { Protected } from "@/components/protected/protected";
 
 export default function DashboardPage() {
@@ -8,8 +9,19 @@ export default function DashboardPage() {
     <Protected>
       <DashboardLayout>
         <div className="dashboard">
-          <h1 className="dashboard-title">Dashboard</h1>
-          {/* <p className="dashboard-subtitle">Welcome, user: {user.firstName}</p> */}
+          <div className="px-4 lg:px-6 py-6">
+            <div className="">
+              <div className="flex items-center gap-2">
+                <div className="w-10">
+                  <Logo className="h-2" />
+                </div>
+                <h1 className="font-semibold text-4xl">Limpia is here!</h1>
+              </div>
+              <p className="border-b-2 inline-flex pt-4 p-2">
+                Bienvenidos Martin, Alma y Armando!
+              </p>
+            </div>
+          </div>
         </div>
       </DashboardLayout>
     </Protected>

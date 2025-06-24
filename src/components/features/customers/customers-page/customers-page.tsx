@@ -46,10 +46,12 @@ export function CustomersPage() {
           </Button>
         </div>
 
-        <CustomerTable
-          customers={customers}
-          onView={(id) => router.push(`/customers/${id}`)}
-        />
+        <div className="py-6 px-4 lg:px-6">
+          <CustomerTable
+            customers={customers}
+            onView={(id) => router.push(`/customers/${id}`)}
+          />
+        </div>
       </div>
     </DashboardLayout>
   );

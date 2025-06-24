@@ -19,6 +19,8 @@ export function DashboardLayout({ children, className }: DashboardLayoutProps) {
   const { user } = useAuth();
   const [open, setOpen] = useState<Boolean>(false);
 
+  const currentYear = new Date().getFullYear();
+
   function toggleSidebar() {
     setOpen(!open);
   }
@@ -42,7 +44,11 @@ export function DashboardLayout({ children, className }: DashboardLayoutProps) {
           user={user}
         />
         <main className="dashboard-layout-main">{children}</main>
-        <footer className="dashboard-layout-footer">Test content</footer>
+        <footer className="dashboard-layout-footer">
+          <p className="text-right text-neutral-500 text-sm font-light">
+            &copy; {currentYear} Limpia LLC. All rights reserved.
+          </p>
+        </footer>
       </div>
     </div>
   );

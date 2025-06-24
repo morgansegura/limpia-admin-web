@@ -1,7 +1,7 @@
 @reference 'tailwindcss';
 
 .customers-page {
-  @apply flex flex-col gap-4 p-4;
+  @apply flex flex-col justify-center;
 }
 
 .customers-page-title-bar {

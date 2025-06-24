@@ -34,7 +34,7 @@ export function JobsPage() {
 
   return (
     <DashboardLayout>
-      <div className="jobs-page p-4">
+      <div className="jobs-page">
         <div className="dashboard-header-toolbar">
           <h2 className="dashboard-layout-title">Jobs</h2>
           <div className="flex gap-2">
@@ -42,11 +42,15 @@ export function JobsPage() {
               <Plus className="jobs-page-icon" />
               Add Job
             </Button>
-            <Button onClick={handleEstimate}>Get Estimate</Button>
+            <Button onClick={handleEstimate} variant="outline">
+              Get Estimate
+            </Button>
           </div>
         </div>
 
-        <JobTable jobs={jobs} onView={(id) => router.push(`/jobs/${id}`)} />
+        <div className="py-6 px-4 lg:px-6">
+          <JobTable jobs={jobs} onView={(id) => router.push(`/jobs/${id}`)} />
+        </div>
       </div>
     </DashboardLayout>
   );
