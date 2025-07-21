@@ -21,6 +21,16 @@ export function DashboardLayoutSidebar() {
     },
     {
       icon: <NotebookTabsIcon />,
+      href: "/leads",
+      label: "Leads",
+    },
+    {
+      icon: <CornerDownRightIcon />,
+      href: "/leads/new",
+      label: "New Lead",
+    },
+    {
+      icon: <NotebookTabsIcon />,
       href: "/customers",
       label: "Customers",
     },
