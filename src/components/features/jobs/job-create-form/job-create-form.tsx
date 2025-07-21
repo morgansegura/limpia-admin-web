@@ -20,7 +20,7 @@ import { Switch } from "@/components/ui/switch";
 
 import { CLEANING_TYPE_OPTIONS } from "@/types/customer.types";
 import { ValueAddedServiceForm } from "../value-added-service-form/value-added-service-form";
-import { ValueAddedService } from "@/types/valye-added-services.types";
+import { ValueAddedService } from "@/types/value-added-services.types";
 import { User } from "@/types/user.types";
 import { Customer } from "@/types/customer.types";
 import { Job } from "@/types/job.types";
@@ -61,7 +61,7 @@ export function JobCreateForm() {
     customerNotes: "",
   });
 
-  const [estimate, setEstimate] = useState<number | null>(
+  const [estimate] = useState<number | null>(
     Number(searchParams.get("estimatedPrice")) || null,
   );
 
@@ -79,7 +79,7 @@ export function JobCreateForm() {
     loadData();
   }, []);
 
-  const handleChange = (key: string, value: any) => {
+  const handleChange = (key: string, value: unknown) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 

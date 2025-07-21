@@ -1,5 +1,5 @@
 import { apiFetch } from "@/lib/api";
-import { ValueAddedService } from "@/types/valye-added-services.types";
+import { ValueAddedService } from "@/types/value-added-services.types";
 
 export async function createValueAddedService(input: {
   name: string;

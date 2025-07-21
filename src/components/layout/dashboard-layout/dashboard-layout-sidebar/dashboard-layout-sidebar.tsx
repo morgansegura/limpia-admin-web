@@ -1,5 +1,4 @@
 import {
-  BriefcaseBusinessIcon,
   BrushCleaningIcon,
   CogIcon,
   CornerDownRightIcon,

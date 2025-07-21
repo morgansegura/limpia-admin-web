@@ -11,10 +11,11 @@ import { Label } from "@/components/ui/label";
 import { createValueAddedService } from "@/lib/api/value-added-services";
 import { apiFetch } from "@/lib/api";
 import { VALUE_ADDED_SERVICE_TYPES } from "@/constants/value-added-service-types";
+import { ValueAddedService } from "@/types/value-added-services.types";
 
 type Props = {
   jobId: string;
-  onCreated: (newService: unknown) => void;
+  onCreated?: (newService: ValueAddedService) => void;
 };
 
 type ServiceEntry = {
@@ -33,11 +34,12 @@ export function ValueAddedServiceForm({ jobId, onCreated }: Props) {
   useEffect(() => {
     async function loadExisting() {
       try {
-        const existing = await apiFetch(`/jobs/${jobId}/value-added-services`);
+        const existing: ValueAddedService[] =
+          (await apiFetch(`/jobs/${jobId}/value-added-services`)) ?? [];
 
         const mapped: FormState = VALUE_ADDED_SERVICE_TYPES.reduce(
           (acc, name) => {
-            const match = existing.find((item: any) => item.name === name);
+            const match = existing.find((item) => item.name === name);
             acc[name] = {
               selected: Boolean(match),
               duration: match?.duration ?? 10,
@@ -99,7 +101,11 @@ export function ValueAddedServiceForm({ jobId, onCreated }: Props) {
         ),
       );
 
-      results.forEach(onCreated);
+      if (onCreated) {
+        results
+          .filter((s): s is ValueAddedService => s !== null)
+          .forEach(onCreated);
+      }
       toast.success("Services updated");
 
       // Reset only selection

@@ -20,7 +20,7 @@ export function useEstimateForm() {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = (key: keyof EstimateFormValues, value: any) => {
+  const handleChange = (key: keyof EstimateFormValues, value: unknown) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 

@@ -37,7 +37,7 @@ export function CustomerDetail({ customer: initialCustomer }: Props) {
 
   const router = useRouter();
 
-  const updateField = (key: keyof Customer, value: any) => {
+  const updateField = (key: keyof Customer, value: unknown) => {
     setForm({ ...form, [key]: value });
   };
 

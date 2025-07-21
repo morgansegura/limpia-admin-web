@@ -8,7 +8,7 @@ import { CustomerDetailPage } from "@/components/features/customers/customer-det
 import { ROLES } from "@/constants/roles";
 
 export const metadata: Metadata = {
-  title: "Customer Detail | Limpia Admin",
+  title: "Leads Detail | Limpia Admin",
 };
 
 type CustomerDetailDashboardPageProps = {

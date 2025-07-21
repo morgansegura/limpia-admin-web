@@ -17,7 +17,7 @@ export type DashboardLayoutProps = {
 
 export function DashboardLayout({ children, className }: DashboardLayoutProps) {
   const { user } = useAuth();
-  const [open, setOpen] = useState<Boolean>(false);
+  const [open, setOpen] = useState<boolean>(false);
 
   const currentYear = new Date().getFullYear();
 

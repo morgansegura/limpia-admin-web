@@ -7,17 +7,16 @@ import { cn } from "@/lib/utils";
 import { AuthContextType } from "@/context/auth-context";
 
 type DashboardLayoutHeaderProps = {
-  open: Boolean;
+  open: boolean;
   setOpen?: () => void;
   user: AuthContextType["user"];
 };
 
 export function DashboardLayoutHeader({
-  open,
   setOpen,
   user,
 }: DashboardLayoutHeaderProps) {
-  const [menuActive, setMenuActive] = useState<Boolean>(false);
+  const [menuActive, setMenuActive] = useState<boolean>(false);
 
   function toggleMenu() {
     setMenuActive(!menuActive);

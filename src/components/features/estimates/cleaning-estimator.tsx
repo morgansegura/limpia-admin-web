@@ -25,7 +25,7 @@ export default function CleaningEstimator() {
   });
 
   const handleChange = (field: keyof EstimateInputs, value: string) => {
-    setInputs((prev: any) => ({
+    setInputs((prev) => ({
       ...prev,
       [field]: parseFloat(value) || 0,
     }));

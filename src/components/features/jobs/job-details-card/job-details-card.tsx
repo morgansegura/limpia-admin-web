@@ -22,7 +22,7 @@ import { Combobox } from "@/components/ui/combobox";
 
 import { CLEANING_TYPE_OPTIONS, Customer } from "@/types/customer.types";
 import { User } from "@/types/user.types";
-import { ValueAddedService } from "@/types/valye-added-services.types";
+import { ValueAddedService } from "@/types/value-added-services.types";
 import { Job } from "@/types/job.types";
 import { ValueAddedServiceForm } from "../value-added-service-form/value-added-service-form";
 
@@ -73,7 +73,7 @@ export function JobCreateForm() {
     loadData();
   }, []);
 
-  const handleChange = (key: string, value: any) => {
+  const handleChange = (key: string, value: unknown) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 

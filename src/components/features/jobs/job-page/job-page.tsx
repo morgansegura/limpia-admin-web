@@ -27,6 +27,7 @@ import {
   jobPricingFields,
   jobScheduleFields,
 } from "./job-detail-fields";
+import { ValueAddedService } from "@/types/value-added-services.types";
 
 interface Props {
   jobId: string;
@@ -61,7 +62,7 @@ export function JobPage({ jobId }: Props) {
     fetchJob();
   }, [jobId]);
 
-  const updateField = (key: keyof Job, value: any) => {
+  const updateField = (key: keyof Job, value: unknown) => {
     if (!form) return;
     setForm({ ...form, [key]: value });
   };
@@ -109,6 +110,10 @@ export function JobPage({ jobId }: Props) {
       setSaving(false);
     }
   };
+
+  function handleCreated(service: ValueAddedService) {
+    toast.success(`Added: ${service.name}`);
+  }
 
   if (loading) return <p className="p-4">Loading...</p>;
   if (error || !job || !form)
@@ -224,9 +229,7 @@ export function JobPage({ jobId }: Props) {
                 <ValueAddedServiceList jobId={jobId} />
                 <ValueAddedServiceForm
                   jobId={jobId}
-                  onCreated={(service) =>
-                    toast.success(`Added: ${service.name}`)
-                  }
+                  onCreated={handleCreated}
                 />
               </CardContent>
             </Card>

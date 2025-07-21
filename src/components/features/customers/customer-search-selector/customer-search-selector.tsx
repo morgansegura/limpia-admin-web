@@ -8,7 +8,7 @@ type Props = {
   onSelect: (customer: Customer) => void;
 };
 
-export function CustomerSearchSelect({ value, onSelect }: Props) {
+export function CustomerSearchSelect({ onSelect }: Props) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Customer[]>([]);
 

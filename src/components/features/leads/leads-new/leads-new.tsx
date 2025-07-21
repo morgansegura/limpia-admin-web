@@ -33,7 +33,7 @@ export function CustomerNewPage() {
   const [form, setForm] = useState<Partial<Customer>>(initialForm);
   const [loading, setLoading] = useState(false);
 
-  const updateField = (key: keyof Customer, value: any) => {
+  const updateField = (key: keyof Customer, value: unknown) => {
     setForm({ ...form, [key]: value });
   };
 

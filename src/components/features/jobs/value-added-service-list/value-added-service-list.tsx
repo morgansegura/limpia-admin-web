@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Trash2, Pencil, X, Check } from "lucide-react";
 
-import { ValueAddedService } from "@/types/valye-added-services.types";
+import { ValueAddedService } from "@/types/value-added-services.types";
 import {
   deleteValueAddedService,
   updateValueAddedService,
