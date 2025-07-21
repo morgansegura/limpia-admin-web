@@ -1,5 +1,6 @@
 "use client";
 
+import TestEstimateResults from "@/components/features/estimates/test-estimates";
 import { DashboardLayout } from "@/components/layout/dashboard-layout/dashboard-layout";
 import { Logo } from "@/components/layout/logo/logo";
 import { Protected } from "@/components/protected/protected";
@@ -20,6 +21,7 @@ export default function DashboardPage() {
               <p className="border-b-2 inline-flex pt-4 p-2">
                 Bienvenidos Martin, Alma y Armando!
               </p>
+              <TestEstimateResults />
             </div>
           </div>
         </div>

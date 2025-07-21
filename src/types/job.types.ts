@@ -1,3 +1,5 @@
+import { CleaningType } from "./customer.types";
+
 export type JobStatus =
   | "PENDING"
   | "ASSIGNED"
@@ -5,19 +7,31 @@ export type JobStatus =
   | "COMPLETED"
   | "CANCELLED";
 
-export type Job = {
-  [x: string]: any;
+export interface Job {
   id: string;
-  customerId: string;
-  cleaningType: string;
-  scheduledDate: string;
-  createdAt: string;
-  updatedAt: string;
-  // Optional fields:
-  notes?: string;
-  recurrence?: string;
-  status?: JobStatus;
-};
+  title: string;
+  description?: string;
+  status: JobStatus;
+  scheduledAt: string;
+  cleaningType: CleaningType;
+  squareFootage: number;
+  price: number;
+
+  customer: {
+    name: string;
+    city: string;
+    state: string;
+    zip: string;
+  };
+
+  checklistItem: {
+    id: string;
+    label: string;
+    isCompleted: boolean;
+    room?: string;
+    isRotationTask?: boolean;
+  }[];
+}
 
 export const JOB_STATUS_OPTIONS: JobStatus[] = [
   "PENDING",
