@@ -1,9 +1,7 @@
 import { FieldConfig } from "@/types/forms.types";
 import { Job } from "@/types/job.types";
 
-type JobFieldConfig = FieldConfig<Pick<Job, keyof Job>>;
-
-export const jobInfoFields: JobFieldConfig[] = [
+export const jobInfoFields: FieldConfig<Job>[] = [
   { key: "title", label: "Job Title", type: "text", required: true },
   { key: "description", label: "Description", type: "textarea" },
   {
@@ -33,7 +31,7 @@ export const jobInfoFields: JobFieldConfig[] = [
   },
 ];
 
-export const jobScheduleFields: JobFieldConfig[] = [
+export const jobScheduleFields: FieldConfig<Job>[] = [
   { key: "scheduledAt", label: "Scheduled At", type: "datetime" },
   { key: "completedAt", label: "Completed At", type: "datetime" },
   { key: "isRecurring", label: "Is Recurring", type: "switch" },
@@ -41,7 +39,7 @@ export const jobScheduleFields: JobFieldConfig[] = [
   { key: "repeatNextAt", label: "Next Repeat", type: "datetime" },
 ];
 
-export const jobPricingFields: JobFieldConfig[] = [
+export const jobPricingFields: FieldConfig<Job>[] = [
   { key: "squareFootage", label: "Square Footage", type: "number" },
   { key: "price", label: "Price", type: "number" },
   { key: "discount", label: "Discount", type: "number" },

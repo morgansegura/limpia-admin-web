@@ -13,6 +13,11 @@ export interface Job {
   description?: string;
   status: JobStatus;
   scheduledAt: string;
+  completedAt: string;
+  isRecurring: boolean;
+  recurrenceType: string;
+  repeatNextAt: string;
+  discount: number;
   cleaningType: CleaningType;
   squareFootage: number;
   price: number;

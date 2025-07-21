@@ -25,7 +25,7 @@ import { useState } from "react";
 type Props<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  searchKey?: keyof TData;
+  searchKey?: string;
   placeholder?: string;
   rowOnClick?: (row: TData) => void;
 };

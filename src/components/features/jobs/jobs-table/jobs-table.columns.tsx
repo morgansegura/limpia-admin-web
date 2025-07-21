@@ -17,10 +17,10 @@ export const jobColumns: ColumnDef<Job>[] = [
             status === "PENDING"
               ? "bg-yellow-100 text-yellow-800"
               : status === "IN_PROGRESS"
-              ? "bg-blue-100 text-blue-800"
-              : status === "COMPLETED"
-              ? "bg-green-100 text-green-800"
-              : "bg-gray-100 text-gray-800"
+                ? "bg-blue-100 text-blue-800"
+                : status === "COMPLETED"
+                  ? "bg-green-100 text-green-800"
+                  : "bg-gray-100 text-gray-800"
           }`}
         >
           {status}
@@ -32,8 +32,8 @@ export const jobColumns: ColumnDef<Job>[] = [
     accessorKey: "scheduledAt",
     header: "Scheduled",
     cell: ({ row }) =>
-      row.original.scheduledDate
-        ? new Date(row.original.scheduledDate).toLocaleString()
+      row.original.scheduledAt
+        ? new Date(row.original.scheduledAt).toLocaleString()
         : "-",
   },
   {
