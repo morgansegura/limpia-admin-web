@@ -1,6 +1,8 @@
-import { FieldConfig } from "@/types/field-config.types";
+import { FieldConfig } from "@/types/forms.types";
 
-export const estimateFields: FieldConfig[] = [
+import type { EstimateFormValues } from "@/types/estimate.types";
+
+export const estimateFields: FieldConfig<EstimateFormValues>[] = [
   {
     key: "street",
     label: "Street Address",
