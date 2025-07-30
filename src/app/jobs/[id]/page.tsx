@@ -4,7 +4,7 @@ import { JobPage } from "@/components/features/jobs/job-page/job-page";
 import { Protected } from "@/components/protected/protected";
 
 import { ROLES } from "@/constants/roles";
-import { DashboardLayout } from "@/components/layout/dashboard-layout/dashboard-layout";
+import { DashboardLayout } from "@/components/dashboard/dashboard";
 
 export const metadata: Metadata = {
   title: "Customer Detail | Limpia Admin",

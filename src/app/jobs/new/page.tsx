@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import { Protected } from "@/components/protected/protected";
 
 import { ROLES } from "@/constants/roles";
-import { DashboardLayout } from "@/components/layout/dashboard-layout/dashboard-layout";
+import { DashboardLayout } from "@/components/dashboard/dashboard";
 import { JobCreateForm } from "@/components/features/jobs/job-create-form/job-create-form";
 
 export const metadata: Metadata = {

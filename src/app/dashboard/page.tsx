@@ -1,7 +1,7 @@
 "use client";
 
 import TestEstimateResults from "@/components/features/estimates/test-estimates";
-import { DashboardLayout } from "@/components/layout/dashboard-layout/dashboard-layout";
+import { DashboardLayout } from "@/components/dashboard/dashboard";
 import { Logo } from "@/components/layout/logo/logo";
 import { Protected } from "@/components/protected/protected";
 

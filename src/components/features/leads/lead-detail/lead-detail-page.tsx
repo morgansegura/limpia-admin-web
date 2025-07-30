@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { getLeadById } from "@/lib/api/leads";
 import { LeadDetail } from "./lead-detail";
-import { DashboardLayout } from "@/components/layout/dashboard-layout/dashboard-layout";
+import { DashboardLayout } from "@/components/dashboard/dashboard";
 
 import { Customer } from "@/types/customer.types";
 

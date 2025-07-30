@@ -1,0 +1,10 @@
+@reference "tailwindcss";
+
+.dashboard-footer {
+  @apply p-4 border-t w-full bg-neutral-50;
+
+  .copyright {
+    @apply text-right text-sm font-light
+    bg-(--color-sidebar-primary-foreground);
+  }
+}

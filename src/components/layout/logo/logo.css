@@ -1,11 +1,7 @@
 @reference "tailwindcss";
 
-.logo {
-  @apply h-full w-full;
-}
-
 .logo-color-primary {
-  @apply fill-(--color-brand-accent1);
+  @apply fill-(--color-accent-green);
 }
 
 .logo-color-secondary {

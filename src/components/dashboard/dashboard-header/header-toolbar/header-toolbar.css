@@ -1,0 +1,61 @@
+@reference "tailwindcss";
+
+.header-toolbar {
+  @apply sticky inset-x-0 py-2 px-4 top-[49px] lg:top-[55px] items-center flex justify-between;
+
+  .button-block {
+    @apply flex gap-2 justify-self-end;
+  }
+
+  /* Breadcrumbs */
+  .breadcrumbs {
+    @apply flex space-x-1 transition-colors duration-300 ease-out;
+  }
+
+  .breadcrumb {
+    @apply flex items-center;
+  }
+
+  .breadcrumb-item {
+    span {
+      @apply ml-1 text-sm;
+    }
+  }
+
+  a.breadcrumb-item {
+    @apply text-neutral-400 hover:text-neutral-900;
+  }
+
+  .breadcrumb-spacer {
+    @apply h-full w-6 shrink-0 text-neutral-200;
+  }
+
+  .breadcrumb-icon {
+    @apply text-neutral-400 w-4;
+  }
+
+  /* Title Block */
+  .heading-block {
+    @apply inset-x-0 flex flex-col gap-4 border-b p-4 bg-white;
+  }
+
+  .heading-block .title {
+    @apply text-2xl/7 font-semibold text-gray-900 sm:truncate sm:text-2xl sm:tracking-tight;
+  }
+
+  .heading-block .description-small {
+    @apply flex items-center text-xs  gap-1 text-neutral-500;
+
+    span {
+      @apply text-neutral-400;
+    }
+  }
+
+  .heading-block .description {
+    @apply text-sm flex items-center gap-1 text-neutral-500;
+  }
+
+  .heading-block .breadcrumbs {
+    @apply hidden sm:flex;
+  }
+}

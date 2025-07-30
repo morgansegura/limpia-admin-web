@@ -1,0 +1,33 @@
+@reference 'tailwindcss';
+
+.dashboard-layout {
+  @apply w-screen flex overflow-x-hidden;
+
+  .container {
+    --sidebar-width-mobile: calc(100% - (var(--spacing) * 16));
+    --sidebar-width-desktop: calc(100% - (var(--spacing) * 64));
+
+    @apply fixed w-full overflow-y-auto h-full flex flex-col items-start inset-y-0 bg-white transition-transform duration-300 ease-out;
+
+    .dashboard-sidebar-inactive &,
+    .dashboard-sidebar-active & {
+      @apply lg:translate-x-64 lg:max-w-(--sidebar-width-desktop);
+    }
+
+    .dashboard-sidebar-active & {
+      @apply translate-x-64;
+    }
+  }
+
+  .main {
+    @apply relative z-10 flex-1 w-full;
+  }
+
+  .content {
+    @apply flex flex-col;
+  }
+
+  .section {
+    @apply grid p-4 gap-4;
+  }
+}

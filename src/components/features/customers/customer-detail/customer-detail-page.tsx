@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { getCustomerById } from "@/lib/api/customers";
 import { CustomerDetail } from "@/components/features/customers/customer-detail/customer-detail";
-import { DashboardLayout } from "@/components/layout/dashboard-layout/dashboard-layout";
+import { DashboardLayout } from "@/components/dashboard/dashboard";
 
 import { Customer } from "@/types/customer.types";
 

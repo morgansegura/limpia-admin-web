@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/api";
 
 import { CustomerTable } from "@/components/features/customers/customer-table/customer-table";
-import { DashboardLayout } from "@/components/layout/dashboard-layout/dashboard-layout";
+import { DashboardLayout } from "@/components/dashboard/dashboard";
 
 import "./customers-page.css";
 

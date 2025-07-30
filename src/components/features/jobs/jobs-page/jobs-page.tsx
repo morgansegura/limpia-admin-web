@@ -6,7 +6,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import { apiFetch } from "@/lib/api";
-import { DashboardLayout } from "@/components/layout/dashboard-layout/dashboard-layout";
+import { DashboardLayout } from "@/components/dashboard/dashboard";
 import { JobTable } from "@/components/features/jobs/jobs-table/jobs-table";
 
 import type { Job } from "@/types/job.types";

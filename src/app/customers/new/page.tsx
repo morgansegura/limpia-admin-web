@@ -1,7 +1,7 @@
 "use client";
 
 import { CustomerNewPage } from "@/components/features/customers/customer-new/customer-new";
-import { DashboardLayout } from "@/components/layout/dashboard-layout/dashboard-layout";
+import { DashboardLayout } from "@/components/dashboard/dashboard";
 import { Protected } from "@/components/protected/protected";
 
 import { ROLES } from "@/constants/roles";

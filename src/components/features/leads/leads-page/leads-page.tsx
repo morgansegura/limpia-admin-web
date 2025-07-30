@@ -8,11 +8,12 @@ import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/api";
 
 import { CustomerTable } from "@/components/features/customers/customer-table/customer-table";
-import { DashboardLayout } from "@/components/layout/dashboard-layout/dashboard-layout";
+import { DashboardLayout } from "@/components/dashboard/dashboard";
 
 import "./leads-page.css";
 
 import type { Customer } from "@/types/customer.types";
+import { HeaderToolbar } from "@/components/dashboard/dashboard-header/header-toolbar/header-toolbar";
 
 export function LeadsPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -38,13 +39,13 @@ export function LeadsPage() {
   return (
     <DashboardLayout>
       <div className="customers-page">
-        <div className="dashboard-header-toolbar">
-          <h2 className="dashboard-layout-title">Leads</h2>
-          <Button onClick={handleAdd}>
+        <HeaderToolbar>
+          <h2 className="title">Leads</h2>
+          <Button size="sm" variant="outline" onClick={handleAdd}>
             <Plus className="customers-page-icon" />
             Add Lead
           </Button>
-        </div>
+        </HeaderToolbar>
 
         <div className="py-6 px-4 lg:px-6">
           <CustomerTable
