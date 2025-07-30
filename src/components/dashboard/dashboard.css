@@ -7,7 +7,7 @@
     --sidebar-width-mobile: calc(100% - (var(--spacing) * 16));
     --sidebar-width-desktop: calc(100% - (var(--spacing) * 64));
 
-    @apply fixed w-full overflow-y-auto h-full flex flex-col items-start inset-y-0 bg-white transition-transform duration-300 ease-out;
+    /* @apply fixed w-full overflow-y-auto h-full flex flex-col items-start inset-y-0 bg-white transition-transform duration-300 ease-out; */
 
     .dashboard-sidebar-inactive &,
     .dashboard-sidebar-active & {
@@ -20,7 +20,8 @@
   }
 
   .main {
-    @apply relative z-10 flex-1 w-full;
+    @apply relative z-10 flex-1 w-full
+    bg-(--background);
   }
 
   .content {

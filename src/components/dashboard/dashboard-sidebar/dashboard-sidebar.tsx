@@ -1,57 +1,67 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import Link from "next/link";
 
-import { Logo, LogoText } from "@/components/layout/logo/logo";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar";
+
+import { useDashboardMenu } from "@/hooks/use-dashboard-menu";
+import type { AuthContextType } from "@/context/auth-context";
+
+import { NavMain } from "@/components/dashboard/nav-main";
+import { NavUser } from "@/components/dashboard/nav-user";
+import { NavSecondary } from "@/components/dashboard/nav-secondary";
+import { NavProjects } from "@/components/dashboard/nav-projects";
 
 import "./dashboard-sidebar.css";
-import { ReactNode } from "react";
-import { AuthContextType, useAuth } from "@/context/auth-context";
-
-import type { TUserRoles } from "@/types/user.types";
-
-type TDashboardRoute = {
-  icon: ReactNode;
-  href: string;
-  label: string;
-  description?: string;
-  roles: TUserRoles[];
-  section?: string;
-};
+import { Separator } from "@/components/ui/separator";
+import { LucideHouse } from "lucide-react";
 
 type TDashboardSidebarProps = {
-  user?: AuthContextType["user"];
+  user: AuthContextType["user"];
 };
 
 export function DashboardSidebar({ user }: TDashboardSidebarProps) {
-  const DASHBOARD_ROUTES: TDashboardRoute[] = [];
-
-  function Sidebar({ className }: { className?: string }) {
-    return (
-      <div className={cn("dashboard-sidebar", className)}>
-        <div className="logo">
-          <Logo />
-          <LogoText />
-        </div>
-        <nav className="menu">
-          <ul role="list" className="menu-list">
-            {/* {adminMenu.map((item, index) => (
-              <li key={index}>
-                <Link href={item?.href} className="menu-item">
-                  {item?.icon}
-                  <span>{item?.label}</span>
-                </Link>
-              </li>
-            ))} */}
-          </ul>
-        </nav>
-      </div>
-    );
-  }
+  const { navMain, navSecondary, navProjects } = useDashboardMenu();
 
   return (
-    <>
-      <Sidebar className={cn("dashboard-layout-sidebar")} />
-    </>
+    <Sidebar collapsible="icon" className="dashboard-sidebar">
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" asChild>
+              <Link href="/">
+                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-sm">
+                  {/* <Command className="size-4" /> */}
+                  <LucideHouse />
+                </div>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-medium">
+                    {user?.organization.name}
+                  </span>
+                  <span className="truncate text-xs">{user?.role}</span>
+                </div>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+      <SidebarContent>
+        <NavMain items={navMain} />
+        <NavProjects projects={navProjects} />
+        <NavSecondary items={navSecondary} className="mt-auto" />
+      </SidebarContent>
+      <Separator />
+      <SidebarFooter>
+        <NavUser user={user} />
+      </SidebarFooter>
+    </Sidebar>
   );
 }

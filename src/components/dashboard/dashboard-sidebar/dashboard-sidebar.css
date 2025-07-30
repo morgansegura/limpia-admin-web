@@ -1,10 +1,9 @@
 @reference "tailwindcss";
 
 .dashboard-sidebar {
-  @apply fixed inset-y-0 left-0 flex flex-col gap-y-5 pb-4 border-r overflow-y-auto px-6 w-64 transition-transform duration-300 ease-out;
-
   .logo {
-    @apply flex flex-col items-center justify-center w-18;
+    @apply flex flex-col items-center justify-center h-12
+    fill-(--primary);
   }
 
   .menu {
