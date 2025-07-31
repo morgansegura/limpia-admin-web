@@ -1,8 +1,8 @@
 "use client";
 
+import { resetPassword } from "@/lib/api/auth";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { resetPassword } from "@/lib/api/reset-password";
 
 export function ResetPasswordForm() {
   const router = useRouter();

@@ -1,7 +1,8 @@
 export interface TCustomer {
   id: string;
   email: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   phone?: string;
   isActive: boolean;
 
@@ -47,7 +48,8 @@ export interface TCustomer {
 
 export type TEditableCustomerField = keyof Pick<
   TCustomer,
-  | "name"
+  | "firstName"
+  | "lastName"
   | "email"
   | "phone"
   | "unit"

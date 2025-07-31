@@ -1,11 +1,11 @@
 import { ColumnDef } from "@tanstack/react-table";
-
 import type { TLead } from "@/types/lead.types";
 
 export const leadColumns: ColumnDef<TLead>[] = [
   {
-    accessorKey: "name",
     header: "Name",
+    accessorFn: (row) => `${row.firstName} ${row.lastName}`,
+    id: "fullName",
   },
   {
     accessorKey: "email",
@@ -20,9 +20,11 @@ export const leadColumns: ColumnDef<TLead>[] = [
     header: "Status",
   },
   {
-    accessorKey: "customerSince",
-    header: "Last Activity at",
+    accessorKey: "lastActivityAt",
+    header: "Last Activity",
     cell: ({ row }) =>
-      new Date(row.original.lastActivityAt).toLocaleDateString(),
+      row.original.lastActivityAt
+        ? new Date(row.original.lastActivityAt).toLocaleDateString()
+        : "—",
   },
 ];

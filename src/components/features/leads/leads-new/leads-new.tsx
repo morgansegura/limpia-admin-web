@@ -2,22 +2,23 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { apiFetch } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-import { Customer } from "@/types/customer.types";
-import { toast } from "sonner";
 import { DetailSection } from "@/components/features/detail-section/detail-section";
-import {
-  customerDetailsFields,
-  customerLocationFields,
-  customerPreferenceFields,
-} from "@/components/features/customers/customer-detail/details";
 
-const initialForm: Partial<Customer> = {
-  name: "",
+import type { TLead } from "@/types/lead.types";
+import {
+  leadDetailsFields,
+  leadLocationFields,
+  customerPreferenceFields,
+} from "@/components/features/leads/lead-detail/details";
+
+const initialForm: Partial<TLead> = {
+  firstName: "",
+  lastName: "",
   email: "",
   phone: "",
   street: "",
@@ -28,44 +29,44 @@ const initialForm: Partial<Customer> = {
   cleaningType: "BASE",
 };
 
-export function CustomerNewPage() {
+export function LeadNewPage() {
   const router = useRouter();
-  const [form, setForm] = useState<Partial<Customer>>(initialForm);
+  const [form, setForm] = useState<Partial<TLead>>(initialForm);
   const [loading, setLoading] = useState(false);
 
-  const updateField = (key: keyof Customer, value: unknown) => {
+  const updateField = (key: keyof TLead, value: unknown) => {
     setForm({ ...form, [key]: value });
   };
 
   const handleCreate = async () => {
+    if (
+      !form.firstName ||
+      !form.lastName ||
+      !form.email ||
+      !form.street ||
+      !form.state ||
+      !form.zip
+    ) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
+
     setLoading(true);
     try {
-      const created = await apiFetch<Customer>("/leads", {
+      const created = await apiFetch<TLead>("/leads", {
         method: "POST",
         body: JSON.stringify(form),
       });
 
-      if (
-        !form.name ||
-        !form.email ||
-        !form.street ||
-        !form.state ||
-        !form.zip
-      ) {
-        toast.error("Please fill in all required fields.");
-        setLoading(false);
-        return;
-      }
-
       if (!created) {
-        toast.error("Failed to create customer");
+        toast.error("Failed to create lead");
         return;
       }
 
-      toast.success("Customer created");
+      toast.success("Lead created");
       router.push(`/leads/${created.id}`);
     } catch (error) {
-      toast.error("Failed to create customer");
+      toast.error("Failed to create lead");
       console.error(error);
     } finally {
       setLoading(false);
@@ -77,9 +78,9 @@ export function CustomerNewPage() {
   };
 
   return (
-    <div className="customer-create">
+    <div className="lead-create">
       <div className="dashboard-header-toolbar">
-        <h2 className="dashboard-layout-title">New Customer</h2>
+        <h2 className="dashboard-layout-title">New Lead</h2>
         <div className="dashboard-header-button-block">
           <Button variant="outline" onClick={handleCancel} disabled={loading}>
             Cancel
@@ -100,7 +101,7 @@ export function CustomerNewPage() {
               form={form}
               isEditing={true}
               onChange={updateField}
-              fields={customerDetailsFields}
+              fields={leadDetailsFields}
             />
           </CardContent>
         </Card>
@@ -114,7 +115,7 @@ export function CustomerNewPage() {
               form={form}
               isEditing={true}
               onChange={updateField}
-              fields={customerLocationFields}
+              fields={leadLocationFields}
             />
           </CardContent>
         </Card>

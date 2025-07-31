@@ -12,14 +12,14 @@ import { DashboardLayout } from "@/components/dashboard/dashboard";
 
 import "./customers-page.css";
 
-import type { Customer } from "@/types/customer.types";
+import type { TCustomer } from "@/types/customer.types";
 
 export function CustomersPage() {
-  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [customers, setCustomers] = useState<TCustomer[]>([]);
   const router = useRouter();
 
   const fetchCustomers = async () => {
-    const data = await apiFetch<Customer[]>(
+    const data = await apiFetch<TCustomer[]>(
       "/customers",
       {},
       { throwOnError: false },

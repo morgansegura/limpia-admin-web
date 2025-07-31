@@ -1,7 +1,7 @@
-import { FieldConfig } from "@/types/forms.types";
-import { Job } from "@/types/job.types";
+import type { TFieldConfig } from "@/types/forms.types";
+import type { TJob } from "@/types/job.types";
 
-export const jobInfoFields: FieldConfig<Job>[] = [
+export const jobInfoFields: TFieldConfig<TJob>[] = [
   { key: "title", label: "Job Title", type: "text", required: true },
   { key: "description", label: "Description", type: "textarea" },
   {
@@ -31,7 +31,7 @@ export const jobInfoFields: FieldConfig<Job>[] = [
   },
 ];
 
-export const jobScheduleFields: FieldConfig<Job>[] = [
+export const jobScheduleFields: TFieldConfig<TJob>[] = [
   { key: "scheduledAt", label: "Scheduled At", type: "datetime" },
   { key: "completedAt", label: "Completed At", type: "datetime" },
   { key: "isRecurring", label: "Is Recurring", type: "switch" },
@@ -39,7 +39,7 @@ export const jobScheduleFields: FieldConfig<Job>[] = [
   { key: "repeatNextAt", label: "Next Repeat", type: "datetime" },
 ];
 
-export const jobPricingFields: FieldConfig<Job>[] = [
+export const jobPricingFields: TFieldConfig<TJob>[] = [
   { key: "squareFootage", label: "Square Footage", type: "number" },
   { key: "price", label: "Price", type: "number" },
   { key: "discount", label: "Discount", type: "number" },

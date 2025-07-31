@@ -6,26 +6,27 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Trash2, Pencil, X, Check } from "lucide-react";
 
-import { ValueAddedService } from "@/types/value-added-services.types";
 import {
   deleteValueAddedService,
   updateValueAddedService,
 } from "@/lib/api/value-added-services";
 import { apiFetch } from "@/lib/api";
 
+import type { TValueAddedService } from "@/types/value-added-services.types";
+
 type Props = {
   jobId: string;
 };
 
 export function ValueAddedServiceList({ jobId }: Props) {
-  const [services, setServices] = useState<ValueAddedService[]>([]);
+  const [services, setServices] = useState<TValueAddedService[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
   const [editDuration, setEditDuration] = useState<number>(10);
 
   useEffect(() => {
     async function fetch() {
-      const data = await apiFetch<ValueAddedService[]>(
+      const data = await apiFetch<TValueAddedService[]>(
         `/value-added-services/job/${jobId}`,
       );
       setServices(data ?? []);
@@ -46,7 +47,7 @@ export function ValueAddedServiceList({ jobId }: Props) {
     }
   };
 
-  const startEdit = (service: ValueAddedService) => {
+  const startEdit = (service: TValueAddedService) => {
     setEditingId(service.id);
     setEditName(service.name);
     setEditDuration(service.duration);
@@ -63,7 +64,7 @@ export function ValueAddedServiceList({ jobId }: Props) {
       const updated = (await updateValueAddedService(id, {
         name: editName,
         duration: editDuration,
-      })) as ValueAddedService;
+      })) as TValueAddedService;
       setServices((prev) =>
         prev.map((s) => (s.id === id ? { ...s, ...updated } : s)),
       );

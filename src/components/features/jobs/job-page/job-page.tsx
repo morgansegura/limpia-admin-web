@@ -21,21 +21,22 @@ import { DetailSection } from "@/components/features/detail-section/detail-secti
 import { ValueAddedServiceForm } from "@/components/features/jobs/value-added-service-form/value-added-service-form";
 import { ValueAddedServiceList } from "@/components/features/jobs/value-added-service-list/value-added-service-list";
 
-import { Job } from "@/types/job.types";
 import {
   jobInfoFields,
   jobPricingFields,
   jobScheduleFields,
 } from "./job-detail-fields";
-import { ValueAddedService } from "@/types/value-added-services.types";
+
+import type { TJob } from "@/types/job.types";
+import type { TValueAddedService } from "@/types/value-added-services.types";
 
 interface Props {
   jobId: string;
 }
 
 export function JobPage({ jobId }: Props) {
-  const [job, setJob] = useState<Job | null>(null);
-  const [form, setForm] = useState<Job | null>(null);
+  const [job, setJob] = useState<TJob | null>(null);
+  const [form, setForm] = useState<TJob | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -46,7 +47,7 @@ export function JobPage({ jobId }: Props) {
   useEffect(() => {
     async function fetchJob() {
       try {
-        const data = await apiFetch<Job>(`/jobs/${jobId}`);
+        const data = await apiFetch<TJob>(`/jobs/${jobId}`);
         setJob(data);
         setForm(data);
       } catch (err: unknown) {
@@ -62,7 +63,7 @@ export function JobPage({ jobId }: Props) {
     fetchJob();
   }, [jobId]);
 
-  const updateField = (key: keyof Job, value: unknown) => {
+  const updateField = (key: keyof TJob, value: unknown) => {
     if (!form) return;
     setForm({ ...form, [key]: value });
   };
@@ -73,7 +74,7 @@ export function JobPage({ jobId }: Props) {
     if (!form) return;
     setSaving(true);
     try {
-      const updated = await apiFetch<Job>(`/jobs/${jobId}`, {
+      const updated = await apiFetch<TJob>(`/jobs/${jobId}`, {
         method: "PUT",
         body: JSON.stringify(form),
       });
@@ -111,7 +112,7 @@ export function JobPage({ jobId }: Props) {
     }
   };
 
-  function handleCreated(service: ValueAddedService) {
+  function handleCreated(service: TValueAddedService) {
     toast.success(`Added: ${service.name}`);
   }
 

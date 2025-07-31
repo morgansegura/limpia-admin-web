@@ -4,11 +4,11 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { useAuth } from "@/context/auth-context";
-import { Role } from "@/constants/roles";
+import { TRole } from "@/constants/roles";
 
 export type ProtectedProps = {
   children: React.ReactNode;
-  allowedRoles?: Role[];
+  allowedRoles?: TRole[];
 };
 
 export function Protected({ children, allowedRoles }: ProtectedProps) {

@@ -10,12 +10,13 @@ import { Label } from "@/components/ui/label";
 
 import { createValueAddedService } from "@/lib/api/value-added-services";
 import { apiFetch } from "@/lib/api";
+
 import { VALUE_ADDED_SERVICE_TYPES } from "@/constants/value-added-service-types";
-import { ValueAddedService } from "@/types/value-added-services.types";
+import type { TValueAddedService } from "@/types/value-added-services.types";
 
 type Props = {
   jobId: string;
-  onCreated?: (newService: ValueAddedService) => void;
+  onCreated?: (newService: TValueAddedService) => void;
 };
 
 type ServiceEntry = {
@@ -34,7 +35,7 @@ export function ValueAddedServiceForm({ jobId, onCreated }: Props) {
   useEffect(() => {
     async function loadExisting() {
       try {
-        const existing: ValueAddedService[] =
+        const existing: TValueAddedService[] =
           (await apiFetch(`/jobs/${jobId}/value-added-services`)) ?? [];
 
         const mapped: FormState = VALUE_ADDED_SERVICE_TYPES.reduce(
@@ -103,7 +104,7 @@ export function ValueAddedServiceForm({ jobId, onCreated }: Props) {
 
       if (onCreated) {
         results
-          .filter((s): s is ValueAddedService => s !== null)
+          .filter((s): s is TValueAddedService => s !== null)
           .forEach(onCreated);
       }
       toast.success("Services updated");

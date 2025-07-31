@@ -1,8 +1,9 @@
-import { Customer } from "@/types/customer.types";
+import { TCustomer } from "@/types/customer.types";
 
-export const emptyCustomer: Partial<Customer> = {
+export const emptyCustomer: Partial<TCustomer> = {
   id: "",
-  name: "",
+  firstName: "",
+  lastName: "",
   email: "",
   phone: "",
   unit: "",
@@ -35,7 +36,6 @@ export const emptyCustomer: Partial<Customer> = {
   billingMethod: "",
   invoiceNotes: "",
   isActive: true,
-  crmId: "",
   emailOptIn: false,
   createdAt: "",
   updatedAt: "",

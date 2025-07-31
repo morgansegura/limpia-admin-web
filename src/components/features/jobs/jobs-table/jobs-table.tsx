@@ -1,10 +1,10 @@
 import { DataTable } from "@/components/ui/data-table";
 import { jobColumns } from "./jobs-table.columns";
 
-import type { Job } from "@/types/job.types";
+import type { TJob } from "@/types/job.types";
 
 type JobTableProps = {
-  jobs: Job[];
+  jobs: TJob[];
   onView: (id: string) => void;
 };
 

@@ -2,67 +2,64 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ChevronRightIcon, HouseIcon } from "lucide-react";
 import { toast } from "sonner";
 
 import { apiFetch } from "@/lib/api";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { DetailSection } from "@/components/features/detail-section/detail-section";
 import {
+  leadDetailsFields,
+  leadLocationFields,
+  leadEstimateFields,
   customerAccessFields,
-  customerBillingFields,
-  customerDetailsFields,
-  customerEstimateFields,
-  customerInternalFields,
-  customerLocationFields,
   customerPreferenceFields,
 } from "./details";
 
-import { Customer } from "@/types/customer.types";
-import { useRouter } from "next/navigation";
+import type { TLead } from "@/types/lead.types";
 
 interface Props {
-  customer: Customer;
+  customer: TLead;
 }
 
-export function LeadDetail({ customer: initialCustomer }: Props) {
-  const [customer, setCustomer] = useState<Customer>(initialCustomer);
-  const [form, setForm] = useState<Customer>({ ...initialCustomer });
+export function LeadDetail({ customer: initialLead }: Props) {
+  const [lead, setLead] = useState<TLead>(initialLead);
+  const [form, setForm] = useState<TLead>({ ...initialLead });
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
   const router = useRouter();
 
-  const updateField = (key: keyof Customer, value: unknown) => {
+  const updateField = (key: keyof TLead, value: unknown) => {
     setForm({ ...form, [key]: value });
   };
 
-  const isDirty = JSON.stringify(form) !== JSON.stringify(customer);
+  const isDirty = JSON.stringify(form) !== JSON.stringify(lead);
 
   const handleSave = async () => {
     setLoading(true);
     try {
-      const updated = await apiFetch<Customer>(`/leads/${customer.id}`, {
+      const updated = await apiFetch<TLead>(`/leads/${lead.id}`, {
         method: "PUT",
         body: JSON.stringify(form),
       });
 
       if (!updated) {
-        toast.error("Failed to update customer");
+        toast.error("Failed to update lead");
         return;
       }
 
-      setCustomer(updated);
+      setLead(updated);
       setForm(updated);
       setIsEditing(false);
       toast.success("Lead updated successfully");
     } catch (error) {
-      toast.error("Failed to update customer");
-      console.error("Error updating customer:", error);
+      toast.error("Failed to update lead");
+      console.error("Error updating lead:", error);
     } finally {
       setLoading(false);
     }
@@ -70,13 +67,13 @@ export function LeadDetail({ customer: initialCustomer }: Props) {
 
   const handleDelete = async () => {
     const confirmDelete = window.confirm(
-      "Are you sure you want to delete this customer? This action cannot be undone.",
+      "Are you sure you want to delete this lead? This action cannot be undone.",
     );
     if (!confirmDelete) return;
 
     setLoading(true);
     try {
-      await apiFetch(`/leads/${customer.id}`, {
+      await apiFetch(`/leads/${lead.id}`, {
         method: "DELETE",
       });
       toast.success("Lead deleted successfully");
@@ -90,7 +87,7 @@ export function LeadDetail({ customer: initialCustomer }: Props) {
   };
 
   const handleCancel = () => {
-    setForm(customer);
+    setForm(lead);
     setIsEditing(false);
   };
 
@@ -107,14 +104,16 @@ export function LeadDetail({ customer: initialCustomer }: Props) {
           </div>
           <div className="breadcrumb">
             <ChevronRightIcon className="breadcrumb-icon" />
-            <Link href="/customers" className="breadcrumb-item">
-              <span>Customers</span>
+            <Link href="/leads" className="breadcrumb-item">
+              <span>Leads</span>
             </Link>
           </div>
           <div className="breadcrumb">
             <ChevronRightIcon className="breadcrumb-icon" />
             <div className="breadcrumb-item">
-              <span>{customer.name}</span>
+              <span>
+                {lead.firstName} {lead.lastName}
+              </span>
             </div>
           </div>
         </nav>
@@ -145,32 +144,29 @@ export function LeadDetail({ customer: initialCustomer }: Props) {
 
       <div className="dashboard-layout-heading-block">
         <div className="dashboard-layout-title-block">
-          <h2 className="dashboard-layout-title">{customer.name}</h2>
+          <h2 className="dashboard-layout-title">
+            {lead.firstName} {lead.lastName}
+          </h2>
           <div className="dashboard-layout-description-small -mb-1.5">
-            <span>Customer ID:</span>
+            <span>Lead ID:</span>
             <ChevronRightIcon className="w-4" />
-            {customer.id}
-          </div>
-          <div className="dashboard-layout-description-small">
-            <span>CRM ID:</span>
-            <ChevronRightIcon className="w-4" />
-            {customer.crmId ?? "N/A"}
+            {lead.id}
           </div>
         </div>
       </div>
 
       <div className="dashboard-layout-sections">
-        <Tabs defaultValue="account">
+        <Tabs defaultValue="contact">
           <TabsList>
-            <TabsTrigger value="contact">Customer Information</TabsTrigger>
+            <TabsTrigger value="contact">Contact Information</TabsTrigger>
             <TabsTrigger value="property">Property Details</TabsTrigger>
-            <TabsTrigger value="account">Account Information</TabsTrigger>
+            <TabsTrigger value="estimate">Estimate</TabsTrigger>
           </TabsList>
+
           <TabsContent value="contact" className="grid gap-4">
             {[
-              { fields: customerDetailsFields, title: "Contact Information" },
+              { fields: leadDetailsFields, title: "Contact" },
               { fields: customerPreferenceFields, title: "Preferences" },
-              { fields: customerEstimateFields, title: "Cleaning & Estimate" },
             ].map(({ fields, title }, index: number) => (
               <Card className="dashboard-layout-section" key={index}>
                 <CardHeader className="dashboard-layout-section-header">
@@ -187,10 +183,11 @@ export function LeadDetail({ customer: initialCustomer }: Props) {
               </Card>
             ))}
           </TabsContent>
+
           <TabsContent value="property" className="grid gap-4">
             {[
-              { fields: customerLocationFields, title: "Property Details" },
-              { fields: customerAccessFields, title: "Access & Home Notes" },
+              { fields: leadLocationFields, title: "Property" },
+              { fields: customerAccessFields, title: "Access Notes" },
             ].map(({ fields, title }, index: number) => (
               <Card className="dashboard-layout-section" key={index}>
                 <CardHeader className="dashboard-layout-section-header">
@@ -207,36 +204,32 @@ export function LeadDetail({ customer: initialCustomer }: Props) {
               </Card>
             ))}
           </TabsContent>
-          <TabsContent value="account" className="grid gap-4">
-            {[
-              { fields: customerBillingFields, title: "Billing" },
-              { fields: customerInternalFields, title: "Internal / CRM" },
-            ].map(({ fields, title }, index: number) => (
-              <Card className="dashboard-layout-section" key={index}>
-                <CardHeader className="dashboard-layout-section-header">
-                  <CardTitle>{title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <DetailSection
-                    form={form}
-                    isEditing={isEditing}
-                    onChange={updateField}
-                    fields={fields}
-                  />
-                </CardContent>
-              </Card>
-            ))}
+
+          <TabsContent value="estimate" className="grid gap-4">
+            <Card className="dashboard-layout-section">
+              <CardHeader className="dashboard-layout-section-header">
+                <CardTitle>Estimate</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <DetailSection
+                  form={form}
+                  isEditing={isEditing}
+                  onChange={updateField}
+                  fields={leadEstimateFields}
+                />
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
 
-        <div className="flex w-full justify-end">
+        <div className="flex w-full justify-end mt-4">
           <Button
             variant="destructive"
             size="sm"
             onClick={handleDelete}
             disabled={loading}
           >
-            Delete User
+            Delete Lead
           </Button>
         </div>
       </div>

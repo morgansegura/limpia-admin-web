@@ -1,10 +1,10 @@
 import { DataTable } from "@/components/ui/data-table";
 import { customerColumns } from "./customer-table.columns";
 
-import { Customer } from "@/types/customer.types";
+import { TCustomer } from "@/types/customer.types";
 
 type CustomerTableProps = {
-  customers: Customer[];
+  customers: TCustomer[];
   onView: (id: string) => void;
 };
 

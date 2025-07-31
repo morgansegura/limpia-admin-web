@@ -13,13 +13,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { FieldConfig } from "@/types/forms.types";
+import { TFieldConfig } from "@/types/forms.types";
 
 type Props<T extends object, K extends keyof T = keyof T> = {
   form: Partial<T>;
   isEditing: boolean;
   onChange: (key: K, value: unknown) => void;
-  fields: FieldConfig<Pick<T, K>>[];
+  fields: TFieldConfig<Pick<T, K>>[];
   title?: string;
 };
 

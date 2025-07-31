@@ -1,32 +1,34 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
 import { getLeadById } from "@/lib/api/leads";
+
 import { LeadDetail } from "./lead-detail";
 import { DashboardLayout } from "@/components/dashboard/dashboard";
 
-import { Customer } from "@/types/customer.types";
+import type { TLead } from "@/types/lead.types";
 
-type CustomerDetailPageProps = {
+type LeadDetailPageProps = {
   id: string;
 };
 
-export function CustomerDetailPage({ id }: CustomerDetailPageProps) {
-  const [customer, setCustomer] = useState<Customer | null>(null);
+export function LeadDetailPage({ id }: LeadDetailPageProps) {
+  const [lead, setLead] = useState<TLead | null>(null);
 
   useEffect(() => {
     async function load() {
       const data = await getLeadById(id);
-      setCustomer(data);
+      setLead(data);
     }
     load();
   }, [id]);
 
-  if (!customer) return;
+  if (!lead) return;
 
   return (
     <DashboardLayout>
-      <LeadDetail customer={customer} />
+      <LeadDetail customer={lead} />
     </DashboardLayout>
   );
 }

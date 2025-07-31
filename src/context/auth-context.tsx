@@ -3,9 +3,8 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 
-import { currentUser } from "@/lib/api/current-user";
-
 import type { TUser } from "@/types/user.types";
+import { currentUser } from "@/lib/api/auth";
 
 export type AuthContextType = {
   user: TUser | null;

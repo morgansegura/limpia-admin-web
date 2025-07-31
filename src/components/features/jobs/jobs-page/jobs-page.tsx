@@ -6,17 +6,18 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import { apiFetch } from "@/lib/api";
+
 import { DashboardLayout } from "@/components/dashboard/dashboard";
 import { JobTable } from "@/components/features/jobs/jobs-table/jobs-table";
 
-import type { Job } from "@/types/job.types";
+import type { TJob } from "@/types/job.types";
 
 export function JobsPage() {
-  const [jobs, setJobs] = useState<Job[]>([]);
+  const [jobs, setJobs] = useState<TJob[]>([]);
   const router = useRouter();
 
   const fetchJobs = async () => {
-    const data = await apiFetch<Job[]>("/jobs", {}, { throwOnError: false });
+    const data = await apiFetch<TJob[]>("/jobs", {}, { throwOnError: false });
     if (data) setJobs(data);
   };
 

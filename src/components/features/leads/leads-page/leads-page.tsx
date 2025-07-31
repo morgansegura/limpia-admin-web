@@ -12,16 +12,16 @@ import { DashboardLayout } from "@/components/dashboard/dashboard";
 
 import "./leads-page.css";
 
-import type { Customer } from "@/types/customer.types";
+import type { TCustomer } from "@/types/customer.types";
 import { HeaderToolbar } from "@/components/dashboard/dashboard-header/header-toolbar/header-toolbar";
 import { Separator } from "@/components/ui/separator";
 
 export function LeadsPage() {
-  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [customers, setCustomers] = useState<TCustomer[]>([]);
   const router = useRouter();
 
   const fetchLeads = async () => {
-    const data = await apiFetch<Customer[]>(
+    const data = await apiFetch<TCustomer[]>(
       "/leads",
       {},
       { throwOnError: false },

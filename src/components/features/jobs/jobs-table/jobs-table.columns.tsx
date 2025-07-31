@@ -1,7 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table";
-import type { Job } from "@/types/job.types";
+import type { TJob } from "@/types/job.types";
 
-export const jobColumns: ColumnDef<Job>[] = [
+export const jobColumns: ColumnDef<TJob>[] = [
   {
     accessorKey: "title",
     header: "Title",

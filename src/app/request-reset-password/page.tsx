@@ -1,6 +1,6 @@
 "use client";
 
-import { requestResetPassword } from "@/lib/api/request-reset-password";
+import { requestResetPassword } from "@/lib/api/auth";
 import { useState } from "react";
 
 export default function RequestResetPasswordPage() {

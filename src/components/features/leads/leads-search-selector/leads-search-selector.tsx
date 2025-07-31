@@ -1,22 +1,22 @@
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { apiFetch } from "@/lib/api";
-import { Customer } from "@/types/customer.types";
+import { TCustomer } from "@/types/customer.types";
 
 type Props = {
   value: string;
-  onSelect: (customer: Customer) => void;
+  onSelect: (customer: TCustomer) => void;
 };
 
 export function CustomerSearchSelect({ onSelect }: Props) {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<Customer[]>([]);
+  const [results, setResults] = useState<TCustomer[]>([]);
 
   useEffect(() => {
     if (!query) return;
 
     const fetchResults = async () => {
-      const res = await apiFetch<Customer[]>(`/leads?search=${query}`);
+      const res = await apiFetch<TCustomer[]>(`/leads?search=${query}`);
       setResults(res ?? []);
     };
 

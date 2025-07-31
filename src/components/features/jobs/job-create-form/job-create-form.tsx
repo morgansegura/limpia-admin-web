@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+
 import { apiFetch } from "@/lib/api";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,14 +18,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Combobox } from "@/components/ui/combobox";
+
+import { ValueAddedServiceForm } from "@/components/features/jobs/value-added-service-form/value-added-service-form";
 
 import { CLEANING_TYPE_OPTIONS } from "@/types/customer.types";
-import { ValueAddedServiceForm } from "../value-added-service-form/value-added-service-form";
-import { ValueAddedService } from "@/types/value-added-services.types";
-import { User } from "@/types/user.types";
-import { Customer } from "@/types/customer.types";
-import { Job } from "@/types/job.types";
-import { Combobox } from "@/components/ui/combobox";
+import type { TValueAddedService } from "@/types/value-added-services.types";
+import type { TUser } from "@/types/user.types";
+import type { TCustomer } from "@/types/customer.types";
+import type { TJob } from "@/types/job.types";
 
 const DISCOUNT_PERCENT_OPTIONS = ["5", "10", "15", "20"]; // Cap control
 
@@ -32,9 +34,9 @@ export function JobCreateForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
-  const [valueServices, setValueServices] = useState<ValueAddedService[]>([]);
+  const [customers, setCustomers] = useState<TCustomer[]>([]);
+  const [users, setUsers] = useState<TUser[]>([]);
+  const [valueServices, setValueServices] = useState<TValueAddedService[]>([]);
   const isRecurringFromEstimate = searchParams.get("isRecurring") === "true";
 
   const [form, setForm] = useState({
@@ -70,8 +72,8 @@ export function JobCreateForm() {
   useEffect(() => {
     async function loadData() {
       const [custs, users] = await Promise.all([
-        apiFetch<Customer[]>("/customers"),
-        apiFetch<User[]>("/users"),
+        apiFetch<TCustomer[]>("/customers"),
+        apiFetch<TUser[]>("/users"),
       ]);
       setCustomers(custs || []);
       setUsers(users || []);
@@ -86,7 +88,7 @@ export function JobCreateForm() {
   const handleSubmit = async () => {
     setSubmitting(true);
     try {
-      const res = await apiFetch<Job>("/jobs", {
+      const res = await apiFetch<TJob>("/jobs", {
         method: "POST",
         body: JSON.stringify({
           ...form,
@@ -336,7 +338,7 @@ export function JobCreateForm() {
             <ValueAddedServiceForm
               jobId="new-job-temp"
               onCreated={(s) =>
-                setValueServices((prev) => [...prev, s as ValueAddedService])
+                setValueServices((prev) => [...prev, s as TValueAddedService])
               }
             />
           </CardContent>

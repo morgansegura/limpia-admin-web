@@ -7,7 +7,7 @@ import { apiFetch } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-import { Customer } from "@/types/customer.types";
+import { TCustomer } from "@/types/customer.types";
 import { toast } from "sonner";
 import { DetailSection } from "@/components/features/detail-section/detail-section";
 import {
@@ -16,7 +16,7 @@ import {
   customerPreferenceFields,
 } from "@/components/features/customers/customer-detail/details";
 
-const initialForm: Partial<Customer> = {
+const initialForm: Partial<TCustomer> = {
   name: "",
   email: "",
   phone: "",
@@ -30,17 +30,17 @@ const initialForm: Partial<Customer> = {
 
 export function CustomerNewPage() {
   const router = useRouter();
-  const [form, setForm] = useState<Partial<Customer>>(initialForm);
+  const [form, setForm] = useState<Partial<TCustomer>>(initialForm);
   const [loading, setLoading] = useState(false);
 
-  const updateField = (key: keyof Customer, value: unknown) => {
+  const updateField = (key: keyof TCustomer, value: unknown) => {
     setForm({ ...form, [key]: value });
   };
 
   const handleCreate = async () => {
     setLoading(true);
     try {
-      const created = await apiFetch<Customer>("/customers", {
+      const created = await apiFetch<TCustomer>("/customers", {
         method: "POST",
         body: JSON.stringify(form),
       });

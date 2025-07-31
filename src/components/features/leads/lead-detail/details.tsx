@@ -1,16 +1,19 @@
-import { Customer, EditableCustomerField } from "@/types/customer.types";
-import { FieldConfig } from "@/types/forms.types";
+import type { TLead, TEditableLeadField } from "@/types/lead.types";
+import type { TFieldConfig } from "@/types/forms.types";
 
-export const customerDetailsFields: FieldConfig<
-  Pick<Customer, EditableCustomerField>
+export const leadDetailsFields: TFieldConfig<
+  Pick<TLead, TEditableLeadField>
 >[] = [
-  { key: "name", label: "Name", type: "text" },
+  { key: "firstName", label: "First Name", type: "text" },
+  { key: "lastName", label: "Last Name", type: "text" },
   { key: "email", label: "Email", type: "text" },
   { key: "phone", label: "Phone", type: "text" },
+  { key: "contactPermission", label: "Contact Permission", type: "text" },
+  { key: "contactMethod", label: "Preferred Contact Method", type: "text" },
 ];
 
-export const customerLocationFields: FieldConfig<
-  Pick<Customer, EditableCustomerField>
+export const leadLocationFields: TFieldConfig<
+  Pick<TLead, TEditableLeadField>
 >[] = [
   { key: "street", label: "Street", type: "text" },
   { key: "unit", label: "Unit #", type: "text" },
@@ -22,11 +25,11 @@ export const customerLocationFields: FieldConfig<
   { key: "bathrooms", label: "Bathrooms", type: "text" },
 ];
 
-export const customerEstimateFields: FieldConfig<
-  Pick<Customer, EditableCustomerField>
+export const leadEstimateFields: TFieldConfig<
+  Pick<TLead, TEditableLeadField>
 >[] = [
   {
-    key: "cleaningType",
+    key: "cleaningPreference",
     label: "Cleaning Type",
     type: "select",
     options: [
@@ -39,11 +42,10 @@ export const customerEstimateFields: FieldConfig<
     ],
   },
   { key: "squareFootage", label: "Estimated Sq. Ft.", type: "text" },
-  { key: "priceEstimate", label: "Estimated Price", type: "text" },
 ];
 
-export const customerAccessFields: FieldConfig<
-  Pick<Customer, EditableCustomerField>
+export const customerAccessFields: TFieldConfig<
+  Pick<TLead, TEditableLeadField>
 >[] = [
   { key: "entryInstructions", label: "Entry Instructions", type: "textarea" },
   {
@@ -60,8 +62,8 @@ export const customerAccessFields: FieldConfig<
   { key: "hasPets", label: "Has Pets", type: "switch" },
 ];
 
-export const customerPreferenceFields: FieldConfig<
-  Pick<Customer, EditableCustomerField>
+export const customerPreferenceFields: TFieldConfig<
+  Pick<TLead, TEditableLeadField>
 >[] = [
   {
     key: "preferredTimeOfDay",
@@ -86,33 +88,9 @@ export const customerPreferenceFields: FieldConfig<
       { label: "Saturday", value: "Saturday" },
     ],
   },
-  { key: "preferredCleanerId", label: "Preferred Cleaner ID", type: "text" },
-  {
-    key: "rotationSystemOptIn",
-    label: "Use Rotation System",
-    type: "switch",
-  },
   {
     key: "suppliesProvidedByCustomer",
     label: "Supplies Provided",
     type: "switch",
   },
-];
-
-export const customerBillingFields: FieldConfig<
-  Pick<Customer, EditableCustomerField>
->[] = [
-  { key: "billingMethod", label: "Billing Method", type: "text" },
-  { key: "invoiceNotes", label: "Invoice Notes", type: "textarea" },
-  { key: "emailOptIn", label: "Email Opt-in", type: "switch" },
-];
-
-export const customerInternalFields: FieldConfig<
-  Pick<Customer, EditableCustomerField>
->[] = [
-  { key: "crmId", label: "CRM ID", type: "text" },
-  { key: "customerSince", label: "Customer Since", type: "text" },
-  { key: "isVIP", label: "VIP Customer", type: "switch" },
-  { key: "notes", label: "Internal Notes", type: "textarea" },
-  { key: "referredBy", label: "Referred By", type: "text" },
 ];
