@@ -5,10 +5,10 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 import { currentUser } from "@/lib/api/current-user";
 
-import type { User } from "@/types/user.types";
+import type { TUser } from "@/types/user.types";
 
 export type AuthContextType = {
-  user: User | null;
+  user: TUser | null;
   loading: boolean;
   refetchUser: () => Promise<void>;
 };
@@ -20,7 +20,7 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<TUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchUser = async () => {

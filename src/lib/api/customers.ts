@@ -1,13 +1,47 @@
 import { apiFetch } from "@/lib/api";
 
-import type { Customer } from "@/types/customer.types";
+import type { TCustomer } from "@/types/customer.types";
 
-export function fetchCustomers() {
-  return apiFetch<Customer[]>("/customers");
+// GET /customers
+export function fetchCustomers(): Promise<TCustomer[]> {
+  return apiFetch<TCustomer[]>("/customers");
 }
 
-export function getCustomerById(id: string) {
-  return apiFetch<Customer>(`/customers/${id}`, {
-    credentials: "include",
+// GET /customers/:id
+export function getCustomerById(id: string): Promise<TCustomer | null> {
+  return apiFetch<TCustomer>(
+    `/customers/${id}`,
+    {
+      credentials: "include",
+    },
+    {
+      throwOnError: false,
+    },
+  );
+}
+
+// POST /customers
+export function createCustomer(data: Partial<TCustomer>): Promise<TCustomer> {
+  return apiFetch<TCustomer>("/customers", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+// PUT /customers/:id
+export function updateCustomer(
+  id: string,
+  data: Partial<TCustomer>,
+): Promise<TCustomer> {
+  return apiFetch<TCustomer>(`/customers/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+}
+
+// DELETE /customers/:id
+export function deleteCustomer(id: string): Promise<void> {
+  return apiFetch<void>(`/customers/${id}`, {
+    method: "DELETE",
   });
 }

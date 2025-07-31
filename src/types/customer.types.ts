@@ -1,4 +1,4 @@
-export interface Customer {
+export interface TCustomer {
   id: string;
   email: string;
   name: string;
@@ -22,9 +22,9 @@ export interface Customer {
   alarmSystemInstructions?: string;
 
   cleaningNotes?: string;
-  cleaningType: CleaningType;
+  cleaningType: TCleaningType;
   preferredTimeOfDay?: string;
-  preferredDays: DayOfWeek[];
+  preferredDays: TDayOfWeek[];
   preferredCleanerId?: string;
   rotationSystemOptIn?: boolean;
   suppliesProvidedByCustomer?: boolean;
@@ -45,8 +45,8 @@ export interface Customer {
   updatedAt: string;
 }
 
-export type EditableCustomerField = keyof Pick<
-  Customer,
+export type TEditableCustomerField = keyof Pick<
+  TCustomer,
   | "name"
   | "email"
   | "phone"
@@ -85,7 +85,7 @@ export type EditableCustomerField = keyof Pick<
   | "updatedAt"
 >;
 
-export type DayOfWeek = [
+export type TDayOfWeek = [
   | "Sunday"
   | "Monday"
   | "Tuesday"
@@ -95,9 +95,9 @@ export type DayOfWeek = [
   | "Saturday",
 ];
 
-export type DAYS_OF_THE_WEEK = DayOfWeek[];
+export type DAYS_OF_THE_WEEK = TDayOfWeek[];
 
-export type CleaningType =
+export type TCleaningType =
   | "BASE"
   | "MOVE_OUT"
   | "MOVE_IN"
@@ -105,9 +105,9 @@ export type CleaningType =
   | "DEEP"
   | "OFFICE";
 
-export type CLEANING_TYPE = CleaningType[];
+export type CLEANING_TYPE = TCleaningType[];
 
-export const CLEANING_TYPE_OPTIONS: CleaningType[] = [
+export const CLEANING_TYPE_OPTIONS: TCleaningType[] = [
   "BASE",
   "MOVE_OUT",
   "MOVE_IN",
@@ -115,3 +115,5 @@ export const CLEANING_TYPE_OPTIONS: CleaningType[] = [
   "DEEP",
   "OFFICE",
 ];
+
+export type TCustomerStatus = "ACTIVE" | "INACTIVE" | "PAUSED" | "CANCELED";

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { loginUser } from "@/lib/api/login";
+import { loginUser } from "@/lib/api/auth";
 import { useAuth } from "@/context/auth-context";
 
 import "./login.css";

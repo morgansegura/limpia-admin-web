@@ -1,4 +1,4 @@
-export type FieldType =
+export type TFieldType =
   | "text"
   | "textarea"
   | "select"
@@ -12,16 +12,16 @@ export type FieldType =
   | "currency"
   | "radio";
 
-export type FieldOption = {
+export type TFieldOption = {
   label: string;
   value: string;
 };
 
-export interface FieldConfig<T> {
+export interface TFieldConfig<T> {
   key: keyof T;
   label: string;
-  type: FieldType;
-  options?: FieldOption[]; // only for select
+  type: TFieldType;
+  options?: TFieldOption[]; // only for select
   required?: boolean;
   disabled?: boolean;
 }

@@ -1,20 +1,20 @@
-export type FieldType = "text" | "select" | "switch";
+import { TFieldType } from "./forms.types";
 
-export interface BaseField {
+export interface TBaseField {
   key: string;
   label: string;
-  type: FieldType;
+  type: TFieldType;
 }
 
-export interface TextField extends BaseField {
+export interface TTextField extends TBaseField {
   type: "text";
 }
 
-export interface SwitchField extends BaseField {
+export interface TSwitchField extends TBaseField {
   type: "switch";
 }
 
-export interface SelectField extends BaseField {
+export interface TSelectField extends TBaseField {
   type: "select";
   options: {
     value: string;
@@ -22,4 +22,4 @@ export interface SelectField extends BaseField {
   }[];
 }
 
-export type FieldConfig = TextField | SelectField | SwitchField;
+export type FieldConfig = TTextField | TSelectField | TSwitchField;

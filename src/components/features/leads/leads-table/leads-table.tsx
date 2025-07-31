@@ -1,18 +1,18 @@
 import { DataTable } from "@/components/ui/data-table";
-import { customerColumns } from "./leads-table.columns";
+import { leadColumns } from "./leads-table.columns";
 
-import { Customer } from "@/types/customer.types";
+import { TLead } from "@/types/lead.types";
 
 type LeadTableProps = {
-  customers: Customer[];
+  leads: TLead[];
   onView: (id: string) => void;
 };
 
-export function LeadsTable({ customers, onView }: LeadTableProps) {
+export function LeadsTable({ leads, onView }: LeadTableProps) {
   return (
     <DataTable
-      columns={customerColumns}
-      data={customers}
+      columns={leadColumns}
+      data={leads}
       searchKey="name"
       rowOnClick={(row) => onView(row.id)}
       placeholder="Search leads..."

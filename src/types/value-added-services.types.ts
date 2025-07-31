@@ -1,4 +1,4 @@
-export interface ValueAddedService {
+export interface TValueAddedService {
   id: string;
   name: string;
   duration: number; // in minutes

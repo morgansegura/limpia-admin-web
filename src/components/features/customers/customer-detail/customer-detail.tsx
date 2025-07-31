@@ -22,22 +22,22 @@ import {
   customerPreferenceFields,
 } from "./details";
 
-import { Customer } from "@/types/customer.types";
+import { TCustomer } from "@/types/customer.types";
 import { useRouter } from "next/navigation";
 
 interface Props {
-  customer: Customer;
+  customer: TCustomer;
 }
 
 export function CustomerDetail({ customer: initialCustomer }: Props) {
-  const [customer, setCustomer] = useState<Customer>(initialCustomer);
-  const [form, setForm] = useState<Customer>({ ...initialCustomer });
+  const [customer, setCustomer] = useState<TCustomer>(initialCustomer);
+  const [form, setForm] = useState<TCustomer>({ ...initialCustomer });
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
   const router = useRouter();
 
-  const updateField = (key: keyof Customer, value: unknown) => {
+  const updateField = (key: keyof TCustomer, value: unknown) => {
     setForm({ ...form, [key]: value });
   };
 
@@ -46,7 +46,7 @@ export function CustomerDetail({ customer: initialCustomer }: Props) {
   const handleSave = async () => {
     setLoading(true);
     try {
-      const updated = await apiFetch<Customer>(`/customers/${customer.id}`, {
+      const updated = await apiFetch<TCustomer>(`/customers/${customer.id}`, {
         method: "PUT",
         body: JSON.stringify(form),
       });

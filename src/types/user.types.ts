@@ -1,4 +1,6 @@
-import { EmploymentType, Role } from "@/constants/roles";
+import { TEmploymentType, TRole } from "@/constants/roles";
+import { TLead } from "./lead.types";
+import { TJob } from "./job.types";
 
 export type TUserRoles =
   | "SUPER_ADMIN"
@@ -21,18 +23,18 @@ type TOrganization = {
   colorHex: string | null;
 };
 
-export interface User {
+export interface TUser {
   id: string;
   email: string;
   password: string;
   firstName: string;
   lastName: string;
-  role: Role;
+  role: TRole;
   phone: string;
   avatarUrl: string;
 
   // Employment Info
-  type: EmploymentType;
+  type: TEmploymentType;
   startDate: string;
   endDate?: string;
   isActive: boolean;
@@ -46,4 +48,8 @@ export interface User {
 
   createdAt: string;
   updatedAt: string;
+  leadsCreated: TLead[];
+  leadsLastModified: TLead[];
+  Job: TJob[];
+  passwordResetToken: string;
 }

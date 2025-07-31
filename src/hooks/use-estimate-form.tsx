@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { apiFetch } from "@/lib/api";
 import { toast } from "sonner";
-import { EstimateFormValues } from "@/types/estimate.types";
+import { TEstimateFormValues } from "@/types/estimate.types";
 
 export function useEstimateForm() {
-  const [form, setForm] = useState<EstimateFormValues>({
+  const [form, setForm] = useState<TEstimateFormValues>({
     street: "",
     zip: "",
     cleaningType: "BASE",
@@ -20,7 +20,7 @@ export function useEstimateForm() {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = (key: keyof EstimateFormValues, value: unknown) => {
+  const handleChange = (key: keyof TEstimateFormValues, value: unknown) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 

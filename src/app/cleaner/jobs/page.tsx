@@ -1,17 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { apiFetch } from "@/lib/api";
-import { Job } from "@/types/job.types";
-import { Card, CardContent } from "@/components/ui/card";
 import { format } from "date-fns";
+import { useEffect, useState } from "react";
+
+import { apiFetch } from "@/lib/api";
+
+import { Card, CardContent } from "@/components/ui/card";
+
+import type { TJob } from "@/types/job.types";
 
 export default function CleanerJobList() {
-  const [jobs, setJobs] = useState<Job[]>([]);
+  const [jobs, setJobs] = useState<TJob[]>([]);
 
   useEffect(() => {
     async function fetchJobs() {
-      const data = await apiFetch<Job[]>("/jobs/me");
+      const data = await apiFetch<TJob[]>("/jobs/me");
       setJobs(data ?? []);
     }
 

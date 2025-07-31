@@ -1,8 +1,8 @@
 import { ColumnDef } from "@tanstack/react-table";
 
-import type { Customer } from "@/types/customer.types";
+import type { TLead } from "@/types/lead.types";
 
-export const customerColumns: ColumnDef<Customer>[] = [
+export const leadColumns: ColumnDef<TLead>[] = [
   {
     accessorKey: "name",
     header: "Name",
@@ -16,9 +16,13 @@ export const customerColumns: ColumnDef<Customer>[] = [
     header: "Phone",
   },
   {
+    accessorKey: "status",
+    header: "Status",
+  },
+  {
     accessorKey: "customerSince",
-    header: "Member Since",
+    header: "Last Activity at",
     cell: ({ row }) =>
-      new Date(row.original.customerSince).toLocaleDateString(),
+      new Date(row.original.lastActivityAt).toLocaleDateString(),
   },
 ];

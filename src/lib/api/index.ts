@@ -2,7 +2,7 @@ export async function apiFetch<T>(
   path: string,
   options: RequestInit = {},
   opts: { throwOnError?: boolean } = { throwOnError: true },
-): Promise<T | null> {
+): Promise<T> {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const res = await fetch(`${baseUrl}/api${path}`, {
@@ -19,7 +19,7 @@ export async function apiFetch<T>(
     if (opts.throwOnError) {
       throw new Error(`API Error: ${res.status} ${res.statusText}`);
     } else {
-      return null;
+      return null as never;
     }
   }
 
@@ -27,6 +27,6 @@ export async function apiFetch<T>(
     return await res.json();
   } catch (err) {
     if (opts.throwOnError) throw err;
-    return null;
+    return null as never;
   }
 }

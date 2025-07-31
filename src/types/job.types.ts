@@ -1,24 +1,22 @@
-import { CleaningType } from "./customer.types";
-
-export type JobStatus =
+export type TJobStatus =
   | "PENDING"
   | "ASSIGNED"
   | "IN_PROGRESS"
   | "COMPLETED"
   | "CANCELLED";
 
-export interface Job {
+export interface TJob {
   id: string;
   title: string;
   description?: string;
-  status: JobStatus;
+  status: TJobStatus;
   scheduledAt: string;
   completedAt: string;
   isRecurring: boolean;
   recurrenceType: string;
   repeatNextAt: string;
   discount: number;
-  cleaningType: CleaningType;
+  cleaningType: TCleaningType;
   squareFootage: number;
   price: number;
 
@@ -38,10 +36,20 @@ export interface Job {
   }[];
 }
 
-export const JOB_STATUS_OPTIONS: JobStatus[] = [
+export const JOB_STATUS_OPTIONS: TJobStatus[] = [
   "PENDING",
   "ASSIGNED",
   "IN_PROGRESS",
   "COMPLETED",
   "CANCELLED",
 ];
+
+export type TCleaningType =
+  | "BASE"
+  | "MOVE_OUT"
+  | "MOVE_IN"
+  | "AIRBNB"
+  | "DEEP"
+  | "OFFICE";
+
+export type TRecurrenceType = "WEEKLY" | "BIWEEKLY" | "MONTHLY";

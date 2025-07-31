@@ -1,16 +1,16 @@
-import { Customer, EditableCustomerField } from "@/types/customer.types";
-import { FieldConfig } from "@/types/forms.types";
+import { TCustomer, TEditableCustomerField } from "@/types/customer.types";
+import { TFieldConfig } from "@/types/forms.types";
 
-export const customerDetailsFields: FieldConfig<
-  Pick<Customer, EditableCustomerField>
+export const customerDetailsFields: TFieldConfig<
+  Pick<TCustomer, TEditableCustomerField>
 >[] = [
   { key: "name", label: "Name", type: "text" },
   { key: "email", label: "Email", type: "text" },
   { key: "phone", label: "Phone", type: "text" },
 ];
 
-export const customerLocationFields: FieldConfig<
-  Pick<Customer, EditableCustomerField>
+export const customerLocationFields: TFieldConfig<
+  Pick<TCustomer, TEditableCustomerField>
 >[] = [
   { key: "street", label: "Street", type: "text" },
   { key: "unit", label: "Unit #", type: "text" },
@@ -22,8 +22,8 @@ export const customerLocationFields: FieldConfig<
   { key: "bathrooms", label: "Bathrooms", type: "text" },
 ];
 
-export const customerEstimateFields: FieldConfig<
-  Pick<Customer, EditableCustomerField>
+export const customerEstimateFields: TFieldConfig<
+  Pick<TCustomer, TEditableCustomerField>
 >[] = [
   {
     key: "cleaningType",
@@ -42,8 +42,8 @@ export const customerEstimateFields: FieldConfig<
   { key: "priceEstimate", label: "Estimated Price", type: "text" },
 ];
 
-export const customerAccessFields: FieldConfig<
-  Pick<Customer, EditableCustomerField>
+export const customerAccessFields: TFieldConfig<
+  Pick<TCustomer, TEditableCustomerField>
 >[] = [
   { key: "entryInstructions", label: "Entry Instructions", type: "textarea" },
   {
@@ -60,8 +60,8 @@ export const customerAccessFields: FieldConfig<
   { key: "hasPets", label: "Has Pets", type: "switch" },
 ];
 
-export const customerPreferenceFields: FieldConfig<
-  Pick<Customer, EditableCustomerField>
+export const customerPreferenceFields: TFieldConfig<
+  Pick<TCustomer, TEditableCustomerField>
 >[] = [
   {
     key: "preferredTimeOfDay",
@@ -99,16 +99,16 @@ export const customerPreferenceFields: FieldConfig<
   },
 ];
 
-export const customerBillingFields: FieldConfig<
-  Pick<Customer, EditableCustomerField>
+export const customerBillingFields: TFieldConfig<
+  Pick<TCustomer, TEditableCustomerField>
 >[] = [
   { key: "billingMethod", label: "Billing Method", type: "text" },
   { key: "invoiceNotes", label: "Invoice Notes", type: "textarea" },
   { key: "emailOptIn", label: "Email Opt-in", type: "switch" },
 ];
 
-export const customerInternalFields: FieldConfig<
-  Pick<Customer, EditableCustomerField>
+export const customerInternalFields: TFieldConfig<
+  Pick<TCustomer, TEditableCustomerField>
 >[] = [
   { key: "crmId", label: "CRM ID", type: "text" },
   { key: "customerSince", label: "Customer Since", type: "text" },
