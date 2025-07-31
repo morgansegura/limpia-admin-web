@@ -1,18 +1,12 @@
 import { ReactNode } from "react";
 
 import {
-  LayoutDashboard,
-  Users,
   Briefcase,
   ClipboardList,
   Calendar,
-  BookOpen,
   Settings2,
   LifeBuoy,
   Send,
-  Frame,
-  Map,
-  PieChart,
 } from "lucide-react";
 
 import { TUserRoles } from "@/types/user.types";
@@ -49,7 +43,11 @@ export const DASHBOARD_ROUTES: TDashboardMenus = {
           roles: ["SALES_AGENT", "SUPER_ADMIN"],
         },
         { title: "Customers", url: "/customers" },
-        { title: "Estimates", url: "/estimates", roles: ["SALES_AGENT"] },
+        {
+          title: "Estimates",
+          url: "/estimates",
+          roles: ["SALES_AGENT", "SUPER_ADMIN"],
+        },
       ],
     },
     {
@@ -59,7 +57,11 @@ export const DASHBOARD_ROUTES: TDashboardMenus = {
       roles: ["SUPER_ADMIN", "TEAM_MANAGER", "FIELD_WORKER", "TRAINER"],
       items: [
         { title: "All Jobs", url: "/jobs" },
-        { title: "Schedule", url: "/schedule", roles: ["TEAM_MANAGER"] },
+        {
+          title: "Schedule",
+          url: "/schedule",
+          roles: ["TEAM_MANAGER", "SUPER_ADMIN"],
+        },
         { title: "Checklists", url: "/checklists" },
       ],
     },
@@ -67,7 +69,7 @@ export const DASHBOARD_ROUTES: TDashboardMenus = {
       title: "My Work",
       url: "#",
       icon: <Calendar />,
-      roles: ["FIELD_WORKER", "TEAM_MANAGER"],
+      roles: ["FIELD_WORKER", "TEAM_MANAGER", "SUPER_ADMIN"],
       items: [
         { title: "My Jobs", url: "/my-jobs" },
         { title: "Clock In/Out", url: "/clock" },
@@ -97,24 +99,24 @@ export const DASHBOARD_ROUTES: TDashboardMenus = {
       title: "Feedback",
       url: "/feedback",
       icon: <Send />,
-      roles: ["TRAINER", "TEAM_MANAGER"],
+      roles: ["TRAINER", "TEAM_MANAGER", "SUPER_ADMIN"],
     },
   ],
   navProjects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: <Frame />,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: <PieChart />,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: <Map />,
-    },
+    // {
+    //   name: "Design Engineering",
+    //   url: "#",
+    //   icon: <Frame />,
+    // },
+    // {
+    //   name: "Sales & Marketing",
+    //   url: "#",
+    //   icon: <PieChart />,
+    // },
+    // {
+    //   name: "Travel",
+    //   url: "#",
+    //   icon: <Map />,
+    // },
   ],
 };

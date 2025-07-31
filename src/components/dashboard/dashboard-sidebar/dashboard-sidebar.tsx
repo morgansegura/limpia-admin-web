@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 
+import { MdHouse } from "react-icons/md";
+
 import {
   Sidebar,
   SidebarContent,
@@ -21,8 +23,6 @@ import { NavSecondary } from "@/components/dashboard/nav-secondary";
 import { NavProjects } from "@/components/dashboard/nav-projects";
 
 import "./dashboard-sidebar.css";
-import { Separator } from "@/components/ui/separator";
-import { LucideHouse } from "lucide-react";
 
 type TDashboardSidebarProps = {
   user: AuthContextType["user"];
@@ -38,15 +38,15 @@ export function DashboardSidebar({ user }: TDashboardSidebarProps) {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link href="/">
-                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-sm">
+                <div className="bg-primary text-sidebar-primary-foreground flex aspect-square size-7 items-center justify-center rounded-full">
                   {/* <Command className="size-4" /> */}
-                  <LucideHouse />
+                  <MdHouse className="size-5" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">
                     {user?.organization.name}
                   </span>
-                  <span className="truncate text-xs">{user?.role}</span>
+                  <span className="truncate text-xs">{user?.region}</span>
                 </div>
               </Link>
             </SidebarMenuButton>
@@ -58,7 +58,6 @@ export function DashboardSidebar({ user }: TDashboardSidebarProps) {
         <NavProjects projects={navProjects} />
         <NavSecondary items={navSecondary} className="mt-auto" />
       </SidebarContent>
-      <Separator />
       <SidebarFooter>
         <NavUser user={user} />
       </SidebarFooter>
