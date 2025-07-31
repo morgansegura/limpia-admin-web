@@ -21,6 +21,8 @@ import {
 
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { Button } from "./button";
+import { cn } from "@/lib/utils";
 
 type Props<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[];
@@ -64,11 +66,11 @@ export function DataTable<TData, TValue>({
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
           placeholder={placeholder}
-          className="w-full"
+          className="w-full px-3 h-10 bg-card"
         />
       )}
 
-      <div className="rounded-md border">
+      <div className="rounded-md border bg-card">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((group) => (
@@ -108,20 +110,22 @@ export function DataTable<TData, TValue>({
           {table.getPageCount()}
         </div>
         <div className="space-x-2">
-          <button
-            className="underline"
+          <Button
+            className={cn(!table.getCanPreviousPage() && "hidden")}
+            size="sm"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
             Previous
-          </button>
-          <button
-            className="underline"
+          </Button>
+          <Button
+            className={cn(!table.getCanPreviousPage() && "hidden")}
+            size="sm"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
             Next
-          </button>
+          </Button>
         </div>
       </div>
     </div>

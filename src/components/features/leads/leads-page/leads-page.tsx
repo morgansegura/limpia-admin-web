@@ -14,6 +14,7 @@ import "./leads-page.css";
 
 import type { Customer } from "@/types/customer.types";
 import { HeaderToolbar } from "@/components/dashboard/dashboard-header/header-toolbar/header-toolbar";
+import { Separator } from "@/components/ui/separator";
 
 export function LeadsPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -41,11 +42,17 @@ export function LeadsPage() {
       <div className="customers-page">
         <HeaderToolbar>
           <h2 className="title">Leads</h2>
-          <Button size="sm" variant="outline" onClick={handleAdd}>
-            <Plus className="customers-page-icon" />
+          <Button
+            size="sm"
+            variant="outline"
+            className="bg-card"
+            onClick={handleAdd}
+          >
+            <Plus />
             Add Lead
           </Button>
         </HeaderToolbar>
+        <Separator />
 
         <div className="py-6 px-4 lg:px-6">
           <CustomerTable
