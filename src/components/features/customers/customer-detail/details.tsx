@@ -4,7 +4,8 @@ import { TFieldConfig } from "@/types/forms.types";
 export const customerDetailsFields: TFieldConfig<
   Pick<TCustomer, TEditableCustomerField>
 >[] = [
-  { key: "name", label: "Name", type: "text" },
+  { key: "firstName", label: "First Name", type: "text" },
+  { key: "lastName", label: "Last Name", type: "text" },
   { key: "email", label: "Email", type: "text" },
   { key: "phone", label: "Phone", type: "text" },
 ];

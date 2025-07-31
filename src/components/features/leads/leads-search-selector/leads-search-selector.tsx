@@ -1,22 +1,22 @@
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { apiFetch } from "@/lib/api";
-import { TCustomer } from "@/types/customer.types";
+import { TLead } from "@/types/lead.types";
 
 type Props = {
   value: string;
-  onSelect: (customer: TCustomer) => void;
+  onSelect: (lead: TLead) => void;
 };
 
 export function CustomerSearchSelect({ onSelect }: Props) {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<TCustomer[]>([]);
+  const [results, setResults] = useState<TLead[]>([]);
 
   useEffect(() => {
     if (!query) return;
 
     const fetchResults = async () => {
-      const res = await apiFetch<TCustomer[]>(`/leads?search=${query}`);
+      const res = await apiFetch<TLead[]>(`/leads?search=${query}`);
       setResults(res ?? []);
     };
 
@@ -33,16 +33,16 @@ export function CustomerSearchSelect({ onSelect }: Props) {
       />
       {results.length > 0 && (
         <div className="border rounded-md p-2 space-y-1 max-h-48 overflow-y-auto">
-          {results.map((customer) => (
+          {results.map((lead) => (
             <div
-              key={customer.id}
+              key={lead.id}
               className="cursor-pointer hover:bg-muted px-2 py-1 rounded"
               onClick={() => {
-                onSelect(customer);
-                setQuery(`${customer.name}`);
+                onSelect(lead);
+                setQuery(`${lead.firstName} ${lead.lastName}`);
               }}
             >
-              {customer.name} — {customer.email}
+              {lead.firstName} {lead.lastName} — {lead.email}
             </div>
           ))}
         </div>

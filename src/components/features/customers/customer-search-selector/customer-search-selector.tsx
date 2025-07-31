@@ -39,10 +39,10 @@ export function CustomerSearchSelect({ onSelect }: Props) {
               className="cursor-pointer hover:bg-muted px-2 py-1 rounded"
               onClick={() => {
                 onSelect(customer);
-                setQuery(`${customer.name}`);
+                setQuery(`${customer.firstName} ${customer.lastName}`);
               }}
             >
-              {customer.name} — {customer.email}
+              {customer.firstName} {customer.lastName} — {customer.email}
             </div>
           ))}
         </div>

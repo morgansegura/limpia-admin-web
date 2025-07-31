@@ -144,7 +144,7 @@ export function JobCreateForm() {
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Combobox
               items={customers.map((c) => ({
-                label: `${c.name} (${c.email})`,
+                label: `${c.firstName} ${c.lastName} (${c.email})`,
                 value: c.id,
               }))}
               value={form.customerId}

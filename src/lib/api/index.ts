@@ -11,7 +11,7 @@ export async function apiFetch<T>(
       "Content-Type": "application/json",
       ...(options.headers || {}), // allow custom headers if needed
     },
-    credentials: "include", // this sends your secure cookie
+    credentials: "include", // this sends secure cookie
     cache: "no-store",
   });
 

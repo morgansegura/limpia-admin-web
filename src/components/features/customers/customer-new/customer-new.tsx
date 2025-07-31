@@ -17,7 +17,8 @@ import {
 } from "@/components/features/customers/customer-detail/details";
 
 const initialForm: Partial<TCustomer> = {
-  name: "",
+  firstName: "",
+  lastName: "",
   email: "",
   phone: "",
   street: "",
@@ -46,7 +47,8 @@ export function CustomerNewPage() {
       });
 
       if (
-        !form.name ||
+        !form.firstName ||
+        !form.lastName ||
         !form.email ||
         !form.street ||
         !form.state ||

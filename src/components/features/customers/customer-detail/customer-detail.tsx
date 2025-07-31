@@ -114,7 +114,9 @@ export function CustomerDetail({ customer: initialCustomer }: Props) {
           <div className="breadcrumb">
             <ChevronRightIcon className="breadcrumb-icon" />
             <div className="breadcrumb-item">
-              <span>{customer.name}</span>
+              <span>
+                {customer.firstName} {customer.lastName}
+              </span>
             </div>
           </div>
         </nav>
@@ -145,7 +147,9 @@ export function CustomerDetail({ customer: initialCustomer }: Props) {
 
       <div className="dashboard-layout-heading-block">
         <div className="dashboard-layout-title-block">
-          <h2 className="dashboard-layout-title">{customer.name}</h2>
+          <h2 className="dashboard-layout-title">
+            {customer.firstName} {customer.lastName}
+          </h2>
           <div className="dashboard-layout-description-small -mb-1.5">
             <span>Customer ID:</span>
             <ChevronRightIcon className="w-4" />
