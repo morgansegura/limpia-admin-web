@@ -18,7 +18,7 @@ export function UserDetailPage({ userId }: { userId: string }) {
     if (!isNew) {
       apiFetch<TUser>(`/users/${userId}`).then(setUser);
     }
-  }, [userId]);
+  }, [userId, isNew]);
 
   async function handleSubmit(data: Partial<TUser>) {
     try {
@@ -36,8 +36,11 @@ export function UserDetailPage({ userId }: { userId: string }) {
         toast.success("User updated");
       }
       router.push("/users");
-    } catch (err) {
-      toast.error("Something went wrong");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message || "Something went wrong");
+        console.error(err);
+      }
     }
   }
 

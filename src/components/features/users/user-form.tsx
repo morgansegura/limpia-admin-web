@@ -3,13 +3,14 @@
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Select } from "@/components/ui/select";
+// import { Select } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { ROLES } from "@/constants/roles";
+import { ROLES, TRole } from "@/constants/roles";
+import { TUser, TUserFormValues } from "@/types/user.types";
 
 type Props = {
-  initialValues?: any;
-  onSubmit: (data: any) => void;
+  initialValues?: TUser | null;
+  onSubmit: (data: TUserFormValues) => void;
 };
 
 export function UserForm({ initialValues, onSubmit }: Props) {
@@ -47,7 +48,7 @@ export function UserForm({ initialValues, onSubmit }: Props) {
           {...register("role")}
           className="w-full border rounded px-2 py-1"
         >
-          {Object.values(ROLES).map((r) => (
+          {Object.values(ROLES).map((r: TRole) => (
             <option key={r} value={r}>
               {r}
             </option>

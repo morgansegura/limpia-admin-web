@@ -5,7 +5,6 @@ import {
   Bell,
   ChevronsUpDown,
   CreditCard,
-  LogOut,
   Sparkles,
 } from "lucide-react";
 
@@ -30,8 +29,6 @@ import type { AuthContextType } from "@/context/auth-context";
 import { createAcronym } from "@/lib/utils/create-acronym";
 import { cn } from "@/lib/utils";
 import { getRoleColor } from "@/lib/utils/get-role-color";
-import { logoutUser } from "@/lib/api/auth";
-import { Button } from "../ui/button";
 import { LogoutButton } from "../features/logout-button/logout-button";
 
 type TNavUserProps = {

@@ -53,3 +53,11 @@ export interface TUser {
   Job: TJob[];
   passwordResetToken: string;
 }
+
+export type TUserFormValues = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  role: TRole;
+};
