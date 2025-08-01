@@ -3,11 +3,11 @@ import { apiFetch } from ".";
 
 // POST /auth/login
 export async function loginUser(email: string, password: string) {
-  return apiFetch<{ access_token: string }>("/auth/login", {
+  await apiFetch<{ message: string }>("/auth/login", {
     method: "POST",
+    body: JSON.stringify({ email, password }),
     headers: { "Content-Type": "application/json" },
     credentials: "include",
-    body: JSON.stringify({ email, password }),
   });
 }
 
@@ -22,7 +22,7 @@ export async function logoutUser(): Promise<void> {
 // GET /auth/me
 export async function currentUser(): Promise<TUser | null> {
   return apiFetch<TUser>(
-    "/auth/me",
+    "/users/me",
     { credentials: "include" },
     { throwOnError: false },
   );

@@ -26,16 +26,11 @@ export function DashboardLayout({ children, className }: DashboardLayoutProps) {
         <SidebarInset>
           <DashboardHeader />
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-            <main className="min-h-[100vh] flex-1 rounded-xl md:min-h-min">
+            <main className="min-h-screen flex-1 rounded-xl md:min-h-min">
               {children}
             </main>
           </div>
           <DashboardFooter />
-          {/* <div className="container">
-            <main className="flex flex-1 flex-col gap-4 p-4 pt-0">
-              {children}
-            </main>
-          </div> */}
         </SidebarInset>
       </div>
     </SidebarProvider>

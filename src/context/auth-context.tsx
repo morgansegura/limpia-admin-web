@@ -25,6 +25,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const fetchUser = async () => {
     try {
       const data = await currentUser();
+      console.log("Current user: ", data);
       setUser(data);
     } catch {
       setUser(null);
@@ -33,12 +34,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const refetchUser = async () => {
+    setLoading(true);
+    await fetchUser();
+  };
+
   useEffect(() => {
     fetchUser();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, refetchUser: fetchUser }}>
+    <AuthContext.Provider value={{ user, loading, refetchUser }}>
       {children}
     </AuthContext.Provider>
   );

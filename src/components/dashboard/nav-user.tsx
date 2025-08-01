@@ -30,6 +30,9 @@ import type { AuthContextType } from "@/context/auth-context";
 import { createAcronym } from "@/lib/utils/create-acronym";
 import { cn } from "@/lib/utils";
 import { getRoleColor } from "@/lib/utils/get-role-color";
+import { logoutUser } from "@/lib/api/auth";
+import { Button } from "../ui/button";
+import { LogoutButton } from "../features/logout-button/logout-button";
 
 type TNavUserProps = {
   user: AuthContextType["user"];
@@ -107,8 +110,7 @@ export function NavUser({ user }: TNavUserProps) {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <LogOut />
-              Log out
+              <LogoutButton />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

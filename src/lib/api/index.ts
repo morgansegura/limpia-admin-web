@@ -19,7 +19,7 @@ export async function apiFetch<T>(
     if (opts.throwOnError) {
       throw new Error(`API Error: ${res.status} ${res.statusText}`);
     } else {
-      return null as never;
+      return null as unknown as T;
     }
   }
 
@@ -27,6 +27,6 @@ export async function apiFetch<T>(
     return await res.json();
   } catch (err) {
     if (opts.throwOnError) throw err;
-    return null as never;
+    return null as unknown as T;
   }
 }
