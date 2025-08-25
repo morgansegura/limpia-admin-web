@@ -1,0 +1,246 @@
+/* React Big Calendar Custom Styles */
+.rbc-calendar {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.rbc-header {
+  background: hsl(var(--muted));
+  border-bottom: 1px solid hsl(var(--border));
+  padding: 4px 12px;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.rbc-month-view,
+.rbc-time-view {
+  border: 1px solid hsl(var(--border));
+  border-radius: 6px;
+}
+
+.rbc-event {
+  background: hsl(var(--primary));
+  border: none;
+  border-radius: 4px;
+  color: hsl(var(--primary-foreground));
+  outline: none;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+  transition: all 0.2s ease;
+}
+
+.rbc-event:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.rbc-event.rbc-selected {
+  background: hsl(var(--primary));
+  border: 2px solid hsl(var(--ring));
+}
+
+.rbc-event-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.rbc-event-continues-after,
+.rbc-event-continues-prior {
+  background: hsl(var(--primary) / 0.8);
+}
+
+.rbc-slot-selection {
+  background: hsl(var(--accent));
+  border: 1px solid hsl(var(--accent-foreground));
+}
+
+.rbc-time-slot {
+  border-top: 1px solid hsl(var(--border) / 0.3);
+}
+
+.rbc-time-slot.rbc-now {
+  background: hsl(var(--muted) / 0.5);
+}
+
+.rbc-current-time-indicator {
+  background: hsl(var(--destructive));
+  height: 2px;
+  z-index: 10;
+}
+
+.rbc-today {
+  background: hsl(var(--accent) / 0.1);
+}
+
+.rbc-off-range-bg {
+  background: hsl(var(--muted) / 0.3);
+}
+
+.rbc-toolbar {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.rbc-toolbar button {
+  background: transparent;
+  border: 1px solid hsl(var(--border));
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  color: hsl(var(--foreground));
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rbc-toolbar button:hover {
+  background: hsl(var(--accent));
+  border-color: hsl(var(--accent-foreground));
+}
+
+.rbc-toolbar button.rbc-active {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border-color: hsl(var(--primary));
+}
+
+.rbc-toolbar-label {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.rbc-btn-group {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.rbc-btn-group button:first-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.rbc-btn-group button:last-child {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.rbc-btn-group button:not(:first-child):not(:last-child) {
+  border-radius: 0;
+}
+
+.rbc-btn-group button:not(:last-child) {
+  border-right: none;
+}
+
+.rbc-time-header {
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.rbc-time-content {
+  border-top: none;
+}
+
+.rbc-time-gutter .rbc-timeslot-group {
+  border-bottom: 1px solid hsl(var(--border) / 0.3);
+}
+
+.rbc-timeslot-group {
+  border-bottom: 1px solid hsl(var(--border) / 0.2);
+}
+
+.rbc-time-gutter .rbc-time-slot {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+  text-align: right;
+  padding-right: 0.5rem;
+}
+
+.rbc-day-slot .rbc-events-container {
+  margin-right: 0.25rem;
+}
+
+.rbc-addons-dnd .rbc-addons-dnd-over {
+  background: hsl(var(--accent) / 0.3);
+  border: 2px dashed hsl(var(--accent-foreground));
+}
+
+.rbc-addons-dnd .rbc-addons-dnd-drag-preview {
+  background: hsl(var(--primary));
+  border: 1px solid hsl(var(--primary-foreground));
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  color: hsl(var(--primary-foreground));
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+/* Custom priority indicators */
+.rbc-event.priority-urgent {
+  border-left: 4px solid hsl(var(--destructive));
+}
+
+.rbc-event.priority-high {
+  border-left: 4px solid hsl(var(--orange));
+}
+
+.rbc-event.priority-normal {
+  border-left: 4px solid hsl(var(--primary));
+}
+
+.rbc-event.priority-low {
+  border-left: 4px solid hsl(var(--muted-foreground));
+}
+
+/* Status indicators */
+.rbc-event.status-completed {
+  background: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
+  opacity: 0.7;
+}
+
+.rbc-event.status-cancelled {
+  background: hsl(var(--destructive) / 0.2);
+  color: hsl(var(--destructive));
+  text-decoration: line-through;
+}
+
+.rbc-event.status-in-progress {
+  background: hsl(var(--success));
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .rbc-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .rbc-toolbar-label {
+    text-align: center;
+    margin: 0.5rem 0;
+  }
+
+  .rbc-btn-group {
+    justify-content: center;
+  }
+
+  .rbc-event {
+    font-size: 0.65rem;
+    padding: 1px 2px;
+  }
+}

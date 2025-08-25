@@ -1,0 +1,5 @@
+@reference "tailwindcss";
+
+.logo {
+  @apply flex w-full h-full;
+}
