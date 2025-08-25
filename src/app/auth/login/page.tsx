@@ -153,34 +153,22 @@ export default function LoginPage() {
             </div>
           </form>
 
-          <div className="mt-6 pt-6 border-t">
-            <div className="text-center text-sm text-muted-foreground">
-              <p>Demo Credentials:</p>
-              <p className="mt-1">
-                <strong>Corporate CEO:</strong> admin@limpia.com / admin123
-              </p>
-              <p>
-                <strong>Franchise Owner:</strong> owner@limpia.com / franchise123
-              </p>
-              <p>
-                <strong>Sales Manager:</strong> salesmanager@limpia.com / sales123
-              </p>
-              <p>
-                <strong>Sales Rep:</strong> sales@limpia.com / sales123
-              </p>
-              <p>
-                <strong>Employee:</strong> employee@limpia.com / employee123
-              </p>
-              <p>
-                <strong>Support:</strong> support@limpia.com / support123
-              </p>
-              <p className="text-xs mt-1">
-                <strong>Corporate:</strong> No Business ID needed<br/>
-                <strong>Franchise/Sales:</strong> miami
-              </p>
+        </CardContent>
+        
+        {/* Development demo credentials - only show in development */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="text-center text-xs text-yellow-800">
+              <p className="font-medium mb-2">Development Demo Accounts:</p>
+              <div className="space-y-1">
+                <p><strong>CEO:</strong> admin@limpia.com / admin123</p>
+                <p><strong>Owner:</strong> owner@limpia.com / franchise123 (miami)</p>
+                <p><strong>Manager:</strong> salesmanager@limpia.com / sales123 (miami)</p>
+                <p><strong>Sales Rep:</strong> sales@limpia.com / sales123 (miami)</p>
+              </div>
             </div>
           </div>
-        </CardContent>
+        )}
       </Card>
     </div>
   );

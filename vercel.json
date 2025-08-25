@@ -1,20 +1,11 @@
 {
-  "buildCommand": "npm run build",
-  "outputDirectory": ".next",
   "framework": "nextjs",
+  "buildCommand": "npm run build",
   "functions": {
     "app/**": {
       "maxDuration": 30
     }
   },
-  "crons": [],
-  "redirects": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/$1",
-      "permanent": false
-    }
-  ],
   "env": {
     "NEXT_PUBLIC_APP_NAME": "Limpia Service Engine"
   }
