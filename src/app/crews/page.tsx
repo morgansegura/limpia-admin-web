@@ -94,9 +94,9 @@ export default function CrewsPage() {
     setError(null);
     try {
       const data = await crewsApi.getAll();
-      setCrews(Array.isArray(data) ? data : []);
-    } catch (error: any) {
-      if (error?.response?.status === 401 || error?.message?.includes('jwt expired')) {
+      setCrews(Array.isArray(data) ? data as Crew[] : []);
+    } catch (error: unknown) {
+      if ((error && typeof error === 'object' && 'response' in error && (error.response as { status?: number })?.status === 401) || (error instanceof Error && error.message.includes('jwt expired'))) {
         console.warn("🔐 Authentication expired, using fallback crew data");
       } else {
         console.error("Failed to load crews:", error);

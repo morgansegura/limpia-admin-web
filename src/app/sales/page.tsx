@@ -352,10 +352,10 @@ export default function SalesPage() {
         title: "Workflow Initiated",
         description: `Sales-to-service workflow started for ${estimate.customerName}`,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Workflow Error",
-        description: error.message || "Failed to initiate workflow",
+        description: error instanceof Error ? error.message : "Failed to initiate workflow",
         variant: "destructive",
       });
     }
@@ -399,10 +399,10 @@ export default function SalesPage() {
         default:
           console.log(`Unknown workflow step: ${stepId}`);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Workflow Error",
-        description: error.message || "Failed to execute workflow step",
+        description: error instanceof Error ? error.message : "Failed to execute workflow step",
         variant: "destructive",
       });
     }

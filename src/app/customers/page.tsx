@@ -232,10 +232,10 @@ export default function CustomersPage() {
         title: "Call Logged",
         description: `Call with ${callData.customerName} has been logged`,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Error",
-        description: error.message || "Failed to log call",
+        description: error instanceof Error ? error.message : "Failed to log call",
         variant: "destructive",
       });
     }
@@ -249,10 +249,10 @@ export default function CustomersPage() {
         title: "Email Sent",
         description: `Email sent to ${emailData.customerName}`,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Error",
-        description: error.message || "Failed to send email",
+        description: error instanceof Error ? error.message : "Failed to send email",
         variant: "destructive",
       });
     }
@@ -266,10 +266,10 @@ export default function CustomersPage() {
         title: "Message Sent",
         description: `Message sent to ${messageData.customerName}`,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Error",
-        description: error.message || "Failed to send message",
+        description: error instanceof Error ? error.message : "Failed to send message",
         variant: "destructive",
       });
     }

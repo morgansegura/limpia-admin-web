@@ -5,7 +5,7 @@ export interface WorkflowStep {
   id: string;
   name: string;
   status: 'pending' | 'in_progress' | 'completed' | 'failed';
-  data?: any;
+  data?: unknown;
   error?: string;
 }
 
@@ -58,7 +58,7 @@ export const useWorkflow = () => {
     estimateId: string,
     stepId: string,
     status: WorkflowStep['status'],
-    data?: any,
+    data?: unknown,
     error?: string
   ) => {
     setWorkflows(prev => prev.map(workflow => {
@@ -84,7 +84,7 @@ export const useWorkflow = () => {
 
   const executeContractSigning = useCallback(async (
     estimateId: string,
-    contractData: any
+    contractData: unknown
   ) => {
     setLoading(true);
     setError(null);
@@ -100,8 +100,8 @@ export const useWorkflow = () => {
       });
 
       return result;
-    } catch (err: any) {
-      const errorMessage = err.message || 'Contract signing failed';
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Contract signing failed';
       updateWorkflowStep(estimateId, 'contract_signing', 'failed', null, errorMessage);
       setError(errorMessage);
       throw err;
@@ -112,7 +112,7 @@ export const useWorkflow = () => {
 
   const executePaymentProcessing = useCallback(async (
     estimateId: string,
-    paymentData: any
+    paymentData: unknown
   ) => {
     setLoading(true);
     setError(null);
@@ -129,8 +129,8 @@ export const useWorkflow = () => {
       });
 
       return result;
-    } catch (err: any) {
-      const errorMessage = err.message || 'Payment processing failed';
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Payment processing failed';
       updateWorkflowStep(estimateId, 'payment_processing', 'failed', null, errorMessage);
       setError(errorMessage);
       throw err;
@@ -141,7 +141,7 @@ export const useWorkflow = () => {
 
   const executeServiceScheduling = useCallback(async (
     estimateId: string,
-    scheduleData: any
+    scheduleData: unknown
   ) => {
     setLoading(true);
     setError(null);
@@ -158,8 +158,8 @@ export const useWorkflow = () => {
       });
 
       return result;
-    } catch (err: any) {
-      const errorMessage = err.message || 'Service scheduling failed';
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Service scheduling failed';
       updateWorkflowStep(estimateId, 'service_scheduling', 'failed', null, errorMessage);
       setError(errorMessage);
       throw err;
@@ -171,7 +171,7 @@ export const useWorkflow = () => {
   const sendCustomerNotifications = useCallback(async (
     customerId: string,
     notificationType: string,
-    data: any
+    data: unknown
   ) => {
     setLoading(true);
     setError(null);
@@ -179,8 +179,8 @@ export const useWorkflow = () => {
     try {
       const result = await salesApi.sendCustomerNotification(customerId, notificationType, data);
       return result;
-    } catch (err: any) {
-      const errorMessage = err.message || 'Notification sending failed';
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Notification sending failed';
       setError(errorMessage);
       throw err;
     } finally {
@@ -199,8 +199,8 @@ export const useWorkflow = () => {
     try {
       const slots = await salesApi.getAvailableSlots(date, serviceType);
       return slots;
-    } catch (err: any) {
-      const errorMessage = err.message || 'Failed to fetch available slots';
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch available slots';
       setError(errorMessage);
       throw err;
     } finally {

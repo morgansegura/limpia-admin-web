@@ -36,7 +36,7 @@ interface Activity {
   title: string;
   description: string;
   time: Date;
-  icon: any;
+  icon: React.ComponentType<{ className?: string }>;
   iconColor: string;
   badge: string;
   badgeVariant: "default" | "secondary" | "outline" | "destructive";

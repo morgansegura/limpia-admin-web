@@ -59,8 +59,8 @@ export default function RegisterPage() {
         password: formData.password,
         role: formData.role,
       });
-    } catch (err: any) {
-      setError(err.message || 'Registration failed');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Registration failed');
     }
   };
 

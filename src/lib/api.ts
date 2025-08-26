@@ -64,7 +64,7 @@ api.interceptors.response.use(
 );
 
 // API Response Types
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   data: T;
   message?: string;
   success: boolean;
@@ -121,7 +121,7 @@ export interface Tenant {
   name: string;
   slug: string;
   domain?: string;
-  settings: Record<string, any>;
+  settings: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;
 }
@@ -161,63 +161,63 @@ export const authApi = {
 
 // Customers API
 export const customersApi = {
-  getAll: (filters?: Record<string, any>): Promise<any[]> =>
+  getAll: (filters?: Record<string, unknown>): Promise<unknown[]> =>
     api.get('/customers', { params: filters }).then(res => res.data),
 
-  getById: (id: string): Promise<any> =>
+  getById: (id: string): Promise<unknown> =>
     api.get(`/customers/${id}`).then(res => res.data),
 
-  create: (customerData: any): Promise<any> =>
+  create: (customerData: unknown): Promise<unknown> =>
     api.post('/customers', customerData).then(res => res.data),
 
-  update: (id: string, customerData: any): Promise<any> =>
+  update: (id: string, customerData: unknown): Promise<unknown> =>
     api.put(`/customers/${id}`, customerData).then(res => res.data),
 
   delete: (id: string): Promise<void> =>
     api.delete(`/customers/${id}`).then(res => res.data),
 
-  sendCommunication: (id: string, communicationData: any): Promise<any> =>
+  sendCommunication: (id: string, communicationData: unknown): Promise<unknown> =>
     api.post(`/customers/${id}/communication`, communicationData).then(res => res.data),
 
-  getBookings: (id: string): Promise<any[]> =>
+  getBookings: (id: string): Promise<unknown[]> =>
     api.get(`/customers/${id}/bookings`).then(res => res.data),
 
-  getStats: (): Promise<any> =>
+  getStats: (): Promise<unknown> =>
     api.get('/customers/stats').then(res => res.data),
 };
 
 // Sales API
 export const salesApi = {
-  getQuickPrice: (priceData: any): Promise<any> =>
+  getQuickPrice: (priceData: unknown): Promise<unknown> =>
     api.post('/sales/quick-price', priceData).then(res => res.data),
 
-  createEstimate: (estimateData: any): Promise<any> =>
+  createEstimate: (estimateData: unknown): Promise<unknown> =>
     api.post('/sales/estimates', estimateData).then(res => res.data),
 
-  getEstimates: (myEstimatesOnly?: boolean): Promise<any[]> =>
+  getEstimates: (myEstimatesOnly?: boolean): Promise<unknown[]> =>
     api.get('/sales/estimates', { 
       params: myEstimatesOnly ? { 'my-estimates': 'true' } : {} 
     }).then(res => res.data),
 
-  getMyEstimates: (): Promise<any[]> =>
+  getMyEstimates: (): Promise<unknown[]> =>
     api.get('/sales/estimates/my').then(res => res.data),
 
-  getEstimate: (id: string): Promise<any> =>
+  getEstimate: (id: string): Promise<unknown> =>
     api.get(`/sales/estimates/${id}`).then(res => res.data),
 
-  sendEstimate: (id: string): Promise<any> =>
+  sendEstimate: (id: string): Promise<unknown> =>
     api.put(`/sales/estimates/${id}/send`).then(res => res.data),
 
-  acceptEstimate: (id: string): Promise<any> =>
+  acceptEstimate: (id: string): Promise<unknown> =>
     api.put(`/sales/estimates/${id}/accept`).then(res => res.data),
 
-  rejectEstimate: (id: string): Promise<any> =>
+  rejectEstimate: (id: string): Promise<unknown> =>
     api.put(`/sales/estimates/${id}/reject`).then(res => res.data),
 
-  convertToBooking: (id: string, bookingData: any): Promise<any> =>
+  convertToBooking: (id: string, bookingData: unknown): Promise<unknown> =>
     api.post(`/sales/estimates/${id}/convert-to-booking`, bookingData).then(res => res.data),
 
-  getCommissionInfo: (): Promise<any> =>
+  getCommissionInfo: (): Promise<unknown> =>
     api.get('/sales/commission-calculator').then(res => res.data),
 
   // Discount tracking and approval
@@ -235,31 +235,31 @@ export const salesApi = {
     discountAmount: number;
     discountPercentage: number;
     justification: string;
-    customerInfo: any;
-  }): Promise<any> =>
+    customerInfo: unknown;
+  }): Promise<unknown> =>
     api.post('/sales/discount-approval', approvalData).then(res => res.data),
 
   getDiscountApprovals: (filters?: {
     status?: 'pending' | 'approved' | 'rejected';
     userId?: string;
     managerId?: string;
-  }): Promise<any[]> =>
+  }): Promise<unknown[]> =>
     api.get('/sales/discount-approvals', { params: filters }).then(res => res.data),
 
-  approveDiscount: (approvalId: string, decision: 'approved' | 'rejected', notes?: string): Promise<any> =>
+  approveDiscount: (approvalId: string, decision: 'approved' | 'rejected', notes?: string): Promise<unknown> =>
     api.put(`/sales/discount-approvals/${approvalId}`, { decision, notes }).then(res => res.data),
 
   getDiscountAnalytics: (dateRange?: { from: string; to: string }): Promise<{
     totalDiscountsGiven: number;
     averageDiscount: number;
     discountImpactOnMargin: number;
-    topDiscountReasons: any[];
-    salesRepPerformance: any[];
+    topDiscountReasons: unknown[];
+    salesRepPerformance: unknown[];
   }> =>
     api.get('/sales/discount-analytics', { params: dateRange }).then(res => res.data),
 
   // Commission tracking APIs
-  getMyCommissions: (): Promise<any[]> =>
+  getMyCommissions: (): Promise<unknown[]> =>
     api.get('/sales/commissions/my').then(res => res.data),
 
   getCommissionSummary: (): Promise<{
@@ -273,79 +273,79 @@ export const salesApi = {
     api.get('/sales/commissions/summary').then(res => res.data),
 
   // Workflow endpoints
-  initiateContract: (estimateId: string, contractData: any): Promise<any> =>
+  initiateContract: (estimateId: string, contractData: unknown): Promise<unknown> =>
     api.post(`/sales/estimates/${estimateId}/contract`, contractData).then(res => res.data),
 
-  getContractStatus: (contractId: string): Promise<any> =>
+  getContractStatus: (contractId: string): Promise<unknown> =>
     api.get(`/contracts/${contractId}/status`).then(res => res.data),
 
-  scheduleService: (estimateId: string, scheduleData: any): Promise<any> =>
+  scheduleService: (estimateId: string, scheduleData: unknown): Promise<unknown> =>
     api.post(`/sales/estimates/${estimateId}/schedule`, scheduleData).then(res => res.data),
 
-  getAvailableSlots: (date: string, serviceType: string): Promise<any[]> =>
+  getAvailableSlots: (date: string, serviceType: string): Promise<unknown[]> =>
     api.get(`/scheduling/available-slots`, { params: { date, serviceType } }).then(res => res.data),
 
-  processPayment: (estimateId: string, paymentData: any): Promise<any> =>
+  processPayment: (estimateId: string, paymentData: unknown): Promise<unknown> =>
     api.post(`/sales/estimates/${estimateId}/payment`, paymentData).then(res => res.data),
 
-  sendCustomerNotification: (customerId: string, notificationType: string, data: any): Promise<any> =>
+  sendCustomerNotification: (customerId: string, notificationType: string, data: unknown): Promise<unknown> =>
     api.post(`/notifications/customer/${customerId}`, { type: notificationType, data }).then(res => res.data),
 };
 
 // Jobs API
 export const jobsApi = {
-  getAll: (filters?: Record<string, any>): Promise<any[]> =>
+  getAll: (filters?: Record<string, unknown>): Promise<unknown[]> =>
     api.get('/jobs', { params: filters }).then(res => res.data),
 
-  getById: (id: string): Promise<any> =>
+  getById: (id: string): Promise<unknown> =>
     api.get(`/jobs/${id}`).then(res => res.data),
 
-  create: (jobData: any): Promise<any> =>
+  create: (jobData: unknown): Promise<unknown> =>
     api.post('/jobs', jobData).then(res => res.data),
 
-  update: (id: string, jobData: any): Promise<any> =>
+  update: (id: string, jobData: unknown): Promise<unknown> =>
     api.put(`/jobs/${id}`, jobData).then(res => res.data),
 
-  updateStatus: (id: string, status: string, notes?: string): Promise<any> =>
+  updateStatus: (id: string, status: string, notes?: string): Promise<unknown> =>
     api.put(`/jobs/${id}/status`, { status, notes }).then(res => res.data),
 
-  assignCrew: (id: string, crewId: string): Promise<any> =>
+  assignCrew: (id: string, crewId: string): Promise<unknown> =>
     api.put(`/jobs/${id}/assign-crew`, { crewId }).then(res => res.data),
 
-  getStats: (): Promise<any> =>
+  getStats: (): Promise<unknown> =>
     api.get('/jobs/stats').then(res => res.data),
 
-  assignJob: (jobId: string, assignmentData: any): Promise<any> =>
+  assignJob: (jobId: string, assignmentData: unknown): Promise<unknown> =>
     api.put(`/jobs/${jobId}/assign`, assignmentData).then(res => res.data),
 
-  updateJobStatus: (jobId: string, status: string, notes?: string): Promise<any> =>
+  updateJobStatus: (jobId: string, status: string, notes?: string): Promise<unknown> =>
     api.put(`/jobs/${jobId}/status`, { status, notes }).then(res => res.data),
 };
 
 // Crews API  
 export const crewsApi = {
-  getAll: (): Promise<any[]> =>
+  getAll: (): Promise<unknown[]> =>
     api.get('/crews').then(res => res.data),
 
-  getById: (id: string): Promise<any> =>
+  getById: (id: string): Promise<unknown> =>
     api.get(`/crews/${id}`).then(res => res.data),
 
-  create: (crewData: any): Promise<any> =>
+  create: (crewData: unknown): Promise<unknown> =>
     api.post('/crews', crewData).then(res => res.data),
 
-  update: (id: string, crewData: any): Promise<any> =>
+  update: (id: string, crewData: unknown): Promise<unknown> =>
     api.put(`/crews/${id}`, crewData).then(res => res.data),
 
   delete: (id: string): Promise<void> =>
     api.delete(`/crews/${id}`).then(res => res.data),
 
-  updateJobStatus: (crewId: string, jobId: string, statusData: any): Promise<any> =>
+  updateJobStatus: (crewId: string, jobId: string, statusData: unknown): Promise<unknown> =>
     api.put(`/crews/${crewId}/jobs/${jobId}/status`, statusData).then(res => res.data),
 
-  clockIn: (crewId: string, locationData: any): Promise<any> =>
+  clockIn: (crewId: string, locationData: unknown): Promise<unknown> =>
     api.post(`/crews/${crewId}/clock-in`, locationData).then(res => res.data),
 
-  clockOut: (crewId: string, locationData: any): Promise<any> =>
+  clockOut: (crewId: string, locationData: unknown): Promise<unknown> =>
     api.post(`/crews/${crewId}/clock-out`, locationData).then(res => res.data),
 
   assignJobToCrew: (assignmentData: {
@@ -354,78 +354,78 @@ export const crewsApi = {
     assignedBy: string;
     estimatedDuration: number;
     notes?: string;
-  }): Promise<any> =>
+  }): Promise<unknown> =>
     api.post('/crews/jobs/assign', assignmentData).then(res => res.data),
 
-  getPerformanceStats: (): Promise<any> =>
+  getPerformanceStats: (): Promise<unknown> =>
     api.get('/crews/performance-stats').then(res => res.data),
 
-  contactCrew: (crewId: string, method: 'call' | 'message', data: any): Promise<any> =>
+  contactCrew: (crewId: string, method: 'call' | 'message', data: unknown): Promise<unknown> =>
     api.post(`/crews/${crewId}/contact`, { method, ...data }).then(res => res.data),
 
-  getCrewLocation: (crewId: string): Promise<any> =>
+  getCrewLocation: (crewId: string): Promise<unknown> =>
     api.get(`/crews/${crewId}/location`).then(res => res.data),
 
-  updateCrewStatus: (crewId: string, status: string): Promise<any> =>
+  updateCrewStatus: (crewId: string, status: string): Promise<unknown> =>
     api.put(`/crews/${crewId}/status`, { status }).then(res => res.data),
 };
 
 // Inventory API
 export const inventoryApi = {
-  getAll: (filters?: Record<string, any>): Promise<any[]> =>
+  getAll: (filters?: Record<string, unknown>): Promise<unknown[]> =>
     api.get('/inventory', { params: filters }).then(res => res.data),
 
-  getById: (id: string): Promise<any> =>
+  getById: (id: string): Promise<unknown> =>
     api.get(`/inventory/${id}`).then(res => res.data),
 
-  create: (itemData: any): Promise<any> =>
+  create: (itemData: unknown): Promise<unknown> =>
     api.post('/inventory', itemData).then(res => res.data),
 
-  update: (id: string, itemData: any): Promise<any> =>
+  update: (id: string, itemData: unknown): Promise<unknown> =>
     api.put(`/inventory/${id}`, itemData).then(res => res.data),
 
   delete: (id: string): Promise<void> =>
     api.delete(`/inventory/${id}`).then(res => res.data),
 
-  updateStock: (id: string, quantity: number, type: 'add' | 'remove', notes?: string): Promise<any> =>
+  updateStock: (id: string, quantity: number, type: 'add' | 'remove', notes?: string): Promise<unknown> =>
     api.post(`/inventory/${id}/stock`, { quantity, type, notes }).then(res => res.data),
 
-  getLowStockItems: (): Promise<any[]> =>
+  getLowStockItems: (): Promise<unknown[]> =>
     api.get('/inventory/low-stock').then(res => res.data),
 
-  getStats: (): Promise<any> =>
+  getStats: (): Promise<unknown> =>
     api.get('/inventory/stats').then(res => res.data),
 };
 
 // Analytics API
 export const analyticsApi = {
-  getSalesMetrics: (dateRange?: { start: string; end: string }): Promise<any> =>
+  getSalesMetrics: (dateRange?: { start: string; end: string }): Promise<unknown> =>
     api.get('/analytics/sales', { params: dateRange }).then(res => res.data),
 
-  getCrewPerformance: (dateRange?: { start: string; end: string }): Promise<any> =>
+  getCrewPerformance: (dateRange?: { start: string; end: string }): Promise<unknown> =>
     api.get('/analytics/crew-performance', { params: dateRange }).then(res => res.data),
 
-  getCustomerInsights: (dateRange?: { start: string; end: string }): Promise<any> =>
+  getCustomerInsights: (dateRange?: { start: string; end: string }): Promise<unknown> =>
     api.get('/analytics/customer-insights', { params: dateRange }).then(res => res.data),
 
-  getRevenueTrends: (dateRange?: { start: string; end: string }): Promise<any> =>
+  getRevenueTrends: (dateRange?: { start: string; end: string }): Promise<unknown> =>
     api.get('/analytics/revenue-trends', { params: dateRange }).then(res => res.data),
 
-  getOperationalMetrics: (): Promise<any> =>
+  getOperationalMetrics: (): Promise<unknown> =>
     api.get('/analytics/operational').then(res => res.data),
 
-  getRealTimeMetrics: (): Promise<any> =>
+  getRealTimeMetrics: (): Promise<unknown> =>
     api.get('/analytics/real-time').then(res => res.data),
 
-  getSalesManagerDashboard: (dateRange?: { from: string; to: string }): Promise<any> =>
+  getSalesManagerDashboard: (dateRange?: { from: string; to: string }): Promise<unknown> =>
     api.get('/analytics/sales-dashboard', { params: dateRange }).then(res => res.data),
 };
 
 // Dashboard API - consolidates stats from multiple endpoints
 export const dashboardApi = {
-  getOverviewStats: async (): Promise<any> => {
+  getOverviewStats: async (): Promise<unknown> => {
     // Fetch each endpoint individually and handle failures gracefully
-    const fetchWithFallback = async (fetchFn: () => Promise<any>, fallback: any = {}) => {
+    const fetchWithFallback = async (fetchFn: () => Promise<unknown>, fallback: unknown = {}) => {
       try {
         return await fetchFn();
       } catch (error) {
@@ -468,46 +468,46 @@ export const dashboardApi = {
 
 // Payments API
 export const paymentsApi = {
-  getAll: (filters?: Record<string, any>): Promise<any[]> =>
+  getAll: (filters?: Record<string, unknown>): Promise<unknown[]> =>
     api.get('/payments', { params: filters }).then(res => res.data),
 
-  getById: (id: string): Promise<any> =>
+  getById: (id: string): Promise<unknown> =>
     api.get(`/payments/${id}`).then(res => res.data),
 
-  processRefund: (paymentId: string, amount?: number, reason?: string): Promise<any> =>
+  processRefund: (paymentId: string, amount?: number, reason?: string): Promise<unknown> =>
     api.post(`/payments/${paymentId}/refund`, { amount, reason }).then(res => res.data),
 
-  retryPayment: (paymentId: string): Promise<any> =>
+  retryPayment: (paymentId: string): Promise<unknown> =>
     api.post(`/payments/${paymentId}/retry`).then(res => res.data),
 
-  getStats: (): Promise<any> =>
+  getStats: (): Promise<unknown> =>
     api.get('/payments/stats').then(res => res.data),
 
-  getSubscriptions: (): Promise<any[]> =>
+  getSubscriptions: (): Promise<unknown[]> =>
     api.get('/payments/subscriptions').then(res => res.data),
 
-  updateSubscription: (subscriptionId: string, data: any): Promise<any> =>
+  updateSubscription: (subscriptionId: string, data: unknown): Promise<unknown> =>
     api.put(`/payments/subscriptions/${subscriptionId}`, data).then(res => res.data),
 
-  cancelSubscription: (subscriptionId: string, reason?: string): Promise<any> =>
+  cancelSubscription: (subscriptionId: string, reason?: string): Promise<unknown> =>
     api.post(`/payments/subscriptions/${subscriptionId}/cancel`, { reason }).then(res => res.data),
 
-  pauseSubscription: (subscriptionId: string): Promise<any> =>
+  pauseSubscription: (subscriptionId: string): Promise<unknown> =>
     api.post(`/payments/subscriptions/${subscriptionId}/pause`).then(res => res.data),
 
-  resumeSubscription: (subscriptionId: string): Promise<any> =>
+  resumeSubscription: (subscriptionId: string): Promise<unknown> =>
     api.post(`/payments/subscriptions/${subscriptionId}/resume`).then(res => res.data),
 
-  getInvoices: (): Promise<any[]> =>
+  getInvoices: (): Promise<unknown[]> =>
     api.get('/payments/invoices').then(res => res.data),
 
-  createInvoice: (invoiceData: any): Promise<any> =>
+  createInvoice: (invoiceData: unknown): Promise<unknown> =>
     api.post('/payments/invoices', invoiceData).then(res => res.data),
 
-  sendInvoice: (invoiceId: string): Promise<any> =>
+  sendInvoice: (invoiceId: string): Promise<unknown> =>
     api.post(`/payments/invoices/${invoiceId}/send`).then(res => res.data),
 
-  exportPayments: (filters?: Record<string, any>): Promise<Blob> =>
+  exportPayments: (filters?: Record<string, unknown>): Promise<Blob> =>
     api.get('/payments/export', { params: filters, responseType: 'blob' }).then(res => res.data),
 };
 
@@ -588,7 +588,7 @@ export interface CustomerCommunication {
   deliveredAt?: string;
   readAt?: string;
   respondedAt?: string;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   isAutomated: boolean;
   createdAt: string;
   customer: {
@@ -618,7 +618,7 @@ export const communicationsApi = {
   sendCommunication: (customerId: string, data: SendCommunicationRequest): Promise<CustomerCommunication> =>
     api.post(`/customers/${customerId}/communication`, data).then(res => res.data),
 
-  getCommunicationStats: (customerId: string): Promise<any> =>
+  getCommunicationStats: (customerId: string): Promise<unknown> =>
     api.get(`/customers/${customerId}/communications/stats`).then(res => res.data),
 };
 
@@ -640,7 +640,7 @@ export interface Lead {
   timeline?: string;
   score: number;
   notes?: string;
-  address?: any;
+  address?: unknown;
   createdAt: string;
   updatedAt: string;
   assignedTo?: {
@@ -684,7 +684,7 @@ export interface CreateLeadRequest {
   timeline?: string;
   score?: number;
   notes?: string;
-  address?: any;
+  address?: unknown;
 }
 
 export interface LeadFilters {
@@ -719,7 +719,7 @@ export const leadsApi = {
   addInteraction: (id: string, type: string, notes: string): Promise<LeadInteraction> =>
     api.post(`/leads/${id}/interactions`, { type, notes }).then(res => res.data),
 
-  getStats: (): Promise<any> =>
+  getStats: (): Promise<unknown> =>
     api.get('/leads/stats').then(res => res.data),
 };
 
@@ -732,7 +732,7 @@ export interface ActivityItem {
   timestamp: string;
   entityId?: string;
   entityType?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   user?: {
     id: string;
     firstName: string;
@@ -769,7 +769,7 @@ export const activityApi = {
     description: string;
     entityId?: string;
     entityType?: string;
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
   }): Promise<ActivityItem> =>
     api.post('/activity', activityData).then(res => res.data),
 };

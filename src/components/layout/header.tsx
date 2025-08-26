@@ -99,7 +99,7 @@ export function Header() {
         setDashboardStats({
           activeJobs: jobStats?.activeJobs || 0,
           availableCrews: Array.isArray(crewStats)
-            ? crewStats.filter((crew: any) => crew?.status === "available")
+            ? crewStats.filter((crew: unknown) => crew && typeof crew === 'object' && 'status' in crew && (crew as { status: unknown }).status === "available")
                 .length
             : 0,
         });

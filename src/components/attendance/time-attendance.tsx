@@ -377,21 +377,30 @@ export function TimeAttendance() {
         setWorkers(workersData);
 
         // Generate time entries based on crew data  
-        const entriesData: TimeEntry[] = crewsData.flatMap((crew) => [
+        const entriesData: TimeEntry[] = crewsData.flatMap((crew: unknown) => {
+          // Type guard to ensure crew has the expected shape
+          if (!crew || typeof crew !== 'object' || !('id' in crew)) return [];
+          const typedCrew = crew as { id: string; lastClockIn?: string; lastClockOut?: string; currentLocation?: string; members: { name: string }[] };
+          return [
           {
-            id: `${crew.id}-in`,
-            workerId: crew.id,
+            id: `${typedCrew.id}-in`,
+            workerId: typedCrew.id,
             type: "clock_in" as const,
-            timestamp: crew.lastClockIn
-              ? new Date(crew.lastClockIn)
+            timestamp: typedCrew.lastClockIn
+              ? new Date(typedCrew.lastClockIn)
               : new Date(),
-            location: crew.currentLocation || "Office",
+            location: {
+              lat: 25.7617,
+              lng: -80.1918,
+              address: typedCrew.currentLocation || "Office",
+              accuracy: 10,
+            },
             notes: "Started shift",
             source: "manual_entry" as const,
             isValid: true,
             flags: [],
           },
-        ]);
+        ]});
 
         setTimeEntries(entriesData);
 

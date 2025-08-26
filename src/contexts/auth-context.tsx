@@ -121,9 +121,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       // Redirect to dashboard
       router.push('/');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Login failed:', error);
-      throw new Error(error.response?.data?.message || 'Login failed');
+      const errorMessage = error instanceof Error && 'response' in error 
+        ? (error.response as { data?: { message?: string } })?.data?.message
+        : 'Login failed';
+      throw new Error(errorMessage || 'Login failed');
     } finally {
       setIsLoading(false);
     }
@@ -152,9 +155,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       // Redirect to dashboard
       router.push('/');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Registration failed:', error);
-      throw new Error(error.response?.data?.message || 'Registration failed');
+      const errorMessage = error instanceof Error && 'response' in error 
+        ? (error.response as { data?: { message?: string } })?.data?.message
+        : 'Registration failed';
+      throw new Error(errorMessage || 'Registration failed');
     } finally {
       setIsLoading(false);
     }
@@ -178,18 +184,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const forgotPassword = async (email: string) => {
     try {
       await authApi.forgotPassword(email);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Forgot password failed:', error);
-      throw new Error(error.response?.data?.message || 'Failed to send reset email');
+      const errorMessage = error instanceof Error && 'response' in error 
+        ? (error.response as { data?: { message?: string } })?.data?.message
+        : 'Failed to send reset email';
+      throw new Error(errorMessage || 'Failed to send reset email');
     }
   };
 
   const resetPassword = async (token: string, password: string) => {
     try {
       await authApi.resetPassword(token, password);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Reset password failed:', error);
-      throw new Error(error.response?.data?.message || 'Failed to reset password');
+      const errorMessage = error instanceof Error && 'response' in error 
+        ? (error.response as { data?: { message?: string } })?.data?.message
+        : 'Failed to reset password';
+      throw new Error(errorMessage || 'Failed to reset password');
     }
   };
 
