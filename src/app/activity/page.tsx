@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { formatDistanceToNow, format, subDays, isAfter, isBefore } from "date-fns";
+import { formatDistanceToNow, format, subDays, isAfter } from "date-fns";
 import {
   CheckCircle,
   Clock,
@@ -40,7 +40,13 @@ interface Activity {
   iconColor: string;
   badge: string;
   badgeVariant: "default" | "secondary" | "outline" | "destructive";
-  category: "jobs" | "estimates" | "customers" | "inventory" | "crew" | "system";
+  category:
+    | "jobs"
+    | "estimates"
+    | "customers"
+    | "inventory"
+    | "crew"
+    | "system";
   userId?: string;
   userName?: string;
   relatedId?: string;
@@ -102,30 +108,36 @@ const generateMockActivities = (): Activity[] => {
   const activities: Activity[] = [];
   const types = [
     "job_completed",
-    "estimate_sent", 
+    "estimate_sent",
     "crew_assigned",
     "job_started",
     "inventory_alert",
     "new_customer",
     "payment_received",
     "schedule_updated",
-    "system_notification"
+    "system_notification",
   ];
-  
-  const customers = ["Jennifer Wilson", "Michael Chen", "Sarah Davis", "Robert Kim", "Lisa Rodriguez"];
+
+  const customers = [
+    "Jennifer Wilson",
+    "Michael Chen",
+    "Sarah Davis",
+    "Robert Kim",
+    "Lisa Rodriguez",
+  ];
   const crews = ["Team Alpha", "Team Beta", "Team Gamma", "Team Delta"];
-  
+
   for (let i = 0; i < 150; i++) {
     const type = types[Math.floor(Math.random() * types.length)];
     const customer = customers[Math.floor(Math.random() * customers.length)];
     const crew = crews[Math.floor(Math.random() * crews.length)];
     const date = subDays(new Date(), Math.floor(Math.random() * 30));
-    
+
     let title = "";
     let description = "";
     let category: Activity["category"] = "system";
     let priority: Activity["priority"] = "medium";
-    
+
     switch (type) {
       case "job_completed":
         title = `Job completed for ${customer}`;
@@ -135,7 +147,9 @@ const generateMockActivities = (): Activity[] => {
         break;
       case "estimate_sent":
         title = `Estimate sent to ${customer}`;
-        description = `$${Math.floor(Math.random() * 500 + 200)} estimate for deep cleaning`;
+        description = `$${Math.floor(
+          Math.random() * 500 + 200,
+        )} estimate for deep cleaning`;
         category = "estimates";
         priority = "medium";
         break;
@@ -153,7 +167,9 @@ const generateMockActivities = (): Activity[] => {
         break;
       case "inventory_alert":
         title = "Low inventory alert";
-        description = `All-purpose cleaner running low (${Math.floor(Math.random() * 10 + 1)} units left)`;
+        description = `All-purpose cleaner running low (${Math.floor(
+          Math.random() * 10 + 1,
+        )} units left)`;
         category = "inventory";
         priority = "high";
         break;
@@ -165,7 +181,9 @@ const generateMockActivities = (): Activity[] => {
         break;
       case "payment_received":
         title = `Payment received from ${customer}`;
-        description = `$${Math.floor(Math.random() * 300 + 150)} payment processed`;
+        description = `$${Math.floor(
+          Math.random() * 300 + 150,
+        )} payment processed`;
         category = "estimates";
         priority = "low";
         break;
@@ -182,10 +200,10 @@ const generateMockActivities = (): Activity[] => {
         priority = "low";
         break;
     }
-    
+
     const iconData = getActivityIcon(type);
     const badgeData = getActivityBadge(type);
-    
+
     activities.push({
       id: `activity-${i + 1}`,
       type,
@@ -199,10 +217,10 @@ const generateMockActivities = (): Activity[] => {
       category,
       priority,
       userName: Math.random() > 0.5 ? customer : undefined,
-      relatedId: `rel-${Math.floor(Math.random() * 1000)}`
+      relatedId: `rel-${Math.floor(Math.random() * 1000)}`,
     });
   }
-  
+
   return activities.sort((a, b) => b.time.getTime() - a.time.getTime());
 };
 
@@ -226,25 +244,29 @@ export default function ActivityPage() {
       filtered = filtered.filter(
         (activity) =>
           activity.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          activity.description.toLowerCase().includes(searchTerm.toLowerCase())
+          activity.description.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
     // Category filter
     if (filterCategory !== "all") {
-      filtered = filtered.filter((activity) => activity.category === filterCategory);
+      filtered = filtered.filter(
+        (activity) => activity.category === filterCategory,
+      );
     }
 
     // Priority filter
     if (filterPriority !== "all") {
-      filtered = filtered.filter((activity) => activity.priority === filterPriority);
+      filtered = filtered.filter(
+        (activity) => activity.priority === filterPriority,
+      );
     }
 
     // Time range filter
     if (filterTimeRange !== "all") {
       const now = new Date();
       let cutoffDate: Date;
-      
+
       switch (filterTimeRange) {
         case "today":
           cutoffDate = subDays(now, 1);
@@ -258,8 +280,10 @@ export default function ActivityPage() {
         default:
           cutoffDate = subDays(now, 365);
       }
-      
-      filtered = filtered.filter((activity) => isAfter(activity.time, cutoffDate));
+
+      filtered = filtered.filter((activity) =>
+        isAfter(activity.time, cutoffDate),
+      );
     }
 
     // Tab filter
@@ -268,30 +292,41 @@ export default function ActivityPage() {
     }
 
     return filtered;
-  }, [activities, searchTerm, filterCategory, filterPriority, filterTimeRange, activeTab]);
+  }, [
+    activities,
+    searchTerm,
+    filterCategory,
+    filterPriority,
+    filterTimeRange,
+    activeTab,
+  ]);
 
   // Pagination
   const totalPages = Math.ceil(filteredActivities.length / itemsPerPage);
   const paginatedActivities = filteredActivities.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+    currentPage * itemsPerPage,
   );
 
   // Activity stats
   const activityStats = useMemo(() => {
     const today = subDays(new Date(), 1);
     const thisWeek = subDays(new Date(), 7);
-    
-    const todayCount = activities.filter(a => isAfter(a.time, today)).length;
-    const weekCount = activities.filter(a => isAfter(a.time, thisWeek)).length;
-    const highPriorityCount = activities.filter(a => a.priority === "high").length;
+
+    const todayCount = activities.filter((a) => isAfter(a.time, today)).length;
+    const weekCount = activities.filter((a) =>
+      isAfter(a.time, thisWeek),
+    ).length;
+    const highPriorityCount = activities.filter(
+      (a) => a.priority === "high",
+    ).length;
     const totalCount = activities.length;
 
     return {
       todayCount,
       weekCount,
       highPriorityCount,
-      totalCount
+      totalCount,
     };
   }, [activities]);
 
@@ -304,11 +339,11 @@ export default function ActivityPage() {
           "Title",
           "Description",
           "Category",
-          "Priority", 
+          "Priority",
           "Type",
-          "User"
+          "User",
         ],
-        ...filteredActivities.map(activity => [
+        ...filteredActivities.map((activity) => [
           format(activity.time, "yyyy-MM-dd"),
           format(activity.time, "HH:mm:ss"),
           activity.title,
@@ -316,16 +351,18 @@ export default function ActivityPage() {
           activity.category,
           activity.priority,
           activity.type,
-          activity.userName || "System"
-        ])
+          activity.userName || "System",
+        ]),
       ];
 
-      const csvContent = csvData.map(row => row.join(",")).join("\n");
+      const csvContent = csvData.map((row) => row.join(",")).join("\n");
       const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `activity-log-${new Date().toISOString().split("T")[0]}.csv`;
+      link.download = `activity-log-${
+        new Date().toISOString().split("T")[0]
+      }.csv`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -387,7 +424,9 @@ export default function ActivityPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{activityStats.weekCount}</div>
-            <p className="text-xs text-muted-foreground">activities this week</p>
+            <p className="text-xs text-muted-foreground">
+              activities this week
+            </p>
           </CardContent>
         </Card>
 
@@ -397,7 +436,9 @@ export default function ActivityPage() {
             <AlertCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{activityStats.highPriorityCount}</div>
+            <div className="text-2xl font-bold">
+              {activityStats.highPriorityCount}
+            </div>
             <p className="text-xs text-muted-foreground">require attention</p>
           </CardContent>
         </Card>
@@ -486,31 +527,48 @@ export default function ActivityPage() {
           <div className="space-y-3">
             {paginatedActivities.map((activity) => {
               const IconComponent = activity.icon;
-              
+
               return (
-                <Card key={activity.id} className="hover:shadow-md transition-shadow">
+                <Card
+                  key={activity.id}
+                  className="hover:shadow-md transition-shadow"
+                >
                   <CardContent className="pt-4">
                     <div className="flex items-start gap-4">
-                      <div className={`p-2 rounded-full bg-gray-100 ${activity.iconColor}`}>
+                      <div
+                        className={`p-2 rounded-full bg-gray-100 ${activity.iconColor}`}
+                      >
                         <IconComponent className="w-4 h-4" />
                       </div>
-                      
+
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-1">
-                          <p className="text-sm font-medium">{activity.title}</p>
+                          <p className="text-sm font-medium">
+                            {activity.title}
+                          </p>
                           <div className="flex items-center gap-2">
-                            <Badge variant={activity.badgeVariant}>{activity.badge}</Badge>
+                            <Badge variant={activity.badgeVariant}>
+                              {activity.badge}
+                            </Badge>
                             <span className="text-xs text-muted-foreground">
-                              {formatDistanceToNow(activity.time, { addSuffix: true })}
+                              {formatDistanceToNow(activity.time, {
+                                addSuffix: true,
+                              })}
                             </span>
                           </div>
                         </div>
-                        <p className="text-sm text-muted-foreground">{activity.description}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {activity.description}
+                        </p>
                         <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
                           <span>Category: {activity.category}</span>
                           <span>Priority: {activity.priority}</span>
-                          {activity.userName && <span>User: {activity.userName}</span>}
-                          <span>{format(activity.time, "MMM dd, yyyy HH:mm")}</span>
+                          {activity.userName && (
+                            <span>User: {activity.userName}</span>
+                          )}
+                          <span>
+                            {format(activity.time, "MMM dd, yyyy HH:mm")}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -525,14 +583,17 @@ export default function ActivityPage() {
             <div className="flex items-center justify-between">
               <div className="text-sm text-muted-foreground">
                 Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
-                {Math.min(currentPage * itemsPerPage, filteredActivities.length)} of{" "}
-                {filteredActivities.length} activities
+                {Math.min(
+                  currentPage * itemsPerPage,
+                  filteredActivities.length,
+                )}{" "}
+                of {filteredActivities.length} activities
               </div>
               <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
                 >
                   Previous
@@ -543,7 +604,9 @@ export default function ActivityPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  onClick={() =>
+                    setCurrentPage((p) => Math.min(totalPages, p + 1))
+                  }
                   disabled={currentPage === totalPages}
                 >
                   Next

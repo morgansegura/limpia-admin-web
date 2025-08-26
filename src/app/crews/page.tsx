@@ -31,9 +31,6 @@ import {
   Plus,
   Search,
   Users,
-  MapPin,
-  Clock,
-  CheckCircle,
   AlertCircle,
   MoreHorizontal,
 } from "lucide-react";

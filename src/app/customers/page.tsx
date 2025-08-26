@@ -156,7 +156,6 @@ export default function CustomersPage() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [customers, setCustomers] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCustomer, setSelectedCustomer] = useState<any | null>(null);
   const [isCrmDialogOpen, setIsCrmDialogOpen] = useState(false);
@@ -175,12 +174,10 @@ export default function CustomersPage() {
       try {
         setIsLoading(true);
         const customersData = await customersApi.getAll();
-        setCustomers(customersData);
         setCustomersList(customersData);
       } catch (error) {
         console.error("Error loading customers:", error);
         // Use fallback data if API fails
-        setCustomers(fallbackCustomers);
         setCustomersList(fallbackCustomers);
       } finally {
         setIsLoading(false);

@@ -1,53 +1,57 @@
 "use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useAuth } from '@/contexts/auth-context';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useState } from "react";
+import Link from "next/link";
+import { useAuth } from "@/contexts/auth-context";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Loader2, Eye, EyeOff, AlertCircle, ArrowLeft } from 'lucide-react';
-import { UserRole } from '@/lib/api';
+} from "@/components/ui/select";
+import { Loader2, Eye, EyeOff, AlertCircle, ArrowLeft } from "lucide-react";
+import { UserRole } from "@/lib/api";
 
 export default function RegisterPage() {
   const { register, isLoading } = useAuth();
-  const router = useRouter();
-  
+
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
     role: UserRole.EMPLOYEE,
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       return;
     }
 
     // Validate password strength
     if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
+      setError("Password must be at least 6 characters long");
       return;
     }
 
@@ -60,7 +64,7 @@ export default function RegisterPage() {
         role: formData.role,
       });
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Registration failed');
+      setError(err instanceof Error ? err.message : "Registration failed");
     }
   };
 
@@ -93,7 +97,7 @@ export default function RegisterPage() {
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="firstName">First Name</Label>
@@ -141,18 +145,32 @@ export default function RegisterPage() {
               <Label htmlFor="role">Role</Label>
               <Select
                 value={formData.role}
-                onValueChange={(value) => setFormData({ ...formData, role: value as UserRole })}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, role: value as UserRole })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select your role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={UserRole.CORPORATE_EXECUTIVE}>Corporate Executive</SelectItem>
-                  <SelectItem value={UserRole.CORPORATE_ADMIN}>Corporate Admin</SelectItem>
-                  <SelectItem value={UserRole.CORPORATE_SUPPORT}>Corporate Support</SelectItem>
-                  <SelectItem value={UserRole.FRANCHISE_OWNER}>Franchise Owner</SelectItem>
-                  <SelectItem value={UserRole.LOCATION_MANAGER}>Location Manager</SelectItem>
-                  <SelectItem value={UserRole.SUPERVISOR}>Supervisor</SelectItem>
+                  <SelectItem value={UserRole.CORPORATE_EXECUTIVE}>
+                    Corporate Executive
+                  </SelectItem>
+                  <SelectItem value={UserRole.CORPORATE_ADMIN}>
+                    Corporate Admin
+                  </SelectItem>
+                  <SelectItem value={UserRole.CORPORATE_SUPPORT}>
+                    Corporate Support
+                  </SelectItem>
+                  <SelectItem value={UserRole.FRANCHISE_OWNER}>
+                    Franchise Owner
+                  </SelectItem>
+                  <SelectItem value={UserRole.LOCATION_MANAGER}>
+                    Location Manager
+                  </SelectItem>
+                  <SelectItem value={UserRole.SUPERVISOR}>
+                    Supervisor
+                  </SelectItem>
                   <SelectItem value={UserRole.EMPLOYEE}>Employee</SelectItem>
                 </SelectContent>
               </Select>
@@ -164,7 +182,7 @@ export default function RegisterPage() {
                 <Input
                   id="password"
                   name="password"
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   value={formData.password}
                   onChange={handleInputChange}
                   placeholder="Create a password"
@@ -194,7 +212,7 @@ export default function RegisterPage() {
                 <Input
                   id="confirmPassword"
                   name="confirmPassword"
-                  type={showConfirmPassword ? 'text' : 'password'}
+                  type={showConfirmPassword ? "text" : "password"}
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
                   placeholder="Confirm your password"
@@ -225,7 +243,7 @@ export default function RegisterPage() {
                   Creating account...
                 </>
               ) : (
-                'Create Account'
+                "Create Account"
               )}
             </Button>
 
@@ -242,7 +260,8 @@ export default function RegisterPage() {
 
           <div className="mt-6 pt-6 border-t">
             <p className="text-xs text-center text-muted-foreground">
-              By creating an account, you agree to our Terms of Service and Privacy Policy.
+              By creating an account, you agree to our Terms of Service and
+              Privacy Policy.
             </p>
           </div>
         </CardContent>

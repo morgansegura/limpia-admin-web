@@ -6,7 +6,6 @@ import { QuickActions } from "@/components/dashboard/quick-actions";
 import { ProtectedRoute } from "@/components/auth/protected-route";
 import { FranchiseSwitcher } from "@/components/franchise-switcher";
 import { SalesDashboard } from "@/components/sales/sales-dashboard";
-import { LeadsManagement } from "@/components/sales/leads-management";
 import { useAuth } from "@/contexts/auth-context";
 import { UserRole } from "@/lib/api";
 

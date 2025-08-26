@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/auth-context";
-import { User, Mail, Phone, MapPin, Calendar, Shield } from "lucide-react";
+import { Mail, Phone, MapPin, Calendar, Shield } from "lucide-react";
 
 export default function ProfilePage() {
   const { user, tenant } = useAuth();

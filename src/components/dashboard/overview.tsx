@@ -43,7 +43,23 @@ export function DashboardOverview() {
       setError(null);
       
       try {
-        const data = await dashboardApi.getOverviewStats();
+        const rawData = await dashboardApi.getOverviewStats();
+        
+        // Type guard to ensure data has the expected structure
+        const data = rawData && typeof rawData === 'object' ? rawData as {
+          bookings?: { todayRevenue?: number; revenueChange?: number };
+          jobs?: { 
+            completedToday?: number; 
+            activeCrews?: number; 
+            availableCrews?: number; 
+            inProgress?: number; 
+            avgJobTime?: number; 
+            jobsChange?: number; 
+            timeChange?: number; 
+          };
+          analytics?: { efficiencyScore?: number; efficiencyChange?: number };
+          inventory?: { lowStockCount?: number };
+        } : {};
         
         // Process the combined data into dashboard stats
         const processedStats: DashboardStats = {

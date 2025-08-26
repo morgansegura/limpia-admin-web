@@ -35,7 +35,6 @@ import {
   FileText,
   Send,
   CheckCircle,
-  X,
   Calculator,
   TrendingUp,
   CirclePlusIcon,
@@ -298,24 +297,6 @@ export default function SalesPage() {
   };
 
   // NOTE: Customer acceptance/rejection should be handled through customer portal
-  // These functions are kept for backward compatibility but removed from UI
-  const handleAcceptEstimate = async (id: string) => {
-    try {
-      await salesApi.acceptEstimate(id);
-      await loadEstimates(); // Refresh data
-    } catch (error) {
-      console.error("Failed to accept estimate:", error);
-    }
-  };
-
-  const handleRejectEstimate = async (id: string) => {
-    try {
-      await salesApi.rejectEstimate(id);
-      await loadEstimates(); // Refresh data
-    } catch (error) {
-      console.error("Failed to reject estimate:", error);
-    }
-  };
 
   const handleViewEstimate = (estimate: any) => {
     setSelectedEstimate(estimate);
@@ -340,7 +321,7 @@ export default function SalesPage() {
   const handleInitiateWorkflow = async (estimate: any) => {
     try {
       console.log("🚀 Initiating workflow for estimate:", estimate.id);
-      const workflow = await initializeWorkflow(
+      await initializeWorkflow(
         estimate.id,
         estimate.customerId || `customer_${estimate.id}`,
         estimate.customerName,
@@ -364,7 +345,6 @@ export default function SalesPage() {
   const handleWorkflowStepAction = async (
     stepId: string,
     action: string,
-    data?: any,
   ) => {
     if (!workflowEstimate) return;
 
@@ -498,17 +478,6 @@ export default function SalesPage() {
   const isSalesRep = (user?.role as string) === "SALES_REP";
   const isSalesManager = (user?.role as string) === "SALES_MANAGER";
 
-  // Check if user is a sales manager (using the boolean we just defined)
-  const canManageTeam =
-    isSalesManager ||
-    (user?.role &&
-      [
-        UserRole.SALES_MANAGER,
-        UserRole.CORPORATE_EXECUTIVE,
-        UserRole.CORPORATE_ADMIN,
-        UserRole.FRANCHISE_OWNER,
-        UserRole.LOCATION_MANAGER,
-      ].includes(user.role));
 
   // Check if user can manage workflow steps
   const canManageWorkflow =
