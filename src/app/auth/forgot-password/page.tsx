@@ -16,6 +16,9 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, ArrowLeft, CheckCircle, AlertCircle } from "lucide-react";
 
+import "@/styles/auth-screen.css";
+import { LogoText } from "@/components/logo/logo";
+
 export default function ForgotPasswordPage() {
   const { forgotPassword } = useAuth();
 
@@ -94,18 +97,14 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <Card className="w-full max-w-md">
+    <div className="auth-screen">
+      <Card className="card-display">
         <CardHeader className="space-y-1">
-          <div className="flex items-center justify-center mb-4">
-            <div className="bg-primary text-primary-foreground rounded-lg p-3">
-              <span className="text-2xl font-bold">L</span>
-            </div>
+          <div className="logo-block">
+            <LogoText />
           </div>
-          <CardTitle className="text-2xl text-center">
-            Forgot Password
-          </CardTitle>
-          <CardDescription className="text-center">
+
+          <CardDescription className="text-center mx-auto max-w-xs">
             Enter your email address and we&apos;ll send you a link to reset
             your password
           </CardDescription>
@@ -135,6 +134,7 @@ export default function ForgotPasswordPage() {
 
             <Button
               type="submit"
+              size="lg"
               className="w-full"
               disabled={isLoading || !email}
             >

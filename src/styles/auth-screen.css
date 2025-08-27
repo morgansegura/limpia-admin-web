@@ -1,0 +1,19 @@
+@reference "tailwindcss";
+
+.auth-screen {
+  @apply min-h-screen flex items-center justify-center px-4
+  bg-linear-to-bl from-stone-50 via-stone-200 to-stone-50;
+
+  .card-display {
+    @apply w-full max-w-md rounded-2xl shadow-xs px-4 py-8
+    bg-linear-to-b from-white via-stone-50 to-white border-transparent;
+  }
+
+  .logo-block {
+    @apply py-2 flex justify-center;
+
+    .logo-text {
+      @apply h-6 fill-(--primary);
+    }
+  }
+}

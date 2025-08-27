@@ -2,19 +2,20 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Loader2, Eye, EyeOff, AlertCircle } from "lucide-react";
+
 import { useAuth } from "@/contexts/auth-context";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, Eye, EyeOff, AlertCircle } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+
+import "@/styles/auth-screen.css";
+
+import { FormItem } from "@/components/ui/form";
+import { LogoText } from "@/components/logo/logo";
 
 export default function LoginPage() {
   const { login, isLoading } = useAuth();
@@ -50,21 +51,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <div className="flex items-center justify-center mb-4">
-            <div className="bg-primary text-primary-foreground rounded-lg p-3">
-              <span className="text-2xl font-bold">L</span>
-            </div>
-          </div>
-          <CardTitle className="text-2xl text-center">
-            Welcome to Limpia
-          </CardTitle>
-          <CardDescription className="text-center">
-            Sign in to your business management dashboard
-          </CardDescription>
-        </CardHeader>
+    <div className="auth-screen">
+      <Card className="card-display">
+        <div className="logo-block">
+          <LogoText />
+        </div>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
@@ -74,7 +65,7 @@ export default function LoginPage() {
               </Alert>
             )}
 
-            <div className="space-y-2">
+            <FormItem>
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
@@ -86,7 +77,7 @@ export default function LoginPage() {
                 required
                 disabled={isLoading}
               />
-            </div>
+            </FormItem>
 
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
@@ -130,33 +121,32 @@ export default function LoginPage() {
                 disabled={isLoading}
               />
               <p className="text-xs text-muted-foreground">
-                Leave empty if you&apos;re not sure
+                Leave empty if you&apos;re unsure
               </p>
             </div>
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button
+              type="submit"
+              className="w-full"
+              size="lg"
+              disabled={isLoading}
+            >
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Signing in...
                 </>
               ) : (
-                "Sign In"
+                "Sign-in to your account"
               )}
             </Button>
 
-            <div className="flex items-center justify-between text-sm">
+            <div className="flex items-center justify-center text-sm">
               <Link
                 href="/auth/forgot-password"
                 className="text-primary hover:underline"
               >
                 Forgot password?
-              </Link>
-              <Link
-                href="/auth/register"
-                className="text-primary hover:underline"
-              >
-                Create account
               </Link>
             </div>
           </form>
