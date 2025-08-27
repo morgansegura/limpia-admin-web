@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth, usePermissions } from '@/contexts/auth-context';
-import { Card, CardContent } from '@/components/ui/card';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth, usePermissions } from "@/contexts/auth-context";
+import { Card, CardContent } from "@/components/ui/card";
+import { Loader2, AlertCircle } from "lucide-react";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -27,7 +27,7 @@ export function ProtectedRoute({
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      router.push('/auth/login');
+      router.push("/auth/login");
     }
   }, [isAuthenticated, isLoading, router]);
 
@@ -52,52 +52,66 @@ export function ProtectedRoute({
 
   // Check role-based access
   if (requiredRoles && !hasRole(requiredRoles)) {
-    return fallback || (
-      <div className="flex items-center justify-center min-h-screen">
-        <Card className="w-96">
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <AlertCircle className="h-8 w-8 text-destructive" />
-            <h3 className="mt-4 text-lg font-semibold">Access Denied</h3>
-            <p className="mt-2 text-sm text-muted-foreground text-center">
-              You don&apos;t have the required permissions to access this page.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+    return (
+      fallback || (
+        <div className="flex items-center justify-center min-h-screen">
+          <Card className="w-96">
+            <CardContent className="flex flex-col items-center justify-center py-12">
+              <AlertCircle className="h-8 w-8 text-destructive" />
+              <h3 className="mt-4 text-lg font-semibold">Access Denied</h3>
+              <p className="mt-2 text-sm text-muted-foreground text-center">
+                You don&apos;t have the required permissions to access this
+                page.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      )
     );
   }
 
   // Check feature-based access
   if (requiredFeature && !canAccessFeature(requiredFeature)) {
-    return fallback || (
-      <div className="flex items-center justify-center min-h-screen">
-        <Card className="w-96">
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <AlertCircle className="h-8 w-8 text-destructive" />
-            <h3 className="mt-4 text-lg font-semibold">Feature Unavailable</h3>
-            <p className="mt-2 text-sm text-muted-foreground text-center">
-              This feature is not available for your account type.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+    return (
+      fallback || (
+        <div className="flex items-center justify-center min-h-screen">
+          <Card className="w-96">
+            <CardContent className="flex flex-col items-center justify-center py-12">
+              <AlertCircle className="h-8 w-8 text-destructive" />
+              <h3 className="mt-4 text-lg font-semibold">
+                Feature Unavailable
+              </h3>
+              <p className="mt-2 text-sm text-muted-foreground text-center">
+                This feature is not available for your account type.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      )
     );
   }
 
   // Check permission-based access
-  if (requiredPermissions && !requiredPermissions.every(permission => hasPermission(permission))) {
-    return fallback || (
-      <div className="flex items-center justify-center min-h-screen">
-        <Card className="w-96">
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <AlertCircle className="h-8 w-8 text-destructive" />
-            <h3 className="mt-4 text-lg font-semibold">Insufficient Permissions</h3>
-            <p className="mt-2 text-sm text-muted-foreground text-center">
-              You need additional permissions to access this feature.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+  if (
+    requiredPermissions &&
+    !requiredPermissions.every((permission) => hasPermission(permission))
+  ) {
+    return (
+      fallback || (
+        <div className="flex items-center justify-center min-h-screen">
+          <Card className="w-96">
+            <CardContent className="flex flex-col items-center justify-center py-12">
+              <AlertCircle className="h-8 w-8 text-destructive" />
+              <h3 className="mt-4 text-lg font-semibold">
+                Insufficient Permissions
+              </h3>
+              <p className="mt-2 text-sm text-muted-foreground text-center">
+                You need additional permissions to access this feature.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      )
     );
   }
 
@@ -111,7 +125,7 @@ export function withAuth<P extends object>(
     requiredRoles?: string[];
     requiredFeature?: string;
     requiredPermissions?: string[];
-  }
+  },
 ) {
   const AuthenticatedComponent = (props: P) => {
     return (
@@ -126,6 +140,6 @@ export function withAuth<P extends object>(
   };
 
   AuthenticatedComponent.displayName = `withAuth(${WrappedComponent.displayName || WrappedComponent.name})`;
-  
+
   return AuthenticatedComponent;
 }

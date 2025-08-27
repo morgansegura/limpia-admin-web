@@ -1,6 +1,6 @@
 "use client";
 
-import { QualityAssuranceSystem } from '@/components/quality-assurance/qa-system';
+import { QualityAssuranceSystem } from "@/components/quality-assurance/qa-system";
 
 export default function QualityPage() {
   return (

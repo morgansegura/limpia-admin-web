@@ -1,6 +1,6 @@
 "use client";
 
-import { WorkerClassification } from '@/components/workers/worker-classification';
+import { WorkerClassification } from "@/components/workers/worker-classification";
 
 export default function WorkerClassificationPage() {
   return (

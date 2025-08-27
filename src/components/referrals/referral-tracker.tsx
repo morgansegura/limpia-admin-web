@@ -418,7 +418,7 @@ export function ReferralTracker() {
           csvData = [
             [
               "Referral Code",
-              "Referrer Name", 
+              "Referrer Name",
               "Referee Email",
               "Status",
               "Program",
@@ -426,10 +426,10 @@ export function ReferralTracker() {
               "Referrer Reward",
               "Referee Reward",
               "First Purchase",
-              "Days Since Created"
+              "Days Since Created",
             ],
-            ...filteredReferrals.map(ref => {
-              const program = programs.find(p => p.id === ref.programId);
+            ...filteredReferrals.map((ref) => {
+              const program = programs.find((p) => p.id === ref.programId);
               return [
                 ref.code,
                 ref.referrerName,
@@ -440,9 +440,9 @@ export function ReferralTracker() {
                 ref.reward.referrer,
                 ref.reward.referee,
                 ref.firstPurchaseAmount || 0,
-                differenceInDays(new Date(), ref.createdAt)
+                differenceInDays(new Date(), ref.createdAt),
               ];
-            })
+            }),
           ];
           filename = `referrals-report`;
           break;
@@ -454,14 +454,14 @@ export function ReferralTracker() {
               "Email",
               "Tier",
               "Total Referrals",
-              "Qualified Referrals", 
+              "Qualified Referrals",
               "Total Rewards",
               "Conversion Rate",
               "Status",
               "Last Referral",
-              "Days Since Joined"
+              "Days Since Joined",
             ],
-            ...customers.map(customer => [
+            ...customers.map((customer) => [
               customer.name,
               customer.email,
               customer.tier,
@@ -470,9 +470,11 @@ export function ReferralTracker() {
               customer.totalRewards,
               `${((customer.qualifiedReferrals / customer.totalReferrals) * 100).toFixed(1)}%`,
               customer.status,
-              customer.lastReferral ? format(customer.lastReferral, "yyyy-MM-dd") : "Never",
-              differenceInDays(new Date(), customer.joinedAt)
-            ])
+              customer.lastReferral
+                ? format(customer.lastReferral, "yyyy-MM-dd")
+                : "Never",
+              differenceInDays(new Date(), customer.joinedAt),
+            ]),
           ];
           filename = `referral-customers`;
           break;
@@ -490,9 +492,9 @@ export function ReferralTracker() {
               "Status",
               "Total Referrals",
               "Conversion Rate",
-              "Total Rewards"
+              "Total Rewards",
             ],
-            ...programs.map(program => [
+            ...programs.map((program) => [
               program.name,
               program.description,
               program.type,
@@ -503,8 +505,8 @@ export function ReferralTracker() {
               program.isActive ? "Active" : "Inactive",
               program.totalReferrals,
               `${program.conversionRate}%`,
-              program.totalRewards
-            ])
+              program.totalRewards,
+            ]),
           ];
           filename = `referral-programs`;
           break;
@@ -516,15 +518,15 @@ export function ReferralTracker() {
               "Min Referrals",
               "Per Referral Reward",
               "Bonus Reward",
-              "Benefits"
+              "Benefits",
             ],
-            ...referralTiers.map(tier => [
+            ...referralTiers.map((tier) => [
               tier.name,
               tier.minReferrals,
               tier.rewards.perReferral,
               tier.rewards.bonus || 0,
-              tier.benefits.join("; ")
-            ])
+              tier.benefits.join("; "),
+            ]),
           ];
           filename = `referral-tiers`;
           break;
@@ -535,8 +537,8 @@ export function ReferralTracker() {
       }
 
       // Convert to CSV string
-      const csvContent = csvData.map(row => row.join(",")).join("\n");
-      
+      const csvContent = csvData.map((row) => row.join(",")).join("\n");
+
       // Create and download file
       const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
       const url = window.URL.createObjectURL(blob);

@@ -102,22 +102,6 @@ interface InvoiceTemplate {
   isDefault: boolean;
 }
 
-interface AutoInvoiceRule {
-  id: string;
-  name: string;
-  trigger: "job_completion" | "schedule" | "milestone";
-  conditions: {
-    serviceTypes?: string[];
-    customerTypes?: string[];
-    minimumAmount?: number;
-  };
-  template: string;
-  enabled: boolean;
-  createdAt: Date;
-  lastTriggered?: Date;
-  invoicesGenerated: number;
-}
-
 // Mock data
 const mockInvoices: Invoice[] = [
   {
@@ -274,35 +258,6 @@ const mockTemplates: InvoiceTemplate[] = [
     notes: "Thank you for choosing our deep clean service!",
     terms: "Payment due within 15 days of invoice date.",
     isDefault: false,
-  },
-];
-
-const mockAutoRules: AutoInvoiceRule[] = [
-  {
-    id: "rule-1",
-    name: "Auto-invoice on job completion",
-    trigger: "job_completion",
-    conditions: {
-      serviceTypes: ["deep_clean", "regular_clean", "move_out"],
-    },
-    template: "template-1",
-    enabled: true,
-    createdAt: new Date(2024, 7, 1),
-    lastTriggered: new Date(2024, 7, 16),
-    invoicesGenerated: 15,
-  },
-  {
-    id: "rule-2",
-    name: "Monthly recurring invoices",
-    trigger: "schedule",
-    conditions: {
-      customerTypes: ["subscription"],
-    },
-    template: "template-1",
-    enabled: true,
-    createdAt: new Date(2024, 6, 15),
-    lastTriggered: new Date(2024, 7, 1),
-    invoicesGenerated: 12,
   },
 ];
 

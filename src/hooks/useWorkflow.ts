@@ -95,8 +95,8 @@ export const useWorkflow = () => {
       const result = await salesApi.initiateContract(estimateId, contractData);
       
       updateWorkflowStep(estimateId, 'contract_signing', 'completed', {
-        contractId: result.contractId,
-        signatureUrl: result.signatureUrl,
+        contractId: (result as { contractId: string }).contractId,
+        signatureUrl: (result as { signatureUrl: string }).signatureUrl,
       });
 
       return result;
@@ -123,9 +123,9 @@ export const useWorkflow = () => {
       const result = await salesApi.processPayment(estimateId, paymentData);
       
       updateWorkflowStep(estimateId, 'payment_processing', 'completed', {
-        paymentId: result.paymentId,
-        transactionId: result.transactionId,
-        amount: result.amount,
+        paymentId: (result as { paymentId: string }).paymentId,
+        transactionId: (result as { transactionId: string }).transactionId,
+        amount: (result as { amount: number }).amount,
       });
 
       return result;
@@ -152,9 +152,9 @@ export const useWorkflow = () => {
       const result = await salesApi.scheduleService(estimateId, scheduleData);
       
       updateWorkflowStep(estimateId, 'service_scheduling', 'completed', {
-        scheduledDate: result.scheduledDate,
-        timeSlot: result.timeSlot,
-        crewId: result.crewId,
+        scheduledDate: (result as { scheduledDate: string }).scheduledDate,
+        timeSlot: (result as { timeSlot: string }).timeSlot,
+        crewId: (result as { crewId: string }).crewId,
       });
 
       return result;

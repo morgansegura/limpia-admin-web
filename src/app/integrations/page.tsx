@@ -1,6 +1,6 @@
 "use client";
 
-import { IntegrationHub } from '@/components/integrations/integration-hub';
+import { IntegrationHub } from "@/components/integrations/integration-hub";
 
 export default function IntegrationsPage() {
   return (

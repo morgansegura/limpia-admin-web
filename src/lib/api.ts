@@ -107,6 +107,7 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
+  phone?: string;
   role: UserRole;
   avatar?: string;
   permissions: Record<string, boolean> | string[];
@@ -361,7 +362,7 @@ export const crewsApi = {
     api.get('/crews/performance-stats').then(res => res.data),
 
   contactCrew: (crewId: string, method: 'call' | 'message', data: unknown): Promise<unknown> =>
-    api.post(`/crews/${crewId}/contact`, { method, ...data }).then(res => res.data),
+    api.post(`/crews/${crewId}/contact`, { method, ...(data as object) }).then(res => res.data),
 
   getCrewLocation: (crewId: string): Promise<unknown> =>
     api.get(`/crews/${crewId}/location`).then(res => res.data),

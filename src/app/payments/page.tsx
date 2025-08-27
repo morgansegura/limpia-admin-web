@@ -1,6 +1,6 @@
 "use client";
 
-import { PaymentProcessor } from '@/components/payments/payment-processor';
+import { PaymentProcessor } from "@/components/payments/payment-processor";
 
 export default function PaymentsPage() {
   return (

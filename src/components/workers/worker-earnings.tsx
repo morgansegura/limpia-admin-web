@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -21,13 +20,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
 import {
   DollarSign,
   TrendingUp,
-  TrendingDown,
   Users,
-  Calendar,
   Clock,
   Award,
   Target,
@@ -36,28 +32,12 @@ import {
   CheckCircle,
   AlertTriangle,
   Download,
-  Eye,
-  Settings,
   Search,
-  Filter,
-  BarChart3,
-  PieChart,
   Calculator,
   CreditCard,
-  Wallet,
-  Coins,
-  Banknote,
-  Receipt,
   FileText,
 } from "lucide-react";
-import {
-  format,
-  subDays,
-  startOfWeek,
-  endOfWeek,
-  startOfMonth,
-  endOfMonth,
-} from "date-fns";
+import { format, startOfWeek, endOfWeek } from "date-fns";
 
 interface Worker {
   id: string;
@@ -337,11 +317,27 @@ export function WorkerEarnings() {
     try {
       // Generate CSV data for payroll export
       const csvData = [
-        ["Employee Name", "Department", "Role", "Base Rate", "Total Earnings", "Hours Worked", "Pay Period"],
-        ...filteredWorkers.map(worker => {
-          const workerEarnings = earnings.filter(e => e.workerId === worker.id);
-          const totalEarnings = workerEarnings.reduce((sum, e) => sum + e.amount, 0);
-          const totalHours = workerEarnings.reduce((sum, e) => sum + (e.hoursWorked || 0), 0);
+        [
+          "Employee Name",
+          "Department",
+          "Role",
+          "Base Rate",
+          "Total Earnings",
+          "Hours Worked",
+          "Pay Period",
+        ],
+        ...filteredWorkers.map((worker) => {
+          const workerEarnings = earnings.filter(
+            (e) => e.workerId === worker.id,
+          );
+          const totalEarnings = workerEarnings.reduce(
+            (sum, e) => sum + e.amount,
+            0,
+          );
+          const totalHours = workerEarnings.reduce(
+            (sum, e) => sum + (e.hoursWorked || 0),
+            0,
+          );
           return [
             worker.name,
             worker.department,
@@ -349,14 +345,14 @@ export function WorkerEarnings() {
             worker.payStructure.baseRate,
             totalEarnings,
             totalHours,
-            filterPeriod.replace('_', ' ')
+            filterPeriod.replace("_", " "),
           ];
-        })
+        }),
       ];
 
       // Convert to CSV string
-      const csvContent = csvData.map(row => row.join(",")).join("\\n");
-      
+      const csvContent = csvData.map((row) => row.join(",")).join("\\n");
+
       // Create and download file
       const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
       const url = window.URL.createObjectURL(blob);
@@ -370,7 +366,7 @@ export function WorkerEarnings() {
 
       toast({
         title: "Export Complete",
-        description: `Payroll data exported successfully for ${filterPeriod.replace('_', ' ')}`,
+        description: `Payroll data exported successfully for ${filterPeriod.replace("_", " ")}`,
       });
     } catch (error) {
       console.error("Error exporting payroll:", error);

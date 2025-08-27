@@ -5,7 +5,6 @@ import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -24,15 +23,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import {
   TrendingUp,
-  TrendingDown,
   AlertTriangle,
   Target,
-  DollarSign,
-  Users,
-  Calendar,
-  BarChart3,
   LineChart,
-  PieChart,
   Zap,
   Brain,
   Lightbulb,
@@ -44,7 +37,7 @@ import {
   RotateCcw,
   Eye,
 } from "lucide-react";
-import { format, addDays, subDays, startOfWeek, endOfWeek } from "date-fns";
+import { format } from "date-fns";
 
 interface PredictionModel {
   id: string;

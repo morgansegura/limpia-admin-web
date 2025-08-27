@@ -15,19 +15,13 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import {
-  Calendar,
-  Clock,
-  MapPin,
-  Users,
-  DollarSign,
-  AlertTriangle,
-} from "lucide-react";
+import { Calendar, MapPin, DollarSign, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import type { Job } from "@/types/app.types";
 
 interface JobCreationFormProps {
   onClose: () => void;
-  onJobCreated?: (job: any) => void;
+  onJobCreated?: (job: Job) => void;
 }
 
 const SERVICE_TYPES = [
@@ -115,7 +109,7 @@ export function JobCreationForm({
   });
 
   // Calculate pricing when service details change
-  const calculatePricing = () => {
+  const calculatePricing = React.useCallback(() => {
     const service = SERVICE_TYPES.find(
       (s) => s.value === formData.service.type,
     );
@@ -144,9 +138,14 @@ export function JobCreationForm({
       basePrice: Math.round(basePrice),
       totalPrice: Math.round(totalPrice),
     };
-  };
+  }, [
+    formData.service.type,
+    formData.service.frequency,
+    formData.service.squareFootage,
+    formData.pricing.discountPercentage,
+  ]);
 
-  const updatePricing = () => {
+  const updatePricing = React.useCallback(() => {
     const pricing = calculatePricing();
     setFormData((prev) => ({
       ...prev,
@@ -156,7 +155,7 @@ export function JobCreationForm({
         totalPrice: pricing.totalPrice,
       },
     }));
-  };
+  }, [calculatePricing]);
 
   // Update pricing when relevant fields change
   React.useEffect(() => {
@@ -166,6 +165,7 @@ export function JobCreationForm({
     formData.service.frequency,
     formData.service.squareFootage,
     formData.pricing.discountPercentage,
+    updatePricing,
   ]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -181,20 +181,22 @@ export function JobCreationForm({
       ).padStart(4, "0")}`;
 
       // Create job object
-      const newJob = {
+      const newJob: Job = {
         id: jobId,
         customer: formData.customer.name,
         address: formData.customer.address,
-        phone: formData.customer.phone,
-        email: formData.customer.email,
         service:
           SERVICE_TYPES.find((s) => s.value === formData.service.type)?.name ||
           formData.service.type,
         crew:
           CREWS.find((c) => c.value === formData.scheduling.assignedCrew)
             ?.name || "Unassigned",
-        status: "scheduled",
-        priority: formData.scheduling.priority,
+        status: "assigned" as const,
+        priority: formData.scheduling.priority as
+          | "low"
+          | "normal"
+          | "high"
+          | "urgent",
         scheduledStart: new Date(
           `${formData.scheduling.date}T${formData.scheduling.startTime}`,
         ),
@@ -209,11 +211,10 @@ export function JobCreationForm({
         ),
         actualStart: null,
         progress: 0,
-        basePrice: formData.pricing.basePrice,
-        totalPrice: formData.pricing.totalPrice,
+        price: formData.pricing.totalPrice,
+        estimatedDuration: parseInt(formData.scheduling.estimatedDuration) || 3,
         notes:
           `${formData.service.specialRequirements} ${formData.pricing.notes}`.trim(),
-        createdAt: new Date(),
       };
 
       // In a real app, this would save to the backend

@@ -1,13 +1,11 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
-import { useAuth } from '@/contexts/auth-context';
-import { UserRole } from '@/lib/api';
+import React, { useState, useMemo, useEffect, useCallback } from "react";
+import { useAuth } from "@/contexts/auth-context";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import {
   Select,
@@ -28,31 +26,18 @@ import {
   DollarSign,
   TrendingUp,
   TrendingDown,
-  Users,
-  Calendar,
-  Award,
-  Star,
-  BarChart3,
-  PieChart,
-  LineChart,
   CheckCircle,
-  Clock,
-  AlertTriangle,
   Download,
   Search,
-  Filter,
-  Eye,
   Settings,
   Phone,
   Mail,
   UserPlus,
   Handshake,
-  CreditCard,
-  Receipt,
   Percent,
   Trophy,
 } from "lucide-react";
-import { format, subDays, startOfMonth, endOfMonth, addMonths } from "date-fns";
+import { format, startOfMonth, endOfMonth } from "date-fns";
 
 interface SalesRep {
   id: string;
@@ -133,16 +118,6 @@ interface SalesTarget {
   achievement: number; // percentage
   bonusEligible: boolean;
   bonusAmount?: number;
-}
-
-interface LeaderboardEntry {
-  salesRepId: string;
-  rank: number;
-  totalSales: number;
-  totalCommissions: number;
-  newCustomers: number;
-  quotaAchievement: number;
-  trend: "up" | "down" | "same";
 }
 
 // Mock data
@@ -364,15 +339,8 @@ export function CommissionTracker() {
 
   // Handle both string and enum role values for compatibility
   const isSalesRep = (user?.role as string) === "SALES_REP";
-  const isSalesManager = (user?.role as string) === "SALES_MANAGER";
 
-  // Load commission data
-  useEffect(() => {
-    if (user?.role) {
-      console.log("🚀 Loading commission data for user role:", user.role);
-      loadCommissionData();
-    }
-  }, [user?.role]);
+  // Load commission data (moved after loadCommissionData declaration)
 
   // Redirect sales reps away from restricted tabs
   useEffect(() => {
@@ -381,122 +349,124 @@ export function CommissionTracker() {
     }
   }, [isSalesRep, activeTab]);
 
-  const loadCommissionData = async () => {
+  const loadCommissionData = useCallback(async () => {
     try {
       setDataLoading(true);
-      
+
       // Try to load from API (these will fail since no backend is running)
-      const [salesData, commissionsData, targetsData, repsData] = await Promise.all([
-        // salesApi.getSales(),
-        // commissionsApi.getCommissions(), 
-        // targetsApi.getTargets(),
-        // salesApi.getSalesReps(),
-        Promise.reject("No API"), // Simulate API failure
-        Promise.reject("No API"),
-        Promise.reject("No API"), 
-        Promise.reject("No API"),
-      ]);
+      const [salesData, commissionsData, targetsData, repsData] =
+        await Promise.all([
+          // salesApi.getSales(),
+          // commissionsApi.getCommissions(),
+          // targetsApi.getTargets(),
+          // salesApi.getSalesReps(),
+          Promise.reject("No API"), // Simulate API failure
+          Promise.reject("No API"),
+          Promise.reject("No API"),
+          Promise.reject("No API"),
+        ]);
 
       // If we get here, set the real API data
       setSales(salesData || []);
       setCommissions(commissionsData || []);
       setTargets(targetsData || []);
       setSalesReps(repsData || []);
-      
     } catch (error) {
       console.log("📡 API failed, using mock commission data:", error);
-      
+
       // Filter data based on user role for realistic experience
       // Use consistent data that matches the sales page for sales reps
-      const salesRepConsistentData = isSalesRep ? {
-        sales: [
-          {
-            id: "sale-sr-1",
-            salesRepId: "sales-1",
-            customerId: "cus-sr-1", 
-            customerName: "Johnson Family",
-            serviceType: "Recurring Service",
-            amount: 153, // Matches sales page final price
-            commissionRate: 15, // 23/153 = ~15%
-            commissionAmount: 23, // Matches sales page
-            saleDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-            closedDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-            status: "approved" as const,
-            leadSource: "referral" as const,
-            isNewCustomer: true,
-            contractLength: 12,
-            recurringValue: 153,
-            jobs: ["job-sr-1"],
-          },
-          {
-            id: "sale-sr-2", 
-            salesRepId: "sales-1",
-            customerId: "cus-sr-2",
-            customerName: "Smith Residence",
-            serviceType: "Deep Clean Combo",
-            amount: 350, // Matches sales page final price  
-            commissionRate: 20, // 70/350 = 20%
-            commissionAmount: 70, // Matches sales page
-            saleDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
-            closedDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
-            status: "paid" as const,
-            leadSource: "online" as const,
-            isNewCustomer: true,
-            contractLength: 1,
-            recurringValue: 0,
-            jobs: ["job-sr-2"],
+      const salesRepConsistentData = isSalesRep
+        ? {
+            sales: [
+              {
+                id: "sale-sr-1",
+                salesRepId: "sales-1",
+                customerId: "cus-sr-1",
+                customerName: "Johnson Family",
+                serviceType: "Recurring Service",
+                amount: 153, // Matches sales page final price
+                commissionRate: 15, // 23/153 = ~15%
+                commissionAmount: 23, // Matches sales page
+                saleDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+                closedDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+                status: "approved" as const,
+                leadSource: "referral" as const,
+                isNewCustomer: true,
+                contractLength: 12,
+                recurringValue: 153,
+                jobs: ["job-sr-1"],
+              },
+              {
+                id: "sale-sr-2",
+                salesRepId: "sales-1",
+                customerId: "cus-sr-2",
+                customerName: "Smith Residence",
+                serviceType: "Deep Clean Combo",
+                amount: 350, // Matches sales page final price
+                commissionRate: 20, // 70/350 = 20%
+                commissionAmount: 70, // Matches sales page
+                saleDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+                closedDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+                status: "paid" as const,
+                leadSource: "online" as const,
+                isNewCustomer: true,
+                contractLength: 1,
+                recurringValue: 0,
+                jobs: ["job-sr-2"],
+              },
+            ],
+            commissions: [
+              // Johnson Family - RECURRING customer (lifetime commissions)
+              // Month 1 commission
+              {
+                id: "comm-sr-1-m1",
+                salesRepId: "sales-1",
+                saleId: "sale-sr-1",
+                type: "base_commission" as const,
+                amount: 23, // Commission for August 2024
+                rate: 15,
+                calculatedOn: 153,
+                period: new Date(2024, 7, 1), // August 2024
+                status: "paid" as const,
+                paidDate: new Date(2024, 7, 15),
+                customerName: "Johnson Family",
+                serviceMonth: "August 2024",
+              },
+              // Month 2 commission (same customer, next month)
+              {
+                id: "comm-sr-1-m2",
+                salesRepId: "sales-1",
+                saleId: "sale-sr-1",
+                type: "base_commission" as const,
+                amount: 23, // Commission for September 2024
+                rate: 15,
+                calculatedOn: 153,
+                period: new Date(2024, 8, 1), // September 2024
+                status: "approved" as const,
+                customerName: "Johnson Family",
+                serviceMonth: "September 2024",
+              },
+              // Smith Residence - ONE-TIME customer (single commission)
+              {
+                id: "comm-sr-2",
+                salesRepId: "sales-1",
+                saleId: "sale-sr-2",
+                type: "base_commission" as const,
+                amount: 70, // One-time commission for deep clean
+                rate: 20,
+                calculatedOn: 350,
+                period: new Date(2024, 7, 1),
+                status: "paid" as const,
+                paidDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+                customerName: "Smith Residence",
+                serviceMonth: "One-time Service",
+              },
+            ],
           }
-        ],
-        commissions: [
-          // Johnson Family - RECURRING customer (lifetime commissions)
-          // Month 1 commission
-          {
-            id: "comm-sr-1-m1",
-            salesRepId: "sales-1",
-            saleId: "sale-sr-1",
-            type: "base_commission" as const,
-            amount: 23, // Commission for August 2024
-            rate: 15,
-            calculatedOn: 153,
-            period: new Date(2024, 7, 1), // August 2024
-            status: "paid" as const,
-            paidDate: new Date(2024, 7, 15),
-            customerName: "Johnson Family",
-            serviceMonth: "August 2024",
-          },
-          // Month 2 commission (same customer, next month)
-          {
-            id: "comm-sr-1-m2", 
-            salesRepId: "sales-1",
-            saleId: "sale-sr-1",
-            type: "base_commission" as const,
-            amount: 23, // Commission for September 2024
-            rate: 15,
-            calculatedOn: 153,
-            period: new Date(2024, 8, 1), // September 2024
-            status: "approved" as const,
-            customerName: "Johnson Family",
-            serviceMonth: "September 2024",
-          },
-          // Smith Residence - ONE-TIME customer (single commission)
-          {
-            id: "comm-sr-2",
-            salesRepId: "sales-1", 
-            saleId: "sale-sr-2",
-            type: "base_commission" as const,
-            amount: 70, // One-time commission for deep clean
-            rate: 20,
-            calculatedOn: 350,
-            period: new Date(2024, 7, 1),
-            status: "paid" as const,
-            paidDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
-            customerName: "Smith Residence",
-            serviceMonth: "One-time Service",
-          }
-        ]
-      } : null;
+        : null;
 
-      const filteredSales = isSalesRep 
+      const filteredSales = isSalesRep
         ? salesRepConsistentData?.sales || [] // Use consistent data for sales reps
         : mockSales; // All sales for managers
 
@@ -505,11 +475,11 @@ export function CommissionTracker() {
         : mockCommissions; // All commissions for managers
 
       const filteredTargets = isSalesRep
-        ? mockTargets.filter(target => target.salesRepId === "sales-1") // Only current user's targets
+        ? mockTargets.filter((target) => target.salesRepId === "sales-1") // Only current user's targets
         : mockTargets; // All targets for managers
 
       const filteredReps = isSalesRep
-        ? mockSalesReps.filter(rep => rep.id === "sales-1") // Only current user
+        ? mockSalesReps.filter((rep) => rep.id === "sales-1") // Only current user
         : mockSalesReps; // All reps for managers
 
       console.log("🔧 Setting filtered mock data:", {
@@ -518,7 +488,7 @@ export function CommissionTracker() {
         targets: filteredTargets.length,
         reps: filteredReps.length,
         userRole: user?.role,
-        isSalesRep
+        isSalesRep,
       });
 
       setSales(filteredSales);
@@ -528,7 +498,15 @@ export function CommissionTracker() {
     } finally {
       setDataLoading(false);
     }
-  };
+  }, [isSalesRep, user?.role]);
+
+  // Load commission data
+  useEffect(() => {
+    if (user?.role) {
+      console.log("🚀 Loading commission data for user role:", user.role);
+      loadCommissionData();
+    }
+  }, [user?.role, loadCommissionData]);
 
   // Filter sales
   const filteredSales = useMemo(() => {
@@ -566,15 +544,18 @@ export function CommissionTracker() {
         ? sales.reduce((sum, s) => sum + s.commissionRate, 0) / sales.length
         : 0;
 
-    const topPerformer = salesReps.reduce((top, rep) => {
-      const repSales = sales
-        .filter((s) => s.salesRepId === rep.id)
-        .reduce((sum, s) => sum + s.amount, 0);
-      const topSales = sales
-        .filter((s) => s.salesRepId === (top?.id || ""))
-        .reduce((sum, s) => sum + s.amount, 0);
-      return repSales > topSales ? rep : top;
-    }, null as SalesRep | null);
+    const topPerformer = salesReps.reduce(
+      (top, rep) => {
+        const repSales = sales
+          .filter((s) => s.salesRepId === rep.id)
+          .reduce((sum, s) => sum + s.amount, 0);
+        const topSales = sales
+          .filter((s) => s.salesRepId === (top?.id || ""))
+          .reduce((sum, s) => sum + s.amount, 0);
+        return repSales > topSales ? rep : top;
+      },
+      null as SalesRep | null,
+    );
 
     // Debug commission calculations
     console.log("📊 Commission Stats Calculation:", {
@@ -588,8 +569,17 @@ export function CommissionTracker() {
       newCustomers,
       avgCommissionRate: avgCommissionRate.toFixed(2),
       topPerformer: topPerformer?.name,
-      salesData: sales.map(s => ({ id: s.id, amount: s.amount, salesRepId: s.salesRepId })),
-      commissionsData: commissions.map(c => ({ id: c.id, amount: c.amount, status: c.status, salesRepId: c.salesRepId }))
+      salesData: sales.map((s) => ({
+        id: s.id,
+        amount: s.amount,
+        salesRepId: s.salesRepId,
+      })),
+      commissionsData: commissions.map((c) => ({
+        id: c.id,
+        amount: c.amount,
+        status: c.status,
+        salesRepId: c.salesRepId,
+      })),
     });
 
     return {
@@ -679,40 +669,52 @@ export function CommissionTracker() {
   const handleExportReport = () => {
     // Generate CSV data
     const csvData = [
-      ['Sales Rep', 'Total Sales', 'Total Commissions', 'Commission Rate', 'New Customers', 'Quota Achievement', 'Territory', 'Status'],
-      ...salesReps.map(rep => {
-        const repSales = sales.filter(s => s.salesRepId === rep.id);
+      [
+        "Sales Rep",
+        "Total Sales",
+        "Total Commissions",
+        "Commission Rate",
+        "New Customers",
+        "Quota Achievement",
+        "Territory",
+        "Status",
+      ],
+      ...salesReps.map((rep) => {
+        const repSales = sales.filter((s) => s.salesRepId === rep.id);
         const totalSales = repSales.reduce((sum, s) => sum + s.amount, 0);
         const totalCommissions = commissions
-          .filter(c => c.salesRepId === rep.id)
+          .filter((c) => c.salesRepId === rep.id)
           .reduce((sum, c) => sum + c.amount, 0);
-        const newCustomers = repSales.filter(s => s.isNewCustomer).length;
-        const target = targets.find(t => t.salesRepId === rep.id);
+        const newCustomers = repSales.filter((s) => s.isNewCustomer).length;
+        const target = targets.find((t) => t.salesRepId === rep.id);
         const quotaAchievement = target ? target.achievement : 0;
-        
+
         return [
           rep.name,
           totalSales,
           totalCommissions,
-          rep.commissionStructure.baseRate + '%',
+          rep.commissionStructure.baseRate + "%",
           newCustomers,
-          quotaAchievement.toFixed(1) + '%',
+          quotaAchievement.toFixed(1) + "%",
           rep.territory,
-          rep.status
+          rep.status,
         ];
-      })
+      }),
     ];
 
     // Convert to CSV string
-    const csvContent = csvData.map(row => row.join(',')).join('\n');
-    
+    const csvContent = csvData.map((row) => row.join(",")).join("\n");
+
     // Create and download file
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `commission-report-${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `commission-report-${new Date().toISOString().split("T")[0]}.csv`,
+    );
+    link.style.visibility = "hidden";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -978,12 +980,10 @@ export function CommissionTracker() {
             <h1 className="text-2xl font-bold tracking-tight">
               Commission Tracking
             </h1>
-            <p className="text-muted-foreground">
-              Loading commission data...
-            </p>
+            <p className="text-muted-foreground">Loading commission data...</p>
           </div>
         </div>
-        
+
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {[1, 2, 3, 4].map((i) => (
             <Card key={i}>
@@ -998,7 +998,7 @@ export function CommissionTracker() {
             </Card>
           ))}
         </div>
-        
+
         <div className="h-96 bg-muted animate-pulse rounded" />
       </div>
     );
@@ -1087,15 +1087,19 @@ export function CommissionTracker() {
                 // For demo purposes, assume current user is the first sales rep
                 // In real implementation, you'd match by user ID or email
                 const currentUserRep = salesReps[0]; // Sofia Martinez as demo user
-                const currentUserRanking = leaderboard.find(entry => entry.salesRepId === currentUserRep.id);
+                const currentUserRanking = leaderboard.find(
+                  (entry) => entry.salesRepId === currentUserRep.id,
+                );
                 const totalSalesReps = leaderboard.length;
-                
+
                 return (
                   <div>
                     <div className="text-lg font-bold">
                       #{currentUserRanking?.rank || 1}/{totalSalesReps}
                     </div>
-                    <p className="text-xs text-muted-foreground">Your position</p>
+                    <p className="text-xs text-muted-foreground">
+                      Your position
+                    </p>
                   </div>
                 );
               })()
@@ -1106,10 +1110,9 @@ export function CommissionTracker() {
                   {commissionStats.topPerformer?.name || "N/A"}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {commissionStats.topPerformer?.territory ? 
-                    `${commissionStats.topPerformer.territory} • Leading sales` : 
-                    "Leading sales"
-                  }
+                  {commissionStats.topPerformer?.territory
+                    ? `${commissionStats.topPerformer.territory} • Leading sales`
+                    : "Leading sales"}
                 </p>
               </div>
             )}
@@ -1124,7 +1127,9 @@ export function CommissionTracker() {
           {!isSalesRep && <TabsTrigger value="reps">Sales Reps</TabsTrigger>}
           <TabsTrigger value="sales">Sales</TabsTrigger>
           <TabsTrigger value="commissions">Commissions</TabsTrigger>
-          {!isSalesRep && <TabsTrigger value="leaderboard">Leaderboard</TabsTrigger>}
+          {!isSalesRep && (
+            <TabsTrigger value="leaderboard">Leaderboard</TabsTrigger>
+          )}
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
@@ -1278,9 +1283,6 @@ export function CommissionTracker() {
               <div className="space-y-3">
                 {leaderboard.map((entry) => {
                   const rep = salesReps.find((r) => r.id === entry.salesRepId);
-                  const target = targets.find(
-                    (t) => t.salesRepId === entry.salesRepId,
-                  );
 
                   return (
                     <div
@@ -1548,7 +1550,10 @@ export function CommissionTracker() {
       </Dialog>
 
       {/* Commission Rules Dialog */}
-      <Dialog open={isCommissionRulesOpen} onOpenChange={setIsCommissionRulesOpen}>
+      <Dialog
+        open={isCommissionRulesOpen}
+        onOpenChange={setIsCommissionRulesOpen}
+      >
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Commission Rules & Structure</DialogTitle>
@@ -1573,18 +1578,30 @@ export function CommissionTracker() {
                       <div className="grid grid-cols-3 gap-4">
                         <div className="border rounded p-3">
                           <div className="font-semibold">New Sales Rep</div>
-                          <div className="text-2xl font-bold text-blue-600">5%</div>
-                          <div className="text-sm text-muted-foreground">Base rate for first 6 months</div>
+                          <div className="text-2xl font-bold text-blue-600">
+                            5%
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            Base rate for first 6 months
+                          </div>
                         </div>
                         <div className="border rounded p-3">
                           <div className="font-semibold">Experienced Rep</div>
-                          <div className="text-2xl font-bold text-green-600">7%</div>
-                          <div className="text-sm text-muted-foreground">After 6 months performance review</div>
+                          <div className="text-2xl font-bold text-green-600">
+                            7%
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            After 6 months performance review
+                          </div>
                         </div>
                         <div className="border rounded p-3">
                           <div className="font-semibold">Senior Rep</div>
-                          <div className="text-2xl font-bold text-purple-600">10%</div>
-                          <div className="text-sm text-muted-foreground">Top performers & team leads</div>
+                          <div className="text-2xl font-bold text-purple-600">
+                            10%
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            Top performers & team leads
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1597,7 +1614,8 @@ export function CommissionTracker() {
                   <CardHeader>
                     <CardTitle>Bonus Structure</CardTitle>
                     <div className="text-sm text-muted-foreground">
-                      Bonuses complement base commissions and reward specific achievements under the lifetime model
+                      Bonuses complement base commissions and reward specific
+                      achievements under the lifetime model
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -1605,46 +1623,74 @@ export function CommissionTracker() {
                       <div className="border rounded p-3">
                         <div className="flex justify-between items-center">
                           <div>
-                            <div className="font-semibold">New Customer Acquisition</div>
-                            <div className="text-sm text-muted-foreground">Per new customer brought to Limpia</div>
+                            <div className="font-semibold">
+                              New Customer Acquisition
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              Per new customer brought to Limpia
+                            </div>
                           </div>
-                          <div className="text-lg font-bold text-green-600">$100</div>
+                          <div className="text-lg font-bold text-green-600">
+                            $100
+                          </div>
                         </div>
                       </div>
                       <div className="border rounded p-3">
                         <div className="flex justify-between items-center">
                           <div>
-                            <div className="font-semibold">Monthly Quota Achievement</div>
-                            <div className="text-sm text-muted-foreground">100% of monthly quota target</div>
+                            <div className="font-semibold">
+                              Monthly Quota Achievement
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              100% of monthly quota target
+                            </div>
                           </div>
-                          <div className="text-lg font-bold text-blue-600">$1,000</div>
+                          <div className="text-lg font-bold text-blue-600">
+                            $1,000
+                          </div>
                         </div>
                       </div>
                       <div className="border rounded p-3">
                         <div className="flex justify-between items-center">
                           <div>
-                            <div className="font-semibold">Customer Retention</div>
-                            <div className="text-sm text-muted-foreground">95%+ customer retention rate</div>
+                            <div className="font-semibold">
+                              Customer Retention
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              95%+ customer retention rate
+                            </div>
                           </div>
-                          <div className="text-lg font-bold text-purple-600">$500</div>
+                          <div className="text-lg font-bold text-purple-600">
+                            $500
+                          </div>
                         </div>
                       </div>
                       <div className="border rounded p-3">
                         <div className="flex justify-between items-center">
                           <div>
                             <div className="font-semibold">Upsell Success</div>
-                            <div className="text-sm text-muted-foreground">Per successful service upsell</div>
+                            <div className="text-sm text-muted-foreground">
+                              Per successful service upsell
+                            </div>
                           </div>
-                          <div className="text-lg font-bold text-orange-600">$50</div>
+                          <div className="text-lg font-bold text-orange-600">
+                            $50
+                          </div>
                         </div>
                       </div>
                       <div className="border rounded p-3">
                         <div className="flex justify-between items-center">
                           <div>
-                            <div className="font-semibold">Customer Longevity</div>
-                            <div className="text-sm text-muted-foreground">Customer completes 12 months of service</div>
+                            <div className="font-semibold">
+                              Customer Longevity
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              Customer completes 12 months of service
+                            </div>
                           </div>
-                          <div className="text-lg font-bold text-indigo-600">$200</div>
+                          <div className="text-lg font-bold text-indigo-600">
+                            $200
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1661,48 +1707,73 @@ export function CommissionTracker() {
                     <div className="space-y-4">
                       <div className="border rounded p-4 bg-red-50">
                         <div className="flex justify-between items-center mb-2">
-                          <div className="font-semibold text-red-700">Building (0-25% quota)</div>
-                          <Badge variant="outline" className="border-red-300">Needs Improvement</Badge>
+                          <div className="font-semibold text-red-700">
+                            Building (0-25% quota)
+                          </div>
+                          <Badge variant="outline" className="border-red-300">
+                            Needs Improvement
+                          </Badge>
                         </div>
                         <div className="text-sm text-red-600">
-                          • Base commission rate only<br/>
-                          • No bonuses<br/>
-                          • Monthly coaching sessions<br/>
-                          • Performance improvement plan
+                          • Base commission rate only
+                          <br />
+                          • No bonuses
+                          <br />
+                          • Monthly coaching sessions
+                          <br />• Performance improvement plan
                         </div>
                       </div>
                       <div className="border rounded p-4 bg-yellow-50">
                         <div className="flex justify-between items-center mb-2">
-                          <div className="font-semibold text-yellow-700">Fair (26-75% quota)</div>
-                          <Badge variant="outline" className="border-yellow-300">Developing</Badge>
+                          <div className="font-semibold text-yellow-700">
+                            Fair (26-75% quota)
+                          </div>
+                          <Badge
+                            variant="outline"
+                            className="border-yellow-300"
+                          >
+                            Developing
+                          </Badge>
                         </div>
                         <div className="text-sm text-yellow-600">
-                          • Base commission rate<br/>
-                          • Limited bonuses (new customer only)<br/>
-                          • Bi-weekly check-ins
+                          • Base commission rate
+                          <br />
+                          • Limited bonuses (new customer only)
+                          <br />• Bi-weekly check-ins
                         </div>
                       </div>
                       <div className="border rounded p-4 bg-blue-50">
                         <div className="flex justify-between items-center mb-2">
-                          <div className="font-semibold text-blue-700">Good (76-99% quota)</div>
-                          <Badge variant="outline" className="border-blue-300">Meeting Expectations</Badge>
+                          <div className="font-semibold text-blue-700">
+                            Good (76-99% quota)
+                          </div>
+                          <Badge variant="outline" className="border-blue-300">
+                            Meeting Expectations
+                          </Badge>
                         </div>
                         <div className="text-sm text-blue-600">
-                          • Base commission rate<br/>
-                          • All bonuses available<br/>
-                          • Standard support
+                          • Base commission rate
+                          <br />
+                          • All bonuses available
+                          <br />• Standard support
                         </div>
                       </div>
                       <div className="border rounded p-4 bg-green-50">
                         <div className="flex justify-between items-center mb-2">
-                          <div className="font-semibold text-green-700">Excellent (100%+ quota)</div>
-                          <Badge variant="outline" className="border-green-300">Exceeding Expectations</Badge>
+                          <div className="font-semibold text-green-700">
+                            Excellent (100%+ quota)
+                          </div>
+                          <Badge variant="outline" className="border-green-300">
+                            Exceeding Expectations
+                          </Badge>
                         </div>
                         <div className="text-sm text-green-600">
-                          • Enhanced commission rate (+1%)<br/>
-                          • All bonuses + quota bonus<br/>
-                          • Recognition & rewards<br/>
-                          • Leadership opportunities
+                          • Enhanced commission rate (+1%)
+                          <br />
+                          • All bonuses + quota bonus
+                          <br />
+                          • Recognition & rewards
+                          <br />• Leadership opportunities
                         </div>
                       </div>
                     </div>
@@ -1718,43 +1789,82 @@ export function CommissionTracker() {
                   <CardContent>
                     <div className="space-y-4">
                       <div>
-                        <h4 className="font-semibold mb-2">Lifetime Commission Model</h4>
+                        <h4 className="font-semibold mb-2">
+                          Lifetime Commission Model
+                        </h4>
                         <div className="bg-blue-50 p-3 rounded mb-3">
-                          <div className="text-sm font-medium text-blue-900 mb-1">Key Principle</div>
+                          <div className="text-sm font-medium text-blue-900 mb-1">
+                            Key Principle
+                          </div>
                           <div className="text-sm text-blue-800">
-                            Sales reps are responsible for the lifetime value of their customers and earn commissions 
-                            over the entire relationship duration.
+                            Sales reps are responsible for the lifetime value of
+                            their customers and earn commissions over the entire
+                            relationship duration.
                           </div>
                         </div>
                         <ul className="list-disc list-inside text-sm space-y-1 text-muted-foreground">
-                          <li><strong>Recurring Customers:</strong> Earn commission every month the customer stays active</li>
-                          <li><strong>One-Time Services:</strong> Earn single commission payment upon completion</li>
-                          <li><strong>Customer Retention:</strong> Your commission continues as long as customer remains active</li>
-                          <li><strong>Relationship Accountability:</strong> Sales reps liable for maintaining customer satisfaction</li>
-                          <li><strong>Ongoing Contact:</strong> Expected to maintain regular communication with customers</li>
-                          <li><strong>Service Quality:</strong> Commission loss occurs if customers cancel due to poor service</li>
+                          <li>
+                            <strong>Recurring Customers:</strong> Earn
+                            commission every month the customer stays active
+                          </li>
+                          <li>
+                            <strong>One-Time Services:</strong> Earn single
+                            commission payment upon completion
+                          </li>
+                          <li>
+                            <strong>Customer Retention:</strong> Your commission
+                            continues as long as customer remains active
+                          </li>
+                          <li>
+                            <strong>Relationship Accountability:</strong> Sales
+                            reps liable for maintaining customer satisfaction
+                          </li>
+                          <li>
+                            <strong>Ongoing Contact:</strong> Expected to
+                            maintain regular communication with customers
+                          </li>
+                          <li>
+                            <strong>Service Quality:</strong> Commission loss
+                            occurs if customers cancel due to poor service
+                          </li>
                         </ul>
                       </div>
                       <div>
-                        <h4 className="font-semibold mb-2">Commission Examples</h4>
+                        <h4 className="font-semibold mb-2">
+                          Commission Examples
+                        </h4>
                         <div className="space-y-3">
                           <div className="border rounded p-3 bg-green-50">
                             <div className="flex justify-between items-center mb-2">
-                              <div className="font-medium text-green-800">Recurring Service Customer</div>
-                              <div className="text-sm text-green-600">Monthly Commission</div>
+                              <div className="font-medium text-green-800">
+                                Recurring Service Customer
+                              </div>
+                              <div className="text-sm text-green-600">
+                                Monthly Commission
+                              </div>
                             </div>
                             <div className="text-sm text-green-700">
-                              Customer pays $200/month → Sales rep earns $14/month (7% rate)<br/>
-                              <strong>12 months = $168 total | 24 months = $336 total</strong>
+                              Customer pays $200/month → Sales rep earns
+                              $14/month (7% rate)
+                              <br />
+                              <strong>
+                                12 months = $168 total | 24 months = $336 total
+                              </strong>
                             </div>
                           </div>
                           <div className="border rounded p-3 bg-orange-50">
                             <div className="flex justify-between items-center mb-2">
-                              <div className="font-medium text-orange-800">One-Time Service Customer</div>
-                              <div className="text-sm text-orange-600">Single Commission</div>
+                              <div className="font-medium text-orange-800">
+                                One-Time Service Customer
+                              </div>
+                              <div className="text-sm text-orange-600">
+                                Single Commission
+                              </div>
                             </div>
                             <div className="text-sm text-orange-700">
-                              Customer pays $350 for deep clean → Sales rep earns $24.50 (7% rate)<br/>
+                              Customer pays $350 for deep clean → Sales rep
+                              earns $24.50 (7% rate)
+                              <br />
                               <strong>Total commission: $24.50</strong>
                             </div>
                           </div>
@@ -1764,7 +1874,9 @@ export function CommissionTracker() {
                         <h4 className="font-semibold mb-2">Payment Schedule</h4>
                         <ul className="list-disc list-inside text-sm space-y-1 text-muted-foreground">
                           <li>Commissions are calculated monthly</li>
-                          <li>Payment occurs on the 15th of the following month</li>
+                          <li>
+                            Payment occurs on the 15th of the following month
+                          </li>
                           <li>Direct deposit to registered bank account</li>
                           <li>Commission statements provided via email</li>
                         </ul>
@@ -1773,51 +1885,97 @@ export function CommissionTracker() {
                         <h4 className="font-semibold mb-2">Approval Process</h4>
                         <ul className="list-disc list-inside text-sm space-y-1 text-muted-foreground">
                           <li>Sales must be approved by sales manager</li>
-                          <li>Customer payment confirmed before commission release</li>
-                          <li>Disputed commissions reviewed within 5 business days</li>
+                          <li>
+                            Customer payment confirmed before commission release
+                          </li>
+                          <li>
+                            Disputed commissions reviewed within 5 business days
+                          </li>
                           <li>Final approval by finance team</li>
                         </ul>
                       </div>
                       <div>
                         <h4 className="font-semibold mb-2">Clawback Policy</h4>
                         <ul className="list-disc list-inside text-sm space-y-1 text-muted-foreground">
-                          <li>Commission subject to clawback if customer cancels within 90 days</li>
+                          <li>
+                            Commission subject to clawback if customer cancels
+                            within 90 days
+                          </li>
                           <li>Partial clawback for contract downgrades</li>
                           <li>No clawback for involuntary customer churn</li>
                         </ul>
                       </div>
                       <div>
-                        <h4 className="font-semibold mb-2">Sales Rep Responsibilities</h4>
+                        <h4 className="font-semibold mb-2">
+                          Sales Rep Responsibilities
+                        </h4>
                         <div className="bg-yellow-50 p-3 rounded mb-3">
-                          <div className="text-sm font-medium text-yellow-900 mb-1">Customer Relationship Management</div>
+                          <div className="text-sm font-medium text-yellow-900 mb-1">
+                            Customer Relationship Management
+                          </div>
                           <div className="text-sm text-yellow-800">
-                            Under the lifetime commission model, sales reps act as ongoing account managers 
-                            for their customers to ensure retention and satisfaction.
+                            Under the lifetime commission model, sales reps act
+                            as ongoing account managers for their customers to
+                            ensure retention and satisfaction.
                           </div>
                         </div>
                         <ul className="list-disc list-inside text-sm space-y-1 text-muted-foreground">
-                          <li><strong>Regular Check-ins:</strong> Contact customers monthly to ensure satisfaction</li>
-                          <li><strong>Service Quality Monitoring:</strong> Follow up after each cleaning service</li>
-                          <li><strong>Issue Resolution:</strong> Address customer concerns before they lead to cancellation</li>
-                          <li><strong>Upselling Opportunities:</strong> Identify additional service needs</li>
-                          <li><strong>Renewal Management:</strong> Ensure contract renewals for long-term customers</li>
-                          <li><strong>Customer Feedback:</strong> Relay service feedback to operations team</li>
+                          <li>
+                            <strong>Regular Check-ins:</strong> Contact
+                            customers monthly to ensure satisfaction
+                          </li>
+                          <li>
+                            <strong>Service Quality Monitoring:</strong> Follow
+                            up after each cleaning service
+                          </li>
+                          <li>
+                            <strong>Issue Resolution:</strong> Address customer
+                            concerns before they lead to cancellation
+                          </li>
+                          <li>
+                            <strong>Upselling Opportunities:</strong> Identify
+                            additional service needs
+                          </li>
+                          <li>
+                            <strong>Renewal Management:</strong> Ensure contract
+                            renewals for long-term customers
+                          </li>
+                          <li>
+                            <strong>Customer Feedback:</strong> Relay service
+                            feedback to operations team
+                          </li>
                         </ul>
                       </div>
                       <div>
-                        <h4 className="font-semibold mb-2">Commission Adjustments</h4>
+                        <h4 className="font-semibold mb-2">
+                          Commission Adjustments
+                        </h4>
                         <ul className="list-disc list-inside text-sm space-y-1 text-muted-foreground">
-                          <li><strong>Customer Cancellation:</strong> Future commissions stop when customer cancels</li>
-                          <li><strong>Service Downgrades:</strong> Commission adjusted to new service level</li>
-                          <li><strong>Payment Issues:</strong> Commission held until customer payment resolved</li>
-                          <li><strong>Quality Issues:</strong> Commission may be reduced for service-related cancellations</li>
+                          <li>
+                            <strong>Customer Cancellation:</strong> Future
+                            commissions stop when customer cancels
+                          </li>
+                          <li>
+                            <strong>Service Downgrades:</strong> Commission
+                            adjusted to new service level
+                          </li>
+                          <li>
+                            <strong>Payment Issues:</strong> Commission held
+                            until customer payment resolved
+                          </li>
+                          <li>
+                            <strong>Quality Issues:</strong> Commission may be
+                            reduced for service-related cancellations
+                          </li>
                         </ul>
                       </div>
                       <div>
                         <h4 className="font-semibold mb-2">Territory Rules</h4>
                         <ul className="list-disc list-inside text-sm space-y-1 text-muted-foreground">
                           <li>Sales reps assigned exclusive territories</li>
-                          <li>Cross-territory sales require manager approval</li>
+                          <li>
+                            Cross-territory sales require manager approval
+                          </li>
                           <li>Split commissions for collaborative sales</li>
                           <li>Territory boundaries reviewed quarterly</li>
                         </ul>

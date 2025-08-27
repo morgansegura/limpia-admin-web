@@ -1,36 +1,35 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { customersApi } from '@/lib/api';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
-import { 
-  Phone, 
-  Mail, 
-  MapPin, 
-  Plus, 
+import { useState, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { customersApi } from "@/lib/api";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Phone,
+  Mail,
+  MapPin,
+  Plus,
   Search,
-  Filter,
   Calendar,
   DollarSign,
-  Star
-} from 'lucide-react';
-import { LeadCreationForm } from './lead-creation-form';
+  Star,
+} from "lucide-react";
+import { LeadCreationForm } from "./lead-creation-form";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 
 interface Lead {
   id: string;
@@ -55,15 +54,15 @@ interface Lead {
 }
 
 interface LeadsManagementProps {
-  userRole: 'SALES_REP' | 'SALES_MANAGER';
+  userRole: "SALES_REP" | "SALES_MANAGER";
 }
 
-export function LeadsManagement({ userRole }: LeadsManagementProps) {
+export function LeadsManagement({}: LeadsManagementProps) {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [priorityFilter, setPriorityFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [priorityFilter, setPriorityFilter] = useState("all");
   const [isLeadFormOpen, setIsLeadFormOpen] = useState(false);
 
   useEffect(() => {
@@ -73,9 +72,9 @@ export function LeadsManagement({ userRole }: LeadsManagementProps) {
   const fetchLeads = async () => {
     try {
       const data = await customersApi.getAll({ isLead: true });
-      setLeads(data);
+      setLeads(data as Lead[]);
     } catch (error) {
-      console.error('Failed to fetch leads:', error);
+      console.error("Failed to fetch leads:", error);
     } finally {
       setLoading(false);
     }
@@ -86,54 +85,69 @@ export function LeadsManagement({ userRole }: LeadsManagementProps) {
     if (lead.phone) {
       // Open phone dialer
       window.open(`tel:${lead.phone}`);
-      
+
       // Log the contact attempt
-      customersApi.sendCommunication(lead.id, {
-        type: 'call',
-        method: 'phone',
-        notes: `Called ${lead.firstName} ${lead.lastName}`,
-        timestamp: new Date().toISOString(),
-      }).catch(console.error);
+      customersApi
+        .sendCommunication(lead.id, {
+          type: "call",
+          method: "phone",
+          notes: `Called ${lead.firstName} ${lead.lastName}`,
+          timestamp: new Date().toISOString(),
+        })
+        .catch(console.error);
     } else {
-      alert('No phone number available for this lead');
+      alert("No phone number available for this lead");
     }
   };
 
   const handleEmailLead = (lead: Lead) => {
     if (lead.email) {
       // Open email client
-      const subject = encodeURIComponent(`Follow-up: ${lead.serviceNeeded || 'Cleaning Services'}`);
-      const body = encodeURIComponent(`Hi ${lead.firstName},\n\nThank you for your interest in our cleaning services. I wanted to follow up on your inquiry.\n\nBest regards,\nLimpia Cleaning Team`);
+      const subject = encodeURIComponent(
+        `Follow-up: ${lead.serviceNeeded || "Cleaning Services"}`,
+      );
+      const body = encodeURIComponent(
+        `Hi ${lead.firstName},\n\nThank you for your interest in our cleaning services. I wanted to follow up on your inquiry.\n\nBest regards,\nLimpia Cleaning Team`,
+      );
       window.open(`mailto:${lead.email}?subject=${subject}&body=${body}`);
-      
+
       // Log the contact attempt
-      customersApi.sendCommunication(lead.id, {
-        type: 'email',
-        method: 'email',
-        notes: `Emailed ${lead.firstName} ${lead.lastName}`,
-        timestamp: new Date().toISOString(),
-      }).catch(console.error);
+      customersApi
+        .sendCommunication(lead.id, {
+          type: "email",
+          method: "email",
+          notes: `Emailed ${lead.firstName} ${lead.lastName}`,
+          timestamp: new Date().toISOString(),
+        })
+        .catch(console.error);
     } else {
-      alert('No email address available for this lead');
+      alert("No email address available for this lead");
     }
   };
 
   const handleScheduleFollowUp = (lead: Lead) => {
-    const followUpDate = prompt('Enter follow-up date and time (e.g., 2024-08-20 14:00):');
+    const followUpDate = prompt(
+      "Enter follow-up date and time (e.g., 2024-08-20 14:00):",
+    );
     if (followUpDate) {
       // In a real app, this would integrate with calendar system
-      customersApi.sendCommunication(lead.id, {
-        type: 'scheduled_followup',
-        method: 'system',
-        notes: `Follow-up scheduled for ${followUpDate}`,
-        scheduledFor: followUpDate,
-        timestamp: new Date().toISOString(),
-      }).then(() => {
-        alert(`Follow-up scheduled for ${lead.firstName} ${lead.lastName} on ${followUpDate}`);
-      }).catch(error => {
-        console.error('Error scheduling follow-up:', error);
-        alert('Failed to schedule follow-up. Please try again.');
-      });
+      customersApi
+        .sendCommunication(lead.id, {
+          type: "scheduled_followup",
+          method: "system",
+          notes: `Follow-up scheduled for ${followUpDate}`,
+          scheduledFor: followUpDate,
+          timestamp: new Date().toISOString(),
+        })
+        .then(() => {
+          alert(
+            `Follow-up scheduled for ${lead.firstName} ${lead.lastName} on ${followUpDate}`,
+          );
+        })
+        .catch((error) => {
+          console.error("Error scheduling follow-up:", error);
+          alert("Failed to schedule follow-up. Please try again.");
+        });
     }
   };
 
@@ -141,43 +155,47 @@ export function LeadsManagement({ userRole }: LeadsManagementProps) {
     setIsLeadFormOpen(true);
   };
 
-  const handleLeadCreated = (newLead: any) => {
-    setLeads(prev => [newLead, ...prev]);
+  const handleLeadCreated = (newLead: Lead) => {
+    setLeads((prev) => [newLead, ...prev]);
     // Filtering will be handled by useEffect
   };
 
   const getStatusBadgeColor = (status: string) => {
     const colors = {
-      'new': 'bg-blue-100 text-blue-800',
-      'contacted': 'bg-yellow-100 text-yellow-800',
-      'qualified': 'bg-green-100 text-green-800',
-      'proposal': 'bg-purple-100 text-purple-800',
-      'won': 'bg-emerald-100 text-emerald-800',
-      'lost': 'bg-red-100 text-red-800',
+      new: "bg-blue-100 text-blue-800",
+      contacted: "bg-yellow-100 text-yellow-800",
+      qualified: "bg-green-100 text-green-800",
+      proposal: "bg-purple-100 text-purple-800",
+      won: "bg-emerald-100 text-emerald-800",
+      lost: "bg-red-100 text-red-800",
     };
-    return colors[status as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+    return colors[status as keyof typeof colors] || "bg-gray-100 text-gray-800";
   };
 
   const getPriorityBadgeColor = (priority: string) => {
     const colors = {
-      'low': 'bg-gray-100 text-gray-800',
-      'medium': 'bg-yellow-100 text-yellow-800',
-      'high': 'bg-orange-100 text-orange-800',
-      'urgent': 'bg-red-100 text-red-800',
+      low: "bg-gray-100 text-gray-800",
+      medium: "bg-yellow-100 text-yellow-800",
+      high: "bg-orange-100 text-orange-800",
+      urgent: "bg-red-100 text-red-800",
     };
-    return colors[priority as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+    return (
+      colors[priority as keyof typeof colors] || "bg-gray-100 text-gray-800"
+    );
   };
 
-  const filteredLeads = leads.filter(lead => {
-    const matchesSearch = 
+  const filteredLeads = leads.filter((lead) => {
+    const matchesSearch =
       lead.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       lead.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       lead.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       lead.company?.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesStatus = statusFilter === 'all' || lead.status === statusFilter;
-    const matchesPriority = priorityFilter === 'all' || lead.priority === priorityFilter;
-    
+
+    const matchesStatus =
+      statusFilter === "all" || lead.status === statusFilter;
+    const matchesPriority =
+      priorityFilter === "all" || lead.priority === priorityFilter;
+
     return matchesSearch && matchesStatus && matchesPriority;
   });
 
@@ -258,7 +276,10 @@ export function LeadsManagement({ userRole }: LeadsManagementProps) {
       {/* Leads List */}
       <div className="space-y-4">
         {filteredLeads.map((lead) => (
-          <Card key={lead.id} className="cursor-pointer hover:shadow-md transition-shadow">
+          <Card
+            key={lead.id}
+            className="cursor-pointer hover:shadow-md transition-shadow"
+          >
             <CardContent className="p-6">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
@@ -274,10 +295,12 @@ export function LeadsManagement({ userRole }: LeadsManagementProps) {
                     </Badge>
                     <div className="flex items-center gap-1">
                       <Star className="h-4 w-4 text-yellow-500" />
-                      <span className="text-sm text-gray-600">{lead.score}/100</span>
+                      <span className="text-sm text-gray-600">
+                        {lead.score}/100
+                      </span>
                     </div>
                   </div>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                     {lead.email && (
                       <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -309,8 +332,9 @@ export function LeadsManagement({ userRole }: LeadsManagementProps) {
                     <div>
                       <span className="font-medium">Property:</span>
                       <span className="ml-2 text-gray-600">
-                        {lead.propertyType} 
-                        {lead.squareFootage && ` (${lead.squareFootage.toLocaleString()} sqft)`}
+                        {lead.propertyType}
+                        {lead.squareFootage &&
+                          ` (${lead.squareFootage.toLocaleString()} sqft)`}
                       </span>
                     </div>
                     <div>
@@ -319,7 +343,9 @@ export function LeadsManagement({ userRole }: LeadsManagementProps) {
                     </div>
                     <div>
                       <span className="font-medium">Timeline:</span>
-                      <span className="ml-2 text-gray-600">{lead.timeline || 'Not specified'}</span>
+                      <span className="ml-2 text-gray-600">
+                        {lead.timeline || "Not specified"}
+                      </span>
                     </div>
                   </div>
 
@@ -331,15 +357,27 @@ export function LeadsManagement({ userRole }: LeadsManagementProps) {
                 </div>
 
                 <div className="flex flex-col gap-2 ml-4">
-                  <Button size="sm" variant="outline" onClick={() => handleCallLead(lead)}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleCallLead(lead)}
+                  >
                     <Phone className="h-4 w-4 mr-2" />
                     Call
                   </Button>
-                  <Button size="sm" variant="outline" onClick={() => handleEmailLead(lead)}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleEmailLead(lead)}
+                  >
                     <Mail className="h-4 w-4 mr-2" />
                     Email
                   </Button>
-                  <Button size="sm" variant="outline" onClick={() => handleScheduleFollowUp(lead)}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleScheduleFollowUp(lead)}
+                  >
                     <Calendar className="h-4 w-4 mr-2" />
                     Schedule
                   </Button>
@@ -356,7 +394,10 @@ export function LeadsManagement({ userRole }: LeadsManagementProps) {
             <div className="text-gray-500">
               <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <h3 className="text-lg font-medium mb-2">No leads found</h3>
-              <p>Try adjusting your search criteria or add new leads to get started.</p>
+              <p>
+                Try adjusting your search criteria or add new leads to get
+                started.
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -371,8 +412,8 @@ export function LeadsManagement({ userRole }: LeadsManagementProps) {
               Add New Lead
             </DialogTitle>
           </DialogHeader>
-          <LeadCreationForm 
-            onClose={() => setIsLeadFormOpen(false)} 
+          <LeadCreationForm
+            onClose={() => setIsLeadFormOpen(false)}
             onLeadCreated={handleLeadCreated}
           />
         </DialogContent>

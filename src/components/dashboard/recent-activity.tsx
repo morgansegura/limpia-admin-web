@@ -14,6 +14,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { activityApi, ActivityItem } from "@/lib/api";
+import { LucideIcon } from "lucide-react";
 
 interface ProcessedActivity {
   id: string;
@@ -21,7 +22,7 @@ interface ProcessedActivity {
   title: string;
   description: string;
   time: Date;
-  icon: any;
+  icon: LucideIcon;
   iconColor: string;
   badge: string;
   badgeVariant: "default" | "secondary" | "outline" | "destructive";
@@ -70,11 +71,13 @@ export function RecentActivity() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const processActivityData = (activityData: ActivityItem[]): ProcessedActivity[] => {
-    return activityData.map(item => {
+  const processActivityData = (
+    activityData: ActivityItem[],
+  ): ProcessedActivity[] => {
+    return activityData.map((item) => {
       const { icon, color } = getActivityIcon(item.type);
       const { badge, variant } = getActivityBadge(item.type);
-      
+
       return {
         id: item.id,
         type: item.type,
@@ -94,92 +97,94 @@ export function RecentActivity() {
       try {
         setIsLoading(true);
         setError(null);
-        
+
         // Try to load from real API first
         try {
           const activityData = await activityApi.getRecent(6);
           const processedActivities = processActivityData(activityData);
           setActivities(processedActivities);
         } catch (apiError) {
-          console.warn('API not available, using fallback data:', apiError);
-          
+          console.warn("API not available, using fallback data:", apiError);
+
           // Fallback to mock data if API is not available
           const mockActivities: ProcessedActivity[] = [
             {
-              id: '1',
-              type: 'job_completed',
-              title: 'Job Completed',
+              id: "1",
+              type: "job_completed",
+              title: "Job Completed",
               description: `Team completed deep cleaning service`,
               time: new Date(Date.now() - Math.random() * 30 * 60 * 1000),
               icon: CheckCircle,
-              iconColor: 'text-green-500',
-              badge: 'Completed',
-              badgeVariant: 'default',
+              iconColor: "text-green-500",
+              badge: "Completed",
+              badgeVariant: "default",
             },
             {
-              id: '2',
-              type: 'estimate_sent',
-              title: 'Estimate Sent',
+              id: "2",
+              type: "estimate_sent",
+              title: "Estimate Sent",
               description: `$${Math.floor(Math.random() * 500 + 200)} estimate sent to customer`,
               time: new Date(Date.now() - Math.random() * 60 * 60 * 1000),
               icon: DollarSign,
-              iconColor: 'text-blue-500',
-              badge: 'Pending',
-              badgeVariant: 'secondary',
+              iconColor: "text-blue-500",
+              badge: "Pending",
+              badgeVariant: "secondary",
             },
             {
-              id: '3',
-              type: 'crew_assigned',
-              title: 'Crew Assigned',
+              id: "3",
+              type: "crew_assigned",
+              title: "Crew Assigned",
               description: `Team assigned to ${Math.floor(Math.random() * 4 + 1)}-bedroom cleaning`,
               time: new Date(Date.now() - Math.random() * 90 * 60 * 1000),
               icon: User,
-              iconColor: 'text-purple-500',
-              badge: 'Assigned',
-              badgeVariant: 'outline',
+              iconColor: "text-purple-500",
+              badge: "Assigned",
+              badgeVariant: "outline",
             },
             {
-              id: '4',
-              type: 'job_started',
-              title: 'Job Started',
+              id: "4",
+              type: "job_started",
+              title: "Job Started",
               description: `Team started cleaning service`,
               time: new Date(Date.now() - Math.random() * 120 * 60 * 1000),
               icon: Clock,
-              iconColor: 'text-orange-500',
-              badge: 'In Progress',
-              badgeVariant: 'secondary',
+              iconColor: "text-orange-500",
+              badge: "In Progress",
+              badgeVariant: "secondary",
             },
             {
-              id: '5',
-              type: 'inventory_alert',
-              title: 'Inventory Alert',
+              id: "5",
+              type: "inventory_alert",
+              title: "Inventory Alert",
               description: `Cleaning supplies running low (${Math.floor(Math.random() * 10 + 1)} units remaining)`,
               time: new Date(Date.now() - Math.random() * 180 * 60 * 1000),
               icon: AlertCircle,
-              iconColor: 'text-red-500',
-              badge: 'Action Needed',
-              badgeVariant: 'destructive',
+              iconColor: "text-red-500",
+              badge: "Action Needed",
+              badgeVariant: "destructive",
             },
             {
-              id: '6',
-              type: 'new_customer',
-              title: 'New Customer',
+              id: "6",
+              type: "new_customer",
+              title: "New Customer",
               description: `Customer registered for cleaning services`,
               time: new Date(Date.now() - Math.random() * 240 * 60 * 1000),
               icon: User,
-              iconColor: 'text-green-500',
-              badge: 'New',
-              badgeVariant: 'default',
+              iconColor: "text-green-500",
+              badge: "New",
+              badgeVariant: "default",
             },
           ];
-          
-          setActivities(mockActivities.slice(0, Math.floor(Math.random() * 3 + 4)));
+
+          setActivities(
+            mockActivities.slice(0, Math.floor(Math.random() * 3 + 4)),
+          );
         }
-        
+
         setIsLoading(false);
       } catch (error) {
-        console.error('Error loading recent activity:', error);
-        setError('Failed to load recent activity');
+        console.error("Error loading recent activity:", error);
+        setError("Failed to load recent activity");
         setIsLoading(false);
       }
     };
@@ -196,7 +201,9 @@ export function RecentActivity() {
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
             <Loader2 className="h-6 w-6 animate-spin" />
-            <span className="ml-2 text-sm text-muted-foreground">Loading activity...</span>
+            <span className="ml-2 text-sm text-muted-foreground">
+              Loading activity...
+            </span>
           </div>
         ) : error ? (
           <div className="text-center py-8">
@@ -217,7 +224,10 @@ export function RecentActivity() {
                   <div className="flex-1 space-y-1">
                     <div className="flex items-center justify-between">
                       <p className="text-sm font-medium">{activity.title}</p>
-                      <Badge variant={activity.badgeVariant} className="text-xs">
+                      <Badge
+                        variant={activity.badgeVariant}
+                        className="text-xs"
+                      >
                         {activity.badge}
                       </Badge>
                     </div>

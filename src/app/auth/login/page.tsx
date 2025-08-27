@@ -1,29 +1,35 @@
 "use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { useAuth } from '@/contexts/auth-context';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { useState } from "react";
+import Link from "next/link";
+import { useAuth } from "@/contexts/auth-context";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Loader2, Eye, EyeOff, AlertCircle } from "lucide-react";
 
 export default function LoginPage() {
   const { login, isLoading } = useAuth();
-  
+
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    tenantSlug: '',
+    email: "",
+    password: "",
+    tenantSlug: "",
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     try {
       await login({
@@ -32,7 +38,7 @@ export default function LoginPage() {
         tenantSlug: formData.tenantSlug || undefined,
       });
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Login failed');
+      setError(err instanceof Error ? err.message : "Login failed");
     }
   };
 
@@ -52,7 +58,9 @@ export default function LoginPage() {
               <span className="text-2xl font-bold">L</span>
             </div>
           </div>
-          <CardTitle className="text-2xl text-center">Welcome to Limpia</CardTitle>
+          <CardTitle className="text-2xl text-center">
+            Welcome to Limpia
+          </CardTitle>
           <CardDescription className="text-center">
             Sign in to your business management dashboard
           </CardDescription>
@@ -65,7 +73,7 @@ export default function LoginPage() {
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
-            
+
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -86,7 +94,7 @@ export default function LoginPage() {
                 <Input
                   id="password"
                   name="password"
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   value={formData.password}
                   onChange={handleInputChange}
                   placeholder="Enter your password"
@@ -133,7 +141,7 @@ export default function LoginPage() {
                   Signing in...
                 </>
               ) : (
-                'Sign In'
+                "Sign In"
               )}
             </Button>
 
@@ -152,19 +160,29 @@ export default function LoginPage() {
               </Link>
             </div>
           </form>
-
         </CardContent>
-        
+
         {/* Development demo credentials - only show in development */}
-        {process.env.NODE_ENV === 'development' && (
+        {process.env.NODE_ENV === "development" && (
           <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
             <div className="text-center text-xs text-yellow-800">
               <p className="font-medium mb-2">Development Demo Accounts:</p>
               <div className="space-y-1">
-                <p><strong>CEO:</strong> admin@limpia.com / admin123</p>
-                <p><strong>Owner:</strong> owner@limpia.com / franchise123 (miami)</p>
-                <p><strong>Manager:</strong> salesmanager@limpia.com / sales123 (miami)</p>
-                <p><strong>Sales Rep:</strong> sales@limpia.com / sales123 (miami)</p>
+                <p>
+                  <strong>CEO:</strong> admin@limpia.com / admin123
+                </p>
+                <p>
+                  <strong>Owner:</strong> owner@limpia.com / franchise123
+                  (miami)
+                </p>
+                <p>
+                  <strong>Manager:</strong> salesmanager@limpia.com / sales123
+                  (miami)
+                </p>
+                <p>
+                  <strong>Sales Rep:</strong> sales@limpia.com / sales123
+                  (miami)
+                </p>
               </div>
             </div>
           </div>

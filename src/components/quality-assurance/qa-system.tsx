@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useCallback } from "react";
-import { useToast } from "@/hooks/use-toast";
+import React, { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -773,11 +772,14 @@ export function QualityAssuranceSystem() {
 
                 <div className="space-y-3">
                   {Object.entries(
-                    selectedRecord.checklist.reduce((acc, item) => {
-                      if (!acc[item.category]) acc[item.category] = [];
-                      acc[item.category].push(item);
-                      return acc;
-                    }, {} as Record<string, QualityChecklistItem[]>),
+                    selectedRecord.checklist.reduce(
+                      (acc, item) => {
+                        if (!acc[item.category]) acc[item.category] = [];
+                        acc[item.category].push(item);
+                        return acc;
+                      },
+                      {} as Record<string, QualityChecklistItem[]>,
+                    ),
                   ).map(([category, items]) => (
                     <div key={category} className="space-y-2">
                       <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
@@ -964,8 +966,8 @@ export function QualityAssuranceSystem() {
                                   issue.severity === "high"
                                     ? "destructive"
                                     : issue.severity === "medium"
-                                    ? "default"
-                                    : "secondary"
+                                      ? "default"
+                                      : "secondary"
                                 }
                               >
                                 {issue.severity} priority

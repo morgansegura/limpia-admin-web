@@ -1,6 +1,6 @@
 "use client";
 
-import { JobTimer } from '@/components/attendance/job-timer';
+import { JobTimer } from "@/components/attendance/job-timer";
 
 export default function JobTimerPage() {
   return (

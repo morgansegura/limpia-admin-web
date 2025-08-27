@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import type { Estimate, CalculatorData } from "@/types/app.types";
 import { ProtectedRoute } from "@/components/auth/protected-route";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -95,16 +96,20 @@ const getCommissionTierColor = (tier: string) => {
 
 export default function SalesPage() {
   const { user, isLoading: authLoading } = useAuth();
-  const [estimates, setEstimates] = useState<any[]>([]);
+  const [estimates, setEstimates] = useState<Estimate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
   const [isIntegratedWorkflowOpen, setIsIntegratedWorkflowOpen] =
     useState(false);
-  const [selectedEstimate, setSelectedEstimate] = useState<any>(null);
+  const [selectedEstimate, setSelectedEstimate] = useState<Estimate | null>(
+    null,
+  );
   const [isEstimateDetailOpen, setIsEstimateDetailOpen] = useState(false);
-  const [calculatorData, setCalculatorData] = useState<any>(null);
+  const [calculatorData, setCalculatorData] = useState<CalculatorData | null>(
+    null,
+  );
   const [activeTab, setActiveTab] = useState<"estimates" | "approvals">(
     "estimates",
   );
@@ -126,17 +131,33 @@ export default function SalesPage() {
   const [schedulingModalOpen, setSchedulingModalOpen] = useState(false);
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [notificationModalOpen, setNotificationModalOpen] = useState(false);
-  const [workflowEstimate, setWorkflowEstimate] = useState<any>(null);
+  const [workflowEstimate, setWorkflowEstimate] = useState<Estimate | null>(
+    null,
+  );
 
-  // Load estimates from API
-  useEffect(() => {
-    if (user?.role) {
-      console.log("🚀 Loading estimates for user role:", user.role);
-      loadEstimates();
-    }
-  }, [user?.role]);
+  // Debug user role
+  console.log("🔍 Current user role:", user?.role);
+  console.log("🔍 Role type:", typeof user?.role);
+  console.log("🔍 Is Sales Rep (enum)?", user?.role === UserRole.SALES_REP);
+  console.log("🔍 Is Sales Rep (string)?", user?.role === "SALES_REP");
+  console.log("🔍 UserRole enum values:", UserRole);
 
-  const loadEstimates = async () => {
+  // Handle both string and enum role values for compatibility
+  const isSalesRep = (user?.role as string) === "SALES_REP";
+  const isSalesManager = (user?.role as string) === "SALES_MANAGER";
+
+  // Check if user can manage workflow steps
+  const canManageWorkflow =
+    user?.role &&
+    [
+      UserRole.SALES_MANAGER,
+      UserRole.FRANCHISE_OWNER,
+      UserRole.CORPORATE_EXECUTIVE,
+      UserRole.CORPORATE_ADMIN,
+      UserRole.LOCATION_MANAGER,
+    ].includes(user.role);
+
+  const loadEstimates = useCallback(async () => {
     try {
       setIsLoading(true);
       // Sales Reps should only see their own estimates
@@ -147,7 +168,7 @@ export default function SalesPage() {
       // Check if we got valid data
       if (Array.isArray(data) && data.length > 0) {
         console.log("✅ Loaded estimates from API:", data.length, "estimates");
-        setEstimates(data);
+        setEstimates(data as Estimate[]);
       } else {
         // No data returned or empty array - use mock data for demonstration
         console.log(
@@ -280,11 +301,19 @@ export default function SalesPage() {
         "🎯 Role-based data for:",
         isSalesRep ? "Sales Rep" : "Sales Manager",
       );
-      setEstimates(mockEstimates);
+      setEstimates(mockEstimates as Estimate[]);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [isSalesRep, user?.firstName, user?.lastName]);
+
+  // Load estimates from API
+  useEffect(() => {
+    if (user?.role) {
+      console.log("🚀 Loading estimates for user role:", user.role);
+      loadEstimates();
+    }
+  }, [user?.role, loadEstimates]);
 
   // Handle estimate actions
   const handleSendEstimate = async (id: string) => {
@@ -298,12 +327,12 @@ export default function SalesPage() {
 
   // NOTE: Customer acceptance/rejection should be handled through customer portal
 
-  const handleViewEstimate = (estimate: any) => {
+  const handleViewEstimate = (estimate: Estimate) => {
     setSelectedEstimate(estimate);
     setIsEstimateDetailOpen(true);
   };
 
-  const handleCreateFromCalculator = (calculationData: any) => {
+  const handleCreateFromCalculator = (calculationData: CalculatorData) => {
     console.log("🔄 Creating estimate from calculator data:", calculationData);
     console.log("📊 Data includes:", {
       basePrice: calculationData.basePrice,
@@ -318,13 +347,13 @@ export default function SalesPage() {
   };
 
   // Workflow handlers
-  const handleInitiateWorkflow = async (estimate: any) => {
+  const handleInitiateWorkflow = async (estimate: Estimate) => {
     try {
       console.log("🚀 Initiating workflow for estimate:", estimate.id);
       await initializeWorkflow(
         estimate.id,
         estimate.customerId || `customer_${estimate.id}`,
-        estimate.customerName,
+        estimate.customerName || "Unknown Customer",
       );
 
       setWorkflowEstimate(estimate);
@@ -336,16 +365,16 @@ export default function SalesPage() {
     } catch (error: unknown) {
       toast({
         title: "Workflow Error",
-        description: error instanceof Error ? error.message : "Failed to initiate workflow",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to initiate workflow",
         variant: "destructive",
       });
     }
   };
 
-  const handleWorkflowStepAction = async (
-    stepId: string,
-    action: string,
-  ) => {
+  const handleWorkflowStepAction = async (stepId: string, action: string) => {
     if (!workflowEstimate) return;
 
     try {
@@ -382,13 +411,17 @@ export default function SalesPage() {
     } catch (error: unknown) {
       toast({
         title: "Workflow Error",
-        description: error instanceof Error ? error.message : "Failed to execute workflow step",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to execute workflow step",
         variant: "destructive",
       });
     }
   };
 
-  const handleContractInitiated = async (contractData: any) => {
+  const handleContractInitiated = async (contractData: unknown) => {
+    if (!workflowEstimate) return;
     try {
       await executeContractSigning(workflowEstimate.id, contractData);
       setContractModalOpen(false);
@@ -397,7 +430,8 @@ export default function SalesPage() {
     }
   };
 
-  const handlePaymentProcessed = async (paymentData: any) => {
+  const handlePaymentProcessed = async (paymentData: unknown) => {
+    if (!workflowEstimate) return;
     try {
       await executePaymentProcessing(workflowEstimate.id, paymentData);
       setPaymentModalOpen(false);
@@ -406,7 +440,8 @@ export default function SalesPage() {
     }
   };
 
-  const handleServiceScheduled = async (scheduleData: any) => {
+  const handleServiceScheduled = async (scheduleData: unknown) => {
+    if (!workflowEstimate) return;
     try {
       await executeServiceScheduling(workflowEstimate.id, scheduleData);
       setSchedulingModalOpen(false);
@@ -415,11 +450,12 @@ export default function SalesPage() {
     }
   };
 
-  const handleNotificationsSent = async (notificationData: any) => {
+  const handleNotificationsSent = async (notificationData: unknown) => {
+    if (!workflowEstimate) return;
     try {
       await sendCustomerNotifications(
         workflowEstimate.customerId || `customer_${workflowEstimate.id}`,
-        notificationData.templateType,
+        (notificationData as { templateType: string }).templateType,
         notificationData,
       );
       setNotificationModalOpen(false);
@@ -430,9 +466,13 @@ export default function SalesPage() {
 
   const filteredEstimates = estimates.filter((estimate) => {
     const matchesSearch =
-      estimate.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (estimate.customerName || "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
       estimate.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      estimate.customerEmail.toLowerCase().includes(searchTerm.toLowerCase());
+      (estimate.customerEmail || "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
 
     const matchesStatus =
       statusFilter === "all" || estimate.status === statusFilter;
@@ -446,9 +486,9 @@ export default function SalesPage() {
   ).length;
   const totalRevenue = estimates
     .filter((e) => e.status === "ACCEPTED")
-    .reduce((sum, e) => sum + e.finalPrice, 0);
+    .reduce((sum, e) => sum + (e.finalPrice || 0), 0);
   const totalCommissions = estimates.reduce(
-    (sum, e) => sum + e.commissionAmount,
+    (sum, e) => sum + (e.commissionAmount || 0),
     0,
   );
 
@@ -466,29 +506,6 @@ export default function SalesPage() {
       commissionAmount: e.commissionAmount,
     })),
   });
-
-  // Debug user role
-  console.log("🔍 Current user role:", user?.role);
-  console.log("🔍 Role type:", typeof user?.role);
-  console.log("🔍 Is Sales Rep (enum)?", user?.role === UserRole.SALES_REP);
-  console.log("🔍 Is Sales Rep (string)?", user?.role === "SALES_REP");
-  console.log("🔍 UserRole enum values:", UserRole);
-
-  // Handle both string and enum role values for compatibility
-  const isSalesRep = (user?.role as string) === "SALES_REP";
-  const isSalesManager = (user?.role as string) === "SALES_MANAGER";
-
-
-  // Check if user can manage workflow steps
-  const canManageWorkflow =
-    user?.role &&
-    [
-      UserRole.SALES_MANAGER,
-      UserRole.FRANCHISE_OWNER,
-      UserRole.CORPORATE_EXECUTIVE,
-      UserRole.CORPORATE_ADMIN,
-      UserRole.LOCATION_MANAGER,
-    ].includes(user.role);
 
   // Show loading state while authentication is being resolved
   if (authLoading) {
@@ -530,7 +547,22 @@ export default function SalesPage() {
             setCalculatorData(null);
           }}
           onComplete={() => loadEstimates()}
-          initialCalculatorData={calculatorData}
+          initialCalculatorData={
+            calculatorData
+              ? {
+                  basePrice: calculatorData.basePrice || 0,
+                  quotedPrice: calculatorData.quotedPrice || 0,
+                  serviceType: calculatorData.serviceType || "",
+                  squareFootage: calculatorData.squareFootage || "",
+                  frequency: calculatorData.frequency || "",
+                  discountPercentage: calculatorData.discountPercentage || 0,
+                  finalPrice: calculatorData.finalPrice || 0,
+                  discountAmount: calculatorData.discountAmount || 0,
+                  commissionAmount: calculatorData.commissionAmount || 0,
+                  commissionTier: calculatorData.commissionTier || "",
+                }
+              : undefined
+          }
         />
       </ProtectedRoute>
     );
@@ -798,10 +830,10 @@ export default function SalesPage() {
                           {acceptedEstimates >= 8
                             ? "EXCELLENT"
                             : acceptedEstimates >= 5
-                            ? "GOOD"
-                            : acceptedEstimates >= 3
-                            ? "FAIR"
-                            : "BUILDING"}
+                              ? "GOOD"
+                              : acceptedEstimates >= 3
+                                ? "FAIR"
+                                : "BUILDING"}
                         </div>
                         <div className="text-xs text-muted-foreground">
                           Based on deals closed this month
@@ -1037,7 +1069,9 @@ export default function SalesPage() {
                               {
                                 estimates.filter(
                                   (e) =>
-                                    new Date(e.createdAt).toDateString() ===
+                                    new Date(
+                                      e.createdAt || new Date(),
+                                    ).toDateString() ===
                                     new Date().toDateString(),
                                 ).length
                               }
@@ -1160,7 +1194,10 @@ export default function SalesPage() {
                           <TableCell>
                             <div>
                               <div className="capitalize">
-                                {estimate.serviceType.replace(/_/g, " ")}
+                                {(estimate.serviceType || "unknown").replace(
+                                  /_/g,
+                                  " ",
+                                )}
                               </div>
                               <div className="text-sm text-muted-foreground">
                                 {estimate.squareFootage} sq ft
@@ -1175,10 +1212,10 @@ export default function SalesPage() {
                               <div className="font-medium">
                                 ${estimate?.finalPrice?.toFixed(2)}
                               </div>
-                              {estimate.discountPercentage > 0 && (
+                              {(estimate.discountPercentage || 0) > 0 && (
                                 <div className="text-sm text-red-600">
                                   -{estimate.discountPercentage}% ($
-                                  {estimate.discountAmount.toFixed(2)})
+                                  {(estimate.discountAmount || 0).toFixed(2)})
                                 </div>
                               )}
                             </div>
@@ -1189,7 +1226,7 @@ export default function SalesPage() {
                               <div className="flex items-center space-x-2">
                                 <div
                                   className={`w-2 h-2 rounded-full ${getCommissionTierColor(
-                                    estimate.commissionTier,
+                                    estimate.commissionTier || "bronze",
                                   )}`}
                                 />
                                 <div>
@@ -1209,7 +1246,7 @@ export default function SalesPage() {
                               <div className="flex items-center space-x-2">
                                 <div
                                   className={`w-2 h-2 rounded-full ${getCommissionTierColor(
-                                    estimate.commissionTier,
+                                    estimate.commissionTier || "bronze",
                                   )}`}
                                 />
                                 <div>
@@ -1241,9 +1278,12 @@ export default function SalesPage() {
                           <TableCell>
                             <div className="text-sm">
                               <div>
-                                {formatDistanceToNow(estimate.createdAt, {
-                                  addSuffix: true,
-                                })}
+                                {formatDistanceToNow(
+                                  new Date(estimate.createdAt || new Date()),
+                                  {
+                                    addSuffix: true,
+                                  },
+                                )}
                               </div>
                               <div className="text-muted-foreground">
                                 {estimate.createdBy}
@@ -1384,9 +1424,14 @@ export default function SalesPage() {
                         </CardHeader>
                         <CardContent>
                           <p className="text-lg">
-                            {formatDistanceToNow(selectedEstimate.createdAt, {
-                              addSuffix: true,
-                            })}
+                            {selectedEstimate.createdAt
+                              ? formatDistanceToNow(
+                                  selectedEstimate.createdAt,
+                                  {
+                                    addSuffix: true,
+                                  },
+                                )
+                              : "Not available"}
                           </p>
                           <p className="text-sm text-muted-foreground">
                             by {selectedEstimate.createdBy}
@@ -1436,7 +1481,10 @@ export default function SalesPage() {
                               Service Type
                             </h4>
                             <p className="capitalize">
-                              {selectedEstimate.serviceType.replace(/_/g, " ")}
+                              {selectedEstimate.serviceType?.replace(
+                                /_/g,
+                                " ",
+                              ) || "Not specified"}
                             </p>
                           </div>
                           <div>
@@ -1468,7 +1516,7 @@ export default function SalesPage() {
                             </span>
                           </div>
 
-                          {selectedEstimate.discountPercentage > 0 && (
+                          {(selectedEstimate.discountPercentage || 0) > 0 && (
                             <div className="flex justify-between items-center py-2 text-red-600">
                               <span className="flex items-center gap-1">
                                 <Percent className="h-4 w-4" />
@@ -1519,7 +1567,7 @@ export default function SalesPage() {
                               <div className="flex items-center gap-2">
                                 <div
                                   className={`w-3 h-3 rounded-full ${getCommissionTierColor(
-                                    selectedEstimate.commissionTier,
+                                    selectedEstimate.commissionTier || "",
                                   )}`}
                                 />
                                 <span className="capitalize">
@@ -1622,10 +1670,12 @@ export default function SalesPage() {
                   isOpen={contractModalOpen}
                   onClose={() => setContractModalOpen(false)}
                   estimateId={workflowEstimate.id}
-                  customerName={workflowEstimate.customerName}
-                  customerEmail={workflowEstimate.customerEmail}
+                  customerName={workflowEstimate.customerName || ""}
+                  customerEmail={workflowEstimate.customerEmail || ""}
                   estimateAmount={
-                    workflowEstimate.finalPrice || workflowEstimate.quotedPrice
+                    workflowEstimate.finalPrice ||
+                    workflowEstimate.quotedPrice ||
+                    0
                   }
                   onContractInitiated={handleContractInitiated}
                 />
@@ -1634,8 +1684,8 @@ export default function SalesPage() {
                   isOpen={schedulingModalOpen}
                   onClose={() => setSchedulingModalOpen(false)}
                   estimateId={workflowEstimate.id}
-                  customerName={workflowEstimate.customerName}
-                  serviceType={workflowEstimate.serviceType}
+                  customerName={workflowEstimate.customerName || ""}
+                  serviceType={workflowEstimate.serviceType || ""}
                   estimatedDuration={240} // 4 hours default
                   onServiceScheduled={handleServiceScheduled}
                 />
@@ -1644,9 +1694,11 @@ export default function SalesPage() {
                   isOpen={paymentModalOpen}
                   onClose={() => setPaymentModalOpen(false)}
                   estimateId={workflowEstimate.id}
-                  customerName={workflowEstimate.customerName}
+                  customerName={workflowEstimate.customerName || ""}
                   totalAmount={
-                    workflowEstimate.finalPrice || workflowEstimate.quotedPrice
+                    workflowEstimate.finalPrice ||
+                    workflowEstimate.quotedPrice ||
+                    0
                   }
                   onPaymentProcessed={handlePaymentProcessed}
                 />
@@ -1658,10 +1710,10 @@ export default function SalesPage() {
                     workflowEstimate.customerId ||
                     `customer_${workflowEstimate.id}`
                   }
-                  customerName={workflowEstimate.customerName}
-                  customerEmail={workflowEstimate.customerEmail}
+                  customerName={workflowEstimate.customerName || ""}
+                  customerEmail={workflowEstimate.customerEmail || ""}
                   customerPhone={workflowEstimate.customerPhone}
-                  serviceType={workflowEstimate.serviceType}
+                  serviceType={workflowEstimate.serviceType || ""}
                   onNotificationsSent={handleNotificationsSent}
                 />
               </>

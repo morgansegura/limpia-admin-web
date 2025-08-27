@@ -1,8 +1,14 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { authApi, User, Tenant, LoginRequest, RegisterRequest } from '@/lib/api';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  authApi,
+  User,
+  Tenant,
+  LoginRequest,
+  RegisterRequest,
+} from "@/lib/api";
 
 interface AuthContextType {
   user: User | null;
@@ -22,7 +28,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }
@@ -46,10 +52,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const initializeAuth = async () => {
     try {
-      const token = localStorage.getItem('access_token');
-      const storedUser = localStorage.getItem('user');
-      const storedTenant = localStorage.getItem('tenant');
-      
+      const token = localStorage.getItem("access_token");
+      const storedUser = localStorage.getItem("user");
+      const storedTenant = localStorage.getItem("tenant");
+
       if (!token) {
         setIsLoading(false);
         return;
@@ -61,7 +67,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           setUser(JSON.parse(storedUser));
           setTenant(JSON.parse(storedTenant));
         } catch (parseError) {
-          console.error('Failed to parse stored user data:', parseError);
+          console.error("Failed to parse stored user data:", parseError);
         }
       }
 
@@ -69,30 +75,30 @@ export function AuthProvider({ children }: AuthProviderProps) {
       try {
         const response = await authApi.getMe();
         setUser(response.user);
-        
+
         // Extract tenant from user object if nested, otherwise use direct tenant
         const tenant = response.user?.tenant || response.tenant;
         if (tenant) {
           setTenant(tenant);
-          localStorage.setItem('tenant', JSON.stringify(tenant));
+          localStorage.setItem("tenant", JSON.stringify(tenant));
         }
-        
+
         // Update stored data
-        localStorage.setItem('user', JSON.stringify(response.user));
+        localStorage.setItem("user", JSON.stringify(response.user));
       } catch (apiError) {
-        console.error('Failed to refresh user data:', apiError);
+        console.error("Failed to refresh user data:", apiError);
         // If API call fails but we have stored data, continue with stored data
         if (!storedUser || !storedTenant) {
           throw apiError;
         }
       }
     } catch (error) {
-      console.error('Auth initialization failed:', error);
+      console.error("Auth initialization failed:", error);
       // Clear invalid token
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('refresh_token');
-      localStorage.removeItem('user');
-      localStorage.removeItem('tenant');
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      localStorage.removeItem("user");
+      localStorage.removeItem("tenant");
     } finally {
       setIsLoading(false);
     }
@@ -102,31 +108,32 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       setIsLoading(true);
       const response = await authApi.login(credentials);
-      
+
       // Store tokens and user data
-      localStorage.setItem('access_token', response.access_token);
+      localStorage.setItem("access_token", response.access_token);
       if (response.refresh_token) {
-        localStorage.setItem('refresh_token', response.refresh_token);
+        localStorage.setItem("refresh_token", response.refresh_token);
       }
-      localStorage.setItem('user', JSON.stringify(response.user));
-      
+      localStorage.setItem("user", JSON.stringify(response.user));
+
       // Extract tenant from user object if nested, otherwise use direct tenant
       const tenant = response.user?.tenant || response.tenant;
       if (tenant) {
-        localStorage.setItem('tenant', JSON.stringify(tenant));
+        localStorage.setItem("tenant", JSON.stringify(tenant));
         setTenant(tenant);
       }
-      
+
       setUser(response.user);
-      
+
       // Redirect to dashboard
-      router.push('/');
+      router.push("/");
     } catch (error: unknown) {
-      console.error('Login failed:', error);
-      const errorMessage = error instanceof Error && 'response' in error 
-        ? (error.response as { data?: { message?: string } })?.data?.message
-        : 'Login failed';
-      throw new Error(errorMessage || 'Login failed');
+      console.error("Login failed:", error);
+      const errorMessage =
+        error instanceof Error && "response" in error
+          ? (error.response as { data?: { message?: string } })?.data?.message
+          : "Login failed";
+      throw new Error(errorMessage || "Login failed");
     } finally {
       setIsLoading(false);
     }
@@ -136,31 +143,32 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       setIsLoading(true);
       const response = await authApi.register(userData);
-      
+
       // Store tokens and user data
-      localStorage.setItem('access_token', response.access_token);
+      localStorage.setItem("access_token", response.access_token);
       if (response.refresh_token) {
-        localStorage.setItem('refresh_token', response.refresh_token);
+        localStorage.setItem("refresh_token", response.refresh_token);
       }
-      localStorage.setItem('user', JSON.stringify(response.user));
-      
+      localStorage.setItem("user", JSON.stringify(response.user));
+
       // Extract tenant from user object if nested, otherwise use direct tenant
       const tenant = response.user?.tenant || response.tenant;
       if (tenant) {
-        localStorage.setItem('tenant', JSON.stringify(tenant));
+        localStorage.setItem("tenant", JSON.stringify(tenant));
         setTenant(tenant);
       }
-      
+
       setUser(response.user);
-      
+
       // Redirect to dashboard
-      router.push('/');
+      router.push("/");
     } catch (error: unknown) {
-      console.error('Registration failed:', error);
-      const errorMessage = error instanceof Error && 'response' in error 
-        ? (error.response as { data?: { message?: string } })?.data?.message
-        : 'Registration failed';
-      throw new Error(errorMessage || 'Registration failed');
+      console.error("Registration failed:", error);
+      const errorMessage =
+        error instanceof Error && "response" in error
+          ? (error.response as { data?: { message?: string } })?.data?.message
+          : "Registration failed";
+      throw new Error(errorMessage || "Registration failed");
     } finally {
       setIsLoading(false);
     }
@@ -168,28 +176,29 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const logout = () => {
     // Clear storage
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('user');
-    localStorage.removeItem('tenant');
-    
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("tenant");
+
     // Clear state
     setUser(null);
     setTenant(null);
-    
+
     // Redirect to login
-    router.push('/auth/login');
+    router.push("/auth/login");
   };
 
   const forgotPassword = async (email: string) => {
     try {
       await authApi.forgotPassword(email);
     } catch (error: unknown) {
-      console.error('Forgot password failed:', error);
-      const errorMessage = error instanceof Error && 'response' in error 
-        ? (error.response as { data?: { message?: string } })?.data?.message
-        : 'Failed to send reset email';
-      throw new Error(errorMessage || 'Failed to send reset email');
+      console.error("Forgot password failed:", error);
+      const errorMessage =
+        error instanceof Error && "response" in error
+          ? (error.response as { data?: { message?: string } })?.data?.message
+          : "Failed to send reset email";
+      throw new Error(errorMessage || "Failed to send reset email");
     }
   };
 
@@ -197,11 +206,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       await authApi.resetPassword(token, password);
     } catch (error: unknown) {
-      console.error('Reset password failed:', error);
-      const errorMessage = error instanceof Error && 'response' in error 
-        ? (error.response as { data?: { message?: string } })?.data?.message
-        : 'Failed to reset password';
-      throw new Error(errorMessage || 'Failed to reset password');
+      console.error("Reset password failed:", error);
+      const errorMessage =
+        error instanceof Error && "response" in error
+          ? (error.response as { data?: { message?: string } })?.data?.message
+          : "Failed to reset password";
+      throw new Error(errorMessage || "Failed to reset password");
     }
   };
 
@@ -209,14 +219,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       const response = await authApi.getMe();
       setUser(response.user);
-      
+
       // Extract tenant from user object if nested, otherwise use direct tenant
       const tenant = response.user?.tenant || response.tenant;
       if (tenant) {
         setTenant(tenant);
       }
     } catch (error) {
-      console.error('Failed to refresh user:', error);
+      console.error("Failed to refresh user:", error);
       logout();
     }
   };
@@ -234,11 +244,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     refreshUser,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 // Role-based access control hook
@@ -247,21 +253,26 @@ export function usePermissions() {
 
   const hasRole = (requiredRoles: string | string[]) => {
     if (!user) return false;
-    
-    const roles = Array.isArray(requiredRoles) ? requiredRoles : [requiredRoles];
+
+    const roles = Array.isArray(requiredRoles)
+      ? requiredRoles
+      : [requiredRoles];
     return roles.includes(user.role);
   };
 
   const hasPermission = (permission: string) => {
     if (!user) return false;
-    
+
     // Handle both array and object permissions format
     if (Array.isArray(user.permissions)) {
       return user.permissions.includes(permission);
-    } else if (typeof user.permissions === 'object' && user.permissions !== null) {
+    } else if (
+      typeof user.permissions === "object" &&
+      user.permissions !== null
+    ) {
       return user.permissions[permission] === true;
     }
-    
+
     return false;
   };
 
@@ -270,16 +281,61 @@ export function usePermissions() {
 
     // Define feature access based on roles
     const featureAccess: Record<string, string[]> = {
-      'sales': ['FRANCHISE_OWNER', 'LOCATION_MANAGER', 'SUPERVISOR', 'SALES_REP', 'SALES_MANAGER', 'CORPORATE_EXECUTIVE', 'CORPORATE_ADMIN', 'CORPORATE_SUPPORT'],
-      'customers': ['FRANCHISE_OWNER', 'LOCATION_MANAGER', 'SUPERVISOR', 'EMPLOYEE', 'SALES_REP', 'SALES_MANAGER', 'CORPORATE_EXECUTIVE', 'CORPORATE_ADMIN', 'CORPORATE_SUPPORT'],
-      'crews': ['FRANCHISE_OWNER', 'LOCATION_MANAGER', 'SUPERVISOR', 'CORPORATE_EXECUTIVE', 'CORPORATE_ADMIN'],
-      'jobs': ['FRANCHISE_OWNER', 'LOCATION_MANAGER', 'SUPERVISOR', 'EMPLOYEE', 'CORPORATE_EXECUTIVE', 'CORPORATE_ADMIN', 'CORPORATE_SUPPORT'],
-      'inventory': ['FRANCHISE_OWNER', 'LOCATION_MANAGER', 'SUPERVISOR', 'CORPORATE_EXECUTIVE', 'CORPORATE_ADMIN'],
-      'analytics': ['FRANCHISE_OWNER', 'LOCATION_MANAGER', 'CORPORATE_EXECUTIVE', 'CORPORATE_ADMIN', 'CORPORATE_SUPPORT'],
-      'admin': ['FRANCHISE_OWNER', 'CORPORATE_EXECUTIVE', 'CORPORATE_ADMIN'],
-      'corporate': ['CORPORATE_EXECUTIVE', 'CORPORATE_ADMIN'], // Multi-tenant oversight, franchise management
-      'franchiseOversight': ['CORPORATE_EXECUTIVE', 'CORPORATE_ADMIN'], // View all franchises
-      'systemAdmin': ['CORPORATE_EXECUTIVE'], // CEO-level system administration
+      sales: [
+        "FRANCHISE_OWNER",
+        "LOCATION_MANAGER",
+        "SUPERVISOR",
+        "SALES_REP",
+        "SALES_MANAGER",
+        "CORPORATE_EXECUTIVE",
+        "CORPORATE_ADMIN",
+        "CORPORATE_SUPPORT",
+      ],
+      customers: [
+        "FRANCHISE_OWNER",
+        "LOCATION_MANAGER",
+        "SUPERVISOR",
+        "EMPLOYEE",
+        "SALES_REP",
+        "SALES_MANAGER",
+        "CORPORATE_EXECUTIVE",
+        "CORPORATE_ADMIN",
+        "CORPORATE_SUPPORT",
+      ],
+      crews: [
+        "FRANCHISE_OWNER",
+        "LOCATION_MANAGER",
+        "SUPERVISOR",
+        "CORPORATE_EXECUTIVE",
+        "CORPORATE_ADMIN",
+      ],
+      jobs: [
+        "FRANCHISE_OWNER",
+        "LOCATION_MANAGER",
+        "SUPERVISOR",
+        "EMPLOYEE",
+        "CORPORATE_EXECUTIVE",
+        "CORPORATE_ADMIN",
+        "CORPORATE_SUPPORT",
+      ],
+      inventory: [
+        "FRANCHISE_OWNER",
+        "LOCATION_MANAGER",
+        "SUPERVISOR",
+        "CORPORATE_EXECUTIVE",
+        "CORPORATE_ADMIN",
+      ],
+      analytics: [
+        "FRANCHISE_OWNER",
+        "LOCATION_MANAGER",
+        "CORPORATE_EXECUTIVE",
+        "CORPORATE_ADMIN",
+        "CORPORATE_SUPPORT",
+      ],
+      admin: ["FRANCHISE_OWNER", "CORPORATE_EXECUTIVE", "CORPORATE_ADMIN"],
+      corporate: ["CORPORATE_EXECUTIVE", "CORPORATE_ADMIN"], // Multi-tenant oversight, franchise management
+      franchiseOversight: ["CORPORATE_EXECUTIVE", "CORPORATE_ADMIN"], // View all franchises
+      systemAdmin: ["CORPORATE_EXECUTIVE"], // CEO-level system administration
     };
 
     const allowedRoles = featureAccess[feature];

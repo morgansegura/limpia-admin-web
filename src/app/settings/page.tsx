@@ -5,18 +5,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/contexts/auth-context";
-import { 
-  Bell, 
-  Moon, 
-  Globe, 
-  Shield, 
-  Key, 
-  Smartphone, 
-  Save
-} from "lucide-react";
+import { Bell, Moon, Globe, Shield, Key, Smartphone, Save } from "lucide-react";
 
 export default function SettingsPage() {
   const { user, tenant } = useAuth();
@@ -28,18 +26,18 @@ export default function SettingsPage() {
     marketingEmails: false,
     jobUpdates: true,
     customerUpdates: true,
-    
+
     // Appearance Settings
     darkMode: false,
     compactView: false,
-    
+
     // Regional Settings
     timezone: "America/New_York",
     dateFormat: "MM/DD/YYYY",
     timeFormat: "12h",
     currency: "USD",
     language: "en",
-    
+
     // Privacy Settings
     profileVisibility: "team",
     activityStatus: true,
@@ -48,8 +46,8 @@ export default function SettingsPage() {
 
   const [hasChanges, setHasChanges] = useState(false);
 
-  const handleSettingChange = (key: string, value: any) => {
-    setSettings(prev => ({ ...prev, [key]: value }));
+  const handleSettingChange = (key: string, value: boolean | string) => {
+    setSettings((prev) => ({ ...prev, [key]: value }));
     setHasChanges(true);
   };
 
@@ -99,7 +97,9 @@ export default function SettingsPage() {
                 </div>
                 <Switch
                   checked={settings.emailNotifications}
-                  onCheckedChange={(checked) => handleSettingChange('emailNotifications', checked)}
+                  onCheckedChange={(checked) =>
+                    handleSettingChange("emailNotifications", checked)
+                  }
                 />
               </div>
 
@@ -112,7 +112,9 @@ export default function SettingsPage() {
                 </div>
                 <Switch
                   checked={settings.pushNotifications}
-                  onCheckedChange={(checked) => handleSettingChange('pushNotifications', checked)}
+                  onCheckedChange={(checked) =>
+                    handleSettingChange("pushNotifications", checked)
+                  }
                 />
               </div>
 
@@ -125,7 +127,9 @@ export default function SettingsPage() {
                 </div>
                 <Switch
                   checked={settings.smsNotifications}
-                  onCheckedChange={(checked) => handleSettingChange('smsNotifications', checked)}
+                  onCheckedChange={(checked) =>
+                    handleSettingChange("smsNotifications", checked)
+                  }
                 />
               </div>
 
@@ -140,7 +144,9 @@ export default function SettingsPage() {
                 </div>
                 <Switch
                   checked={settings.jobUpdates}
-                  onCheckedChange={(checked) => handleSettingChange('jobUpdates', checked)}
+                  onCheckedChange={(checked) =>
+                    handleSettingChange("jobUpdates", checked)
+                  }
                 />
               </div>
 
@@ -153,7 +159,9 @@ export default function SettingsPage() {
                 </div>
                 <Switch
                   checked={settings.customerUpdates}
-                  onCheckedChange={(checked) => handleSettingChange('customerUpdates', checked)}
+                  onCheckedChange={(checked) =>
+                    handleSettingChange("customerUpdates", checked)
+                  }
                 />
               </div>
 
@@ -166,7 +174,9 @@ export default function SettingsPage() {
                 </div>
                 <Switch
                   checked={settings.marketingEmails}
-                  onCheckedChange={(checked) => handleSettingChange('marketingEmails', checked)}
+                  onCheckedChange={(checked) =>
+                    handleSettingChange("marketingEmails", checked)
+                  }
                 />
               </div>
             </div>
@@ -194,7 +204,9 @@ export default function SettingsPage() {
               </div>
               <Switch
                 checked={settings.darkMode}
-                onCheckedChange={(checked) => handleSettingChange('darkMode', checked)}
+                onCheckedChange={(checked) =>
+                  handleSettingChange("darkMode", checked)
+                }
               />
             </div>
 
@@ -207,7 +219,9 @@ export default function SettingsPage() {
               </div>
               <Switch
                 checked={settings.compactView}
-                onCheckedChange={(checked) => handleSettingChange('compactView', checked)}
+                onCheckedChange={(checked) =>
+                  handleSettingChange("compactView", checked)
+                }
               />
             </div>
           </CardContent>
@@ -230,16 +244,26 @@ export default function SettingsPage() {
                 <Label>Timezone</Label>
                 <Select
                   value={settings.timezone}
-                  onValueChange={(value) => handleSettingChange('timezone', value)}
+                  onValueChange={(value) =>
+                    handleSettingChange("timezone", value)
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="America/New_York">Eastern Time</SelectItem>
-                    <SelectItem value="America/Chicago">Central Time</SelectItem>
-                    <SelectItem value="America/Denver">Mountain Time</SelectItem>
-                    <SelectItem value="America/Los_Angeles">Pacific Time</SelectItem>
+                    <SelectItem value="America/New_York">
+                      Eastern Time
+                    </SelectItem>
+                    <SelectItem value="America/Chicago">
+                      Central Time
+                    </SelectItem>
+                    <SelectItem value="America/Denver">
+                      Mountain Time
+                    </SelectItem>
+                    <SelectItem value="America/Los_Angeles">
+                      Pacific Time
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -248,7 +272,9 @@ export default function SettingsPage() {
                 <Label>Language</Label>
                 <Select
                   value={settings.language}
-                  onValueChange={(value) => handleSettingChange('language', value)}
+                  onValueChange={(value) =>
+                    handleSettingChange("language", value)
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -265,7 +291,9 @@ export default function SettingsPage() {
                 <Label>Date Format</Label>
                 <Select
                   value={settings.dateFormat}
-                  onValueChange={(value) => handleSettingChange('dateFormat', value)}
+                  onValueChange={(value) =>
+                    handleSettingChange("dateFormat", value)
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -282,7 +310,9 @@ export default function SettingsPage() {
                 <Label>Time Format</Label>
                 <Select
                   value={settings.timeFormat}
-                  onValueChange={(value) => handleSettingChange('timeFormat', value)}
+                  onValueChange={(value) =>
+                    handleSettingChange("timeFormat", value)
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -313,12 +343,14 @@ export default function SettingsPage() {
               <div className="space-y-0.5">
                 <Label>Activity Status</Label>
                 <p className="text-sm text-muted-foreground">
-                  Show when you're active to team members
+                  Show when you&apos;re active to team members
                 </p>
               </div>
               <Switch
                 checked={settings.activityStatus}
-                onCheckedChange={(checked) => handleSettingChange('activityStatus', checked)}
+                onCheckedChange={(checked) =>
+                  handleSettingChange("activityStatus", checked)
+                }
               />
             </div>
 
@@ -331,7 +363,9 @@ export default function SettingsPage() {
               </div>
               <Switch
                 checked={settings.dataSharing}
-                onCheckedChange={(checked) => handleSettingChange('dataSharing', checked)}
+                onCheckedChange={(checked) =>
+                  handleSettingChange("dataSharing", checked)
+                }
               />
             </div>
 
@@ -339,7 +373,9 @@ export default function SettingsPage() {
               <Label>Profile Visibility</Label>
               <Select
                 value={settings.profileVisibility}
-                onValueChange={(value) => handleSettingChange('profileVisibility', value)}
+                onValueChange={(value) =>
+                  handleSettingChange("profileVisibility", value)
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -382,20 +418,37 @@ export default function SettingsPage() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-sm font-medium text-muted-foreground">Organization</Label>
+                  <Label className="text-sm font-medium text-muted-foreground">
+                    Organization
+                  </Label>
                   <p className="text-sm">{tenant.name}</p>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium text-muted-foreground">User ID</Label>
+                  <Label className="text-sm font-medium text-muted-foreground">
+                    User ID
+                  </Label>
                   <p className="text-sm font-mono">{user?.id}</p>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium text-muted-foreground">Role</Label>
-                  <p className="text-sm">{user?.role.replace('_', ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase())}</p>
+                  <Label className="text-sm font-medium text-muted-foreground">
+                    Role
+                  </Label>
+                  <p className="text-sm">
+                    {user?.role
+                      .replace("_", " ")
+                      .toLowerCase()
+                      .replace(/\b\w/g, (l) => l.toUpperCase())}
+                  </p>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium text-muted-foreground">Member Since</Label>
-                  <p className="text-sm">{user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}</p>
+                  <Label className="text-sm font-medium text-muted-foreground">
+                    Member Since
+                  </Label>
+                  <p className="text-sm">
+                    {user?.createdAt
+                      ? new Date(user.createdAt).toLocaleDateString()
+                      : "N/A"}
+                  </p>
                 </div>
               </div>
             </CardContent>

@@ -21,7 +21,7 @@ export function TimerStatusIndicator() {
   if (!mounted) {
     return null;
   }
-  
+
   const activeTimers = getActiveTimers();
   const stats = getTimerStats();
 

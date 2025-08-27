@@ -23,7 +23,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
 import {
   Calendar,
   DollarSign,
@@ -33,29 +32,18 @@ import {
   AlertTriangle,
   Clock,
   Plus,
-  Trash2,
   Edit,
   Play,
-  Pause,
   RotateCcw,
   Activity,
   Users,
-  MapPin,
   CreditCard,
-  FileText,
-  Bell,
   Mail,
-  MessageSquare,
-  Database,
-  Cloud,
   Zap,
   Download,
-  Upload,
   Eye,
-  Shield,
-  Key,
 } from "lucide-react";
-import { format, subDays } from "date-fns";
+import { format } from "date-fns";
 
 interface Integration {
   id: string;
@@ -501,7 +489,7 @@ export function IntegrationHub() {
       const csvData = [
         [
           "Integration Name",
-          "Provider", 
+          "Provider",
           "Category",
           "Status",
           "Enabled",
@@ -513,29 +501,33 @@ export function IntegrationHub() {
           "Records Synced",
           "Bidirectional Sync",
           "Auto Create Events",
-          "Features"
+          "Features",
         ],
-        ...integrations.map(integration => [
+        ...integrations.map((integration) => [
           integration.name,
           integration.provider,
           integration.category,
           integration.status,
           integration.isEnabled ? "Yes" : "No",
-          integration.lastSync ? format(integration.lastSync, "yyyy-MM-dd HH:mm") : "Never",
+          integration.lastSync
+            ? format(integration.lastSync, "yyyy-MM-dd HH:mm")
+            : "Never",
           integration.syncFrequency,
-          integration.connectedAt ? format(integration.connectedAt, "yyyy-MM-dd") : "Never",
+          integration.connectedAt
+            ? format(integration.connectedAt, "yyyy-MM-dd")
+            : "Never",
           integration.metrics.totalSyncs,
           integration.metrics.errorCount,
           integration.metrics.recordsSynced,
           integration.settings.bidirectionalSync ? "Yes" : "No",
           integration.settings.autoCreateEvents ? "Yes" : "No",
-          integration.features.join("; ")
-        ])
+          integration.features.join("; "),
+        ]),
       ];
 
       // Convert to CSV string
-      const csvContent = csvData.map(row => row.join(",")).join("\n");
-      
+      const csvContent = csvData.map((row) => row.join(",")).join("\n");
+
       // Create and download file
       const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
       const url = window.URL.createObjectURL(blob);
@@ -554,8 +546,9 @@ export function IntegrationHub() {
     } catch (error) {
       console.error("Error exporting integration config:", error);
       toast({
-        title: "Export Failed", 
-        description: "Failed to export integration configuration. Please try again.",
+        title: "Export Failed",
+        description:
+          "Failed to export integration configuration. Please try again.",
         variant: "destructive",
       });
     }
@@ -572,10 +565,12 @@ export function IntegrationHub() {
           "Records Processed",
           "Duration (seconds)",
           "Message",
-          "Details"
+          "Details",
         ],
-        ...syncLogs.map(log => {
-          const integration = integrations.find(i => i.id === log.integrationId);
+        ...syncLogs.map((log) => {
+          const integration = integrations.find(
+            (i) => i.id === log.integrationId,
+          );
           return [
             integration?.name || "Unknown",
             format(log.timestamp, "yyyy-MM-dd HH:mm:ss"),
@@ -583,14 +578,14 @@ export function IntegrationHub() {
             log.recordsProcessed,
             (log.duration / 1000).toFixed(2),
             log.message,
-            log.details || ""
+            log.details || "",
           ];
-        })
+        }),
       ];
 
       // Convert to CSV string
-      const csvContent = csvData.map(row => row.join(",")).join("\n");
-      
+      const csvContent = csvData.map((row) => row.join(",")).join("\n");
+
       // Create and download file
       const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
       const url = window.URL.createObjectURL(blob);

@@ -1,6 +1,6 @@
 "use client";
 
-import { ReferralTracker } from '@/components/referrals/referral-tracker';
+import { ReferralTracker } from "@/components/referrals/referral-tracker";
 
 export default function ReferralsPage() {
   return (

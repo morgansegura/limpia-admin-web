@@ -1,6 +1,6 @@
 "use client";
 
-import { CommissionTracker } from '@/components/sales/commission-tracker';
+import { CommissionTracker } from "@/components/sales/commission-tracker";
 
 export default function CommissionsPage() {
   return (

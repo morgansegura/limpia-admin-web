@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -45,43 +45,56 @@ interface DiscountApproval {
   basePrice: number;
   finalPrice: number;
   justification: string;
-  status: 'pending' | 'approved' | 'rejected';
+  status: "pending" | "approved" | "rejected";
   requestedAt: string;
   approvedAt?: string;
   approvedBy?: string;
   managerNotes?: string;
   exceedsThreshold: boolean;
   exceedsBudget: boolean;
-  customerInfo?: any;
+  customerInfo?: {
+    serviceType?: string;
+    squareFootage?: string;
+  };
 }
 
 export function ManagerApprovalDashboard() {
   const { user } = useAuth();
   const [approvals, setApprovals] = useState<DiscountApproval[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedApproval, setSelectedApproval] = useState<DiscountApproval | null>(null);
+  const [selectedApproval, setSelectedApproval] =
+    useState<DiscountApproval | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [managerNotes, setManagerNotes] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
-  const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('pending');
+  const [filter, setFilter] = useState<
+    "all" | "pending" | "approved" | "rejected"
+  >("pending");
 
-  // Load discount approvals
-  useEffect(() => {
-    loadApprovals();
-  }, [filter]);
+  // Load discount approvals (moved after loadApprovals declaration)
 
-  const loadApprovals = async () => {
+  const loadApprovals = useCallback(async () => {
     setIsLoading(true);
     try {
       const data = await salesApi.getDiscountApprovals({
-        status: filter === 'all' ? undefined : filter,
+        status: filter === "all" ? undefined : filter,
         managerId: user?.id,
       });
-      setApprovals(Array.isArray(data) ? data : []);
-    } catch (error: any) {
+      setApprovals(Array.isArray(data) ? (data as DiscountApproval[]) : []);
+    } catch (error: unknown) {
       // Handle authentication errors
-      if (error?.response?.status === 401 || error?.message?.includes('jwt expired')) {
-        console.warn("🔐 Authentication expired, using mock approval data. Manager may need to re-login:", error);
+      const errorObj = error as {
+        response?: { status?: number };
+        message?: string;
+      };
+      if (
+        errorObj?.response?.status === 401 ||
+        errorObj?.message?.includes("jwt expired")
+      ) {
+        console.warn(
+          "🔐 Authentication expired, using mock approval data. Manager may need to re-login:",
+          error,
+        );
       } else {
         console.error("Failed to load discount approvals:", error);
       }
@@ -96,18 +109,19 @@ export function ManagerApprovalDashboard() {
           discountPercentage: 25,
           basePrice: 340,
           finalPrice: 255,
-          justification: "Customer is price shopping with competitor who quoted $260. They are a potential high-value recurring customer with a large home and excellent referral potential.",
-          status: 'pending',
+          justification:
+            "Customer is price shopping with competitor who quoted $260. They are a potential high-value recurring customer with a large home and excellent referral potential.",
+          status: "pending",
           requestedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
           exceedsThreshold: true,
           exceedsBudget: false,
           customerInfo: {
             serviceType: "deep_clean_blue",
             squareFootage: "2800",
-          }
+          },
         },
         {
-          id: "DA-002", 
+          id: "DA-002",
           salesRepId: "sr-002",
           salesRepName: "Mike Chen",
           customerName: "Rodriguez Enterprise",
@@ -115,36 +129,56 @@ export function ManagerApprovalDashboard() {
           discountPercentage: 15,
           basePrice: 800,
           finalPrice: 680,
-          justification: "Commercial account with potential for 5 recurring locations. Initial discount to secure contract.",
-          status: 'pending',
+          justification:
+            "Commercial account with potential for 5 recurring locations. Initial discount to secure contract.",
+          status: "pending",
           requestedAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(), // 4 hours ago
           exceedsThreshold: false,
           exceedsBudget: true,
           customerInfo: {
             serviceType: "office",
             squareFootage: "5000",
-          }
-        }
+          },
+        },
       ];
       setApprovals(mockApprovals);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [filter, user?.id]);
 
-  const handleApprovalDecision = async (approvalId: string, decision: 'approved' | 'rejected') => {
+  // Load discount approvals
+  useEffect(() => {
+    loadApprovals();
+  }, [filter, loadApprovals]);
+
+  const handleApprovalDecision = async (
+    approvalId: string,
+    decision: "approved" | "rejected",
+  ) => {
     setIsProcessing(true);
     try {
-      await salesApi.approveDiscount(approvalId, decision, managerNotes.trim() || undefined);
+      await salesApi.approveDiscount(
+        approvalId,
+        decision,
+        managerNotes.trim() || undefined,
+      );
       await loadApprovals(); // Refresh list
       setIsDetailOpen(false);
       setSelectedApproval(null);
       setManagerNotes("");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Failed to process approval:", error);
-      
+
       // Handle authentication errors specifically
-      if (error?.response?.status === 401 || error?.message?.includes('jwt expired')) {
+      const errorObj = error as {
+        response?: { status?: number };
+        message?: string;
+      };
+      if (
+        errorObj?.response?.status === 401 ||
+        errorObj?.message?.includes("jwt expired")
+      ) {
         console.error("Session expired - user needs to refresh");
         // TODO: Replace with proper toast notification
       } else {
@@ -158,10 +192,14 @@ export function ManagerApprovalDashboard() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'approved': return 'bg-green-500';
-      case 'rejected': return 'bg-red-500';
-      case 'pending': return 'bg-yellow-500';
-      default: return 'bg-gray-500';
+      case "approved":
+        return "bg-green-500";
+      case "rejected":
+        return "bg-red-500";
+      case "pending":
+        return "bg-yellow-500";
+      default:
+        return "bg-gray-500";
     }
   };
 
@@ -171,27 +209,33 @@ export function ManagerApprovalDashboard() {
       badges.push(
         <Badge key="threshold" variant="destructive" className="text-xs">
           Exceeds Threshold
-        </Badge>
+        </Badge>,
       );
     }
     if (approval.exceedsBudget) {
       badges.push(
-        <Badge key="budget" variant="outline" className="text-xs border-orange-400 text-orange-600">
+        <Badge
+          key="budget"
+          variant="outline"
+          className="text-xs border-orange-400 text-orange-600"
+        >
           Budget Exceeded
-        </Badge>
+        </Badge>,
       );
     }
     return badges;
   };
 
-  const pendingCount = approvals.filter(a => a.status === 'pending').length;
+  const pendingCount = approvals.filter((a) => a.status === "pending").length;
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Discount Approvals</h2>
+          <h2 className="text-2xl font-bold tracking-tight">
+            Discount Approvals
+          </h2>
           <p className="text-muted-foreground">
             Review and approve discount requests from your sales team
           </p>
@@ -207,23 +251,34 @@ export function ManagerApprovalDashboard() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Requests</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Pending Requests
+            </CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">{pendingCount}</div>
-            <p className="text-xs text-muted-foreground">Awaiting your review</p>
+            <div className="text-2xl font-bold text-yellow-600">
+              {pendingCount}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Awaiting your review
+            </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Discounts</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Discounts
+            </CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ${approvals.reduce((sum, a) => sum + a.discountAmount, 0).toFixed(0)}
+              $
+              {approvals
+                .reduce((sum, a) => sum + a.discountAmount, 0)
+                .toFixed(0)}
             </div>
             <p className="text-xs text-muted-foreground">Across all requests</p>
           </CardContent>
@@ -236,9 +291,14 @@ export function ManagerApprovalDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">
-              {approvals.length > 0 
-                ? Math.round((approvals.filter(a => a.status === 'approved').length / approvals.length) * 100)
-                : 0}%
+              {approvals.length > 0
+                ? Math.round(
+                    (approvals.filter((a) => a.status === "approved").length /
+                      approvals.length) *
+                      100,
+                  )
+                : 0}
+              %
             </div>
             <p className="text-xs text-muted-foreground">Of all requests</p>
           </CardContent>
@@ -247,7 +307,7 @@ export function ManagerApprovalDashboard() {
 
       {/* Filter Buttons */}
       <div className="flex space-x-2">
-        {(['all', 'pending', 'approved', 'rejected'] as const).map((status) => (
+        {(["all", "pending", "approved", "rejected"] as const).map((status) => (
           <Button
             key={status}
             variant={filter === status ? "default" : "outline"}
@@ -255,8 +315,8 @@ export function ManagerApprovalDashboard() {
             onClick={() => setFilter(status)}
             className="capitalize"
           >
-            {status} 
-            {status === 'pending' && pendingCount > 0 && (
+            {status}
+            {status === "pending" && pendingCount > 0 && (
               <Badge variant="secondary" className="ml-2 px-1 py-0 text-xs">
                 {pendingCount}
               </Badge>
@@ -303,15 +363,23 @@ export function ManagerApprovalDashboard() {
                     <TableCell>
                       <div className="flex items-center">
                         <User className="mr-2 h-4 w-4 text-muted-foreground" />
-                        <span className="font-medium">{approval.salesRepName}</span>
+                        <span className="font-medium">
+                          {approval.salesRepName}
+                        </span>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div>
-                        <div className="font-medium">{approval.customerName || "New Customer"}</div>
+                        <div className="font-medium">
+                          {approval.customerName || "New Customer"}
+                        </div>
                         {approval.customerInfo && (
                           <div className="text-sm text-muted-foreground">
-                            {approval.customerInfo.squareFootage} sq ft, {approval.customerInfo.serviceType?.replace(/_/g, " ")}
+                            {approval.customerInfo.squareFootage} sq ft,{" "}
+                            {approval.customerInfo.serviceType?.replace(
+                              /_/g,
+                              " ",
+                            )}
                           </div>
                         )}
                       </div>
@@ -319,14 +387,19 @@ export function ManagerApprovalDashboard() {
                     <TableCell>
                       <div className="flex items-center">
                         <Percent className="mr-1 h-4 w-4" />
-                        <span className="font-medium">{approval.discountPercentage}%</span>
+                        <span className="font-medium">
+                          {approval.discountPercentage}%
+                        </span>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div>
-                        <div className="font-medium">${approval.discountAmount.toFixed(2)}</div>
+                        <div className="font-medium">
+                          ${approval.discountAmount.toFixed(2)}
+                        </div>
                         <div className="text-sm text-muted-foreground">
-                          ${approval.basePrice.toFixed(2)} → ${approval.finalPrice.toFixed(2)}
+                          ${approval.basePrice.toFixed(2)} → $
+                          {approval.finalPrice.toFixed(2)}
                         </div>
                       </div>
                     </TableCell>
@@ -337,7 +410,7 @@ export function ManagerApprovalDashboard() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center">
-                        <div 
+                        <div
                           className={`w-2 h-2 rounded-full mr-2 ${getStatusColor(approval.status)}`}
                         />
                         <span className="capitalize">{approval.status}</span>
@@ -345,7 +418,9 @@ export function ManagerApprovalDashboard() {
                     </TableCell>
                     <TableCell>
                       <div className="text-sm">
-                        {formatDistanceToNow(new Date(approval.requestedAt), { addSuffix: true })}
+                        {formatDistanceToNow(new Date(approval.requestedAt), {
+                          addSuffix: true,
+                        })}
                       </div>
                     </TableCell>
                     <TableCell>
@@ -385,15 +460,23 @@ export function ManagerApprovalDashboard() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-sm">Sales Representative</CardTitle>
+                    <CardTitle className="text-sm">
+                      Sales Representative
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-center">
                       <User className="mr-2 h-5 w-5 text-muted-foreground" />
-                      <span className="font-medium">{selectedApproval.salesRepName}</span>
+                      <span className="font-medium">
+                        {selectedApproval.salesRepName}
+                      </span>
                     </div>
                     <div className="text-sm text-muted-foreground mt-1">
-                      Requested {formatDistanceToNow(new Date(selectedApproval.requestedAt), { addSuffix: true })}
+                      Requested{" "}
+                      {formatDistanceToNow(
+                        new Date(selectedApproval.requestedAt),
+                        { addSuffix: true },
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -406,15 +489,22 @@ export function ManagerApprovalDashboard() {
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span>Base Price:</span>
-                        <span className="font-medium">${selectedApproval.basePrice.toFixed(2)}</span>
+                        <span className="font-medium">
+                          ${selectedApproval.basePrice.toFixed(2)}
+                        </span>
                       </div>
                       <div className="flex justify-between text-red-600">
                         <span>Discount:</span>
-                        <span className="font-medium">{selectedApproval.discountPercentage}% (${selectedApproval.discountAmount.toFixed(2)})</span>
+                        <span className="font-medium">
+                          {selectedApproval.discountPercentage}% ($
+                          {selectedApproval.discountAmount.toFixed(2)})
+                        </span>
                       </div>
                       <div className="flex justify-between border-t pt-2">
                         <span className="font-medium">Final Price:</span>
-                        <span className="font-medium">${selectedApproval.finalPrice.toFixed(2)}</span>
+                        <span className="font-medium">
+                          ${selectedApproval.finalPrice.toFixed(2)}
+                        </span>
                       </div>
                     </div>
                   </CardContent>
@@ -422,29 +512,45 @@ export function ManagerApprovalDashboard() {
               </div>
 
               {/* Customer Information */}
-              {(selectedApproval.customerName || selectedApproval.customerInfo) && (
+              {(selectedApproval.customerName ||
+                selectedApproval.customerInfo) && (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-sm">Customer Information</CardTitle>
+                    <CardTitle className="text-sm">
+                      Customer Information
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       {selectedApproval.customerName && (
                         <div>
-                          <span className="text-muted-foreground">Customer:</span>
-                          <div className="font-medium">{selectedApproval.customerName}</div>
+                          <span className="text-muted-foreground">
+                            Customer:
+                          </span>
+                          <div className="font-medium">
+                            {selectedApproval.customerName}
+                          </div>
                         </div>
                       )}
                       {selectedApproval.customerInfo?.serviceType && (
                         <div>
-                          <span className="text-muted-foreground">Service:</span>
-                          <div className="font-medium capitalize">{selectedApproval.customerInfo.serviceType.replace(/_/g, " ")}</div>
+                          <span className="text-muted-foreground">
+                            Service:
+                          </span>
+                          <div className="font-medium capitalize">
+                            {selectedApproval.customerInfo.serviceType.replace(
+                              /_/g,
+                              " ",
+                            )}
+                          </div>
                         </div>
                       )}
                       {selectedApproval.customerInfo?.squareFootage && (
                         <div>
                           <span className="text-muted-foreground">Size:</span>
-                          <div className="font-medium">{selectedApproval.customerInfo.squareFootage} sq ft</div>
+                          <div className="font-medium">
+                            {selectedApproval.customerInfo.squareFootage} sq ft
+                          </div>
                         </div>
                       )}
                     </div>
@@ -455,20 +561,30 @@ export function ManagerApprovalDashboard() {
               {/* Approval Reasons */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-sm">Approval Required Because</CardTitle>
+                  <CardTitle className="text-sm">
+                    Approval Required Because
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
                     {selectedApproval.exceedsThreshold && (
                       <div className="flex items-center text-red-600">
                         <AlertTriangle className="mr-2 h-4 w-4" />
-                        <span>Discount exceeds {selectedApproval.discountPercentage > 20 ? "20%" : "$50"} threshold</span>
+                        <span>
+                          Discount exceeds{" "}
+                          {selectedApproval.discountPercentage > 20
+                            ? "20%"
+                            : "$50"}{" "}
+                          threshold
+                        </span>
                       </div>
                     )}
                     {selectedApproval.exceedsBudget && (
                       <div className="flex items-center text-orange-600">
                         <AlertTriangle className="mr-2 h-4 w-4" />
-                        <span>Would exceed sales rep's monthly discount budget</span>
+                        <span>
+                          Would exceed sales rep&apos;s monthly discount budget
+                        </span>
                       </div>
                     )}
                   </div>
@@ -478,7 +594,9 @@ export function ManagerApprovalDashboard() {
               {/* Justification */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-sm">Sales Rep Justification</CardTitle>
+                  <CardTitle className="text-sm">
+                    Sales Rep Justification
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="bg-gray-50 p-3 rounded-lg text-sm">
@@ -488,7 +606,7 @@ export function ManagerApprovalDashboard() {
               </Card>
 
               {/* Manager Notes */}
-              {selectedApproval.status === 'pending' && (
+              {selectedApproval.status === "pending" && (
                 <div className="space-y-2">
                   <Label htmlFor="managerNotes">Manager Notes (Optional)</Label>
                   <Textarea
@@ -514,21 +632,28 @@ export function ManagerApprovalDashboard() {
                     <div className="bg-blue-50 p-3 rounded-lg text-sm">
                       {selectedApproval.managerNotes}
                     </div>
-                    {selectedApproval.approvedBy && selectedApproval.approvedAt && (
-                      <div className="text-xs text-muted-foreground mt-2">
-                        By {selectedApproval.approvedBy} • {formatDistanceToNow(new Date(selectedApproval.approvedAt), { addSuffix: true })}
-                      </div>
-                    )}
+                    {selectedApproval.approvedBy &&
+                      selectedApproval.approvedAt && (
+                        <div className="text-xs text-muted-foreground mt-2">
+                          By {selectedApproval.approvedBy} •{" "}
+                          {formatDistanceToNow(
+                            new Date(selectedApproval.approvedAt),
+                            { addSuffix: true },
+                          )}
+                        </div>
+                      )}
                   </CardContent>
                 </Card>
               )}
 
               {/* Action Buttons */}
-              {selectedApproval.status === 'pending' && (
+              {selectedApproval.status === "pending" && (
                 <div className="flex justify-end space-x-3 pt-4 border-t">
                   <Button
                     variant="outline"
-                    onClick={() => handleApprovalDecision(selectedApproval.id, 'rejected')}
+                    onClick={() =>
+                      handleApprovalDecision(selectedApproval.id, "rejected")
+                    }
                     disabled={isProcessing}
                     className="text-red-600 border-red-200 hover:bg-red-50"
                   >
@@ -536,7 +661,9 @@ export function ManagerApprovalDashboard() {
                     Reject
                   </Button>
                   <Button
-                    onClick={() => handleApprovalDecision(selectedApproval.id, 'approved')}
+                    onClick={() =>
+                      handleApprovalDecision(selectedApproval.id, "approved")
+                    }
                     disabled={isProcessing}
                     className="bg-green-600 hover:bg-green-700"
                   >

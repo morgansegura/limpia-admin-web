@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import {
   UserPlus,
   Phone,
@@ -25,10 +24,11 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import type { Lead } from "@/lib/api";
 
 interface LeadCreationFormProps {
   onClose: () => void;
-  onLeadCreated?: (lead: any) => void;
+  onLeadCreated?: (lead: Lead) => void;
 }
 
 const LEAD_SOURCES = [
@@ -112,40 +112,31 @@ export function LeadCreationForm({
       ).padStart(4, "0")}`;
 
       // Create lead object
-      const newLead = {
+      const newLead: Lead = {
         id: leadId,
-        name: `${formData.firstName} ${formData.lastName}`.trim(),
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
         phone: formData.phone,
+        company: undefined, // Not collected in this form
+        source: formData.leadSource,
+        status: "new",
+        priority: formData.priority,
+        propertyType: formData.propertyType,
+        squareFootage: undefined, // Not collected in this form
+        serviceNeeded: Array.isArray(formData.serviceInterest)
+          ? formData.serviceInterest.join(", ")
+          : formData.serviceInterest,
+        budget: formData.estimatedValue
+          ? parseFloat(formData.estimatedValue)
+          : undefined,
+        timeline: formData.urgency,
+        score: 0,
+        notes: `${formData.notes} ${formData.specialRequirements}`.trim(),
         address:
           `${formData.address}, ${formData.city}, ${formData.state} ${formData.zipCode}`.trim(),
-        fullAddress: {
-          street: formData.address,
-          city: formData.city,
-          state: formData.state,
-          zipCode: formData.zipCode,
-        },
-        propertyType: formData.propertyType,
-        leadSource: formData.leadSource,
-        referredBy: formData.referredBy,
-        serviceInterest: formData.serviceInterest,
-        estimatedValue: formData.estimatedValue
-          ? parseFloat(formData.estimatedValue)
-          : 0,
-        priority: formData.priority,
-        preferredContactMethod: formData.preferredContactMethod,
-        bestTimeToCall: formData.bestTimeToCall,
-        urgency: formData.urgency,
-        notes: formData.notes,
-        specialRequirements: formData.specialRequirements,
-        status: "new",
-        score: 0,
-        followUpDate: new Date(Date.now() + 24 * 60 * 60 * 1000), // Tomorrow
-        createdAt: new Date(),
-        lastContact: null,
-        nextAction: "Initial Contact",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
 
       // In a real app, this would save to the backend

@@ -27,31 +27,22 @@ import {
   MapPin,
   Clock,
   AlertTriangle,
-  CheckCircle,
   Phone,
   MessageSquare,
   Navigation,
   Zap,
-  Calendar,
   DollarSign,
   Settings,
   Search,
-  Filter,
   Send,
   Eye,
-  RotateCcw,
   PlayCircle,
-  PauseCircle,
-  Flag,
   User,
-  Truck,
-  Route,
-  Timer,
   Star,
   Award,
   Pencil,
 } from "lucide-react";
-import { format, addHours, differenceInMinutes } from "date-fns";
+import { format } from "date-fns";
 
 interface CrewMember {
   id: string;
@@ -325,8 +316,8 @@ export function JobDispatch() {
         crewsApi.getAll(),
       ]);
 
-      setJobs(jobsData || mockJobs); // Fallback to mock data if API fails
-      setCrewMembers(crewsData || mockCrewMembers);
+      setJobs((jobsData as Job[]) || mockJobs); // Fallback to mock data if API fails
+      setCrewMembers((crewsData as CrewMember[]) || mockCrewMembers);
 
       // Mock notifications for now - would come from a real notifications API
       setNotifications(mockNotifications);
@@ -541,22 +532,6 @@ export function JobDispatch() {
     } catch (error) {
       console.error("Error contacting crew:", error);
       alert("Failed to contact crew member. Please try again.");
-    }
-  };
-
-  const handleUpdateJobStatus = async (jobId: string, status: string) => {
-    try {
-      await jobsApi.updateJobStatus(jobId, status);
-
-      // Update local state
-      setJobs((prevJobs) =>
-        prevJobs.map((job) => (job.id === jobId ? { ...job, status: status as "pending" | "in_progress" | "completed" | "cancelled" | "assigned" } : job)),
-      );
-
-      alert("Job status updated successfully!");
-    } catch (error) {
-      console.error("Error updating job status:", error);
-      alert("Failed to update job status. Please try again.");
     }
   };
 
@@ -1657,7 +1632,13 @@ export function JobDispatch() {
                 </div>
                 <div>
                   <Label htmlFor="assignedCrew">Assigned Crew</Label>
-                  <Select defaultValue={Array.isArray(editingJob.assignedCrew) ? editingJob.assignedCrew[0] || "" : editingJob.assignedCrew || ""}>
+                  <Select
+                    defaultValue={
+                      Array.isArray(editingJob.assignedCrew)
+                        ? editingJob.assignedCrew[0] || ""
+                        : editingJob.assignedCrew || ""
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select crew" />
                     </SelectTrigger>

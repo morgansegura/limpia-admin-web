@@ -18,14 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  DollarSign,
-  TrendingUp,
-  Calendar,
-  Target,
-  Award,
-  Download,
-} from "lucide-react";
+import { DollarSign, Award, Download } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { salesApi } from "@/lib/api";
 import { useAuth } from "@/contexts/auth-context";
@@ -41,7 +34,7 @@ interface CommissionRecord {
   tier: string;
   paidAt: string | null;
   createdAt: string;
-  status: 'pending' | 'paid' | 'processing';
+  status: "pending" | "paid" | "processing";
 }
 
 interface CommissionSummary {
@@ -73,12 +66,17 @@ interface SalesRepCommissionDetailProps {
   onClose: () => void;
 }
 
-export function SalesRepCommissionDetail({ open, onClose }: SalesRepCommissionDetailProps) {
+export function SalesRepCommissionDetail({
+  open,
+  onClose,
+}: SalesRepCommissionDetailProps) {
   const { user } = useAuth();
   const [commissions, setCommissions] = useState<CommissionRecord[]>([]);
   const [summary, setSummary] = useState<CommissionSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedPeriod, setSelectedPeriod] = useState<'thisMonth' | 'lastMonth' | 'ytd'>('thisMonth');
+  const [selectedPeriod] = useState<"thisMonth" | "lastMonth" | "ytd">(
+    "thisMonth",
+  );
 
   useEffect(() => {
     if (open) {
@@ -92,14 +90,18 @@ export function SalesRepCommissionDetail({ open, onClose }: SalesRepCommissionDe
       // Load commission records and summary
       const [commissionsData, summaryData] = await Promise.all([
         salesApi.getMyCommissions(),
-        salesApi.getCommissionSummary()
+        salesApi.getCommissionSummary(),
       ]);
-      
-      setCommissions(Array.isArray(commissionsData) ? commissionsData : []);
+
+      setCommissions(
+        Array.isArray(commissionsData)
+          ? (commissionsData as CommissionRecord[])
+          : [],
+      );
       setSummary(summaryData);
     } catch (error) {
       console.error("Failed to load commission data:", error);
-      
+
       // Mock data for development
       const mockCommissions: CommissionRecord[] = [
         {
@@ -112,28 +114,32 @@ export function SalesRepCommissionDetail({ open, onClose }: SalesRepCommissionDe
           commissionRate: 10,
           tier: "GOOD",
           paidAt: null,
-          createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-          status: 'pending'
+          createdAt: new Date(
+            Date.now() - 2 * 24 * 60 * 60 * 1000,
+          ).toISOString(),
+          status: "pending",
         },
         {
-          id: "COMM-002", 
+          id: "COMM-002",
           estimateId: "EST-002",
           customerName: "Smith Residence",
           serviceType: "Deep Clean Combo",
-          saleAmount: 350.00,
-          commissionAmount: 70.00,
+          saleAmount: 350.0,
+          commissionAmount: 70.0,
           commissionRate: 20,
           tier: "EXCELLENT",
           paidAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-          createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-          status: 'paid'
-        }
+          createdAt: new Date(
+            Date.now() - 7 * 24 * 60 * 60 * 1000,
+          ).toISOString(),
+          status: "paid",
+        },
       ];
 
       const mockSummary: CommissionSummary = {
-        thisMonth: { total: 245.50, paid: 70.00, pending: 175.50, count: 8 },
-        lastMonth: { total: 420.00, paid: 420.00, pending: 0, count: 12 },
-        yearToDate: { total: 2840.00, paid: 2265.00, pending: 575.00, count: 45 },
+        thisMonth: { total: 245.5, paid: 70.0, pending: 175.5, count: 8 },
+        lastMonth: { total: 420.0, paid: 420.0, pending: 0, count: 12 },
+        yearToDate: { total: 2840.0, paid: 2265.0, pending: 575.0, count: 45 },
         currentTier: "GOOD",
         nextTierTarget: 500,
         nextTierBonus: 250,
@@ -148,25 +154,31 @@ export function SalesRepCommissionDetail({ open, onClose }: SalesRepCommissionDe
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'paid': return 'bg-green-500';
-      case 'pending': return 'bg-yellow-500';
-      case 'processing': return 'bg-blue-500';
-      default: return 'bg-gray-500';
+      case "paid":
+        return "bg-green-500";
+      case "pending":
+        return "bg-yellow-500";
+      case "processing":
+        return "bg-blue-500";
+      default:
+        return "bg-gray-500";
     }
   };
 
   const getTierColor = (tier: string) => {
     switch (tier) {
-      case 'EXCELLENT': return 'text-green-600 bg-green-50';
-      case 'GOOD': return 'text-blue-600 bg-blue-50';
-      case 'FAIR': return 'text-yellow-600 bg-yellow-50';
-      default: return 'text-gray-600 bg-gray-50';
+      case "EXCELLENT":
+        return "text-green-600 bg-green-50";
+      case "GOOD":
+        return "text-blue-600 bg-blue-50";
+      case "FAIR":
+        return "text-yellow-600 bg-yellow-50";
+      default:
+        return "text-gray-600 bg-gray-50";
     }
   };
 
   if (!summary) return null;
-
-  const currentPeriodData = summary[selectedPeriod];
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -181,7 +193,11 @@ export function SalesRepCommissionDetail({ open, onClose }: SalesRepCommissionDe
         <div className="space-y-6">
           {/* Commission Summary Cards */}
           <div className="grid gap-4 md:grid-cols-3">
-            <Card className={selectedPeriod === 'thisMonth' ? 'ring-2 ring-blue-500' : ''}>
+            <Card
+              className={
+                selectedPeriod === "thisMonth" ? "ring-2 ring-blue-500" : ""
+              }
+            >
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm">This Month</CardTitle>
               </CardHeader>
@@ -193,22 +209,32 @@ export function SalesRepCommissionDetail({ open, onClose }: SalesRepCommissionDe
                   <div className="text-xs space-y-1">
                     <div className="flex justify-between">
                       <span>Paid:</span>
-                      <span className="font-medium">${summary.thisMonth.paid.toFixed(2)}</span>
+                      <span className="font-medium">
+                        ${summary.thisMonth.paid.toFixed(2)}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Pending:</span>
-                      <span className="font-medium">${summary.thisMonth.pending.toFixed(2)}</span>
+                      <span className="font-medium">
+                        ${summary.thisMonth.pending.toFixed(2)}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Sales:</span>
-                      <span className="font-medium">{summary.thisMonth.count}</span>
+                      <span className="font-medium">
+                        {summary.thisMonth.count}
+                      </span>
                     </div>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className={selectedPeriod === 'lastMonth' ? 'ring-2 ring-blue-500' : ''}>
+            <Card
+              className={
+                selectedPeriod === "lastMonth" ? "ring-2 ring-blue-500" : ""
+              }
+            >
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm">Last Month</CardTitle>
               </CardHeader>
@@ -220,18 +246,24 @@ export function SalesRepCommissionDetail({ open, onClose }: SalesRepCommissionDe
                   <div className="text-xs space-y-1">
                     <div className="flex justify-between">
                       <span>Paid:</span>
-                      <span className="font-medium">${summary.lastMonth.paid.toFixed(2)}</span>
+                      <span className="font-medium">
+                        ${summary.lastMonth.paid.toFixed(2)}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Sales:</span>
-                      <span className="font-medium">{summary.lastMonth.count}</span>
+                      <span className="font-medium">
+                        {summary.lastMonth.count}
+                      </span>
                     </div>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className={selectedPeriod === 'ytd' ? 'ring-2 ring-blue-500' : ''}>
+            <Card
+              className={selectedPeriod === "ytd" ? "ring-2 ring-blue-500" : ""}
+            >
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm">Year to Date</CardTitle>
               </CardHeader>
@@ -243,15 +275,21 @@ export function SalesRepCommissionDetail({ open, onClose }: SalesRepCommissionDe
                   <div className="text-xs space-y-1">
                     <div className="flex justify-between">
                       <span>Paid:</span>
-                      <span className="font-medium">${summary.yearToDate.paid.toFixed(2)}</span>
+                      <span className="font-medium">
+                        ${summary.yearToDate.paid.toFixed(2)}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Pending:</span>
-                      <span className="font-medium">${summary.yearToDate.pending.toFixed(2)}</span>
+                      <span className="font-medium">
+                        ${summary.yearToDate.pending.toFixed(2)}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Sales:</span>
-                      <span className="font-medium">{summary.yearToDate.count}</span>
+                      <span className="font-medium">
+                        {summary.yearToDate.count}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -277,24 +315,30 @@ export function SalesRepCommissionDetail({ open, onClose }: SalesRepCommissionDe
                     </Badge>
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    This month's performance: ${summary.thisMonth.total.toFixed(2)}
+                    This month&apos;s performance: $
+                    {summary.thisMonth.total.toFixed(2)}
                   </div>
                 </div>
-                
+
                 <div>
                   <div className="text-sm mb-1">
-                    Next tier: ${summary.nextTierTarget} (+${summary.nextTierBonus} bonus)
+                    Next tier: ${summary.nextTierTarget} (+$
+                    {summary.nextTierBonus} bonus)
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2 mb-1">
-                    <div 
-                      className="bg-blue-600 h-2 rounded-full" 
-                      style={{ 
-                        width: `${Math.min((summary.thisMonth.total / summary.nextTierTarget) * 100, 100)}%` 
+                    <div
+                      className="bg-blue-600 h-2 rounded-full"
+                      style={{
+                        width: `${Math.min((summary.thisMonth.total / summary.nextTierTarget) * 100, 100)}%`,
                       }}
                     ></div>
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    ${(summary.nextTierTarget - summary.thisMonth.total).toFixed(2)} remaining
+                    $
+                    {(summary.nextTierTarget - summary.thisMonth.total).toFixed(
+                      2,
+                    )}{" "}
+                    remaining
                   </div>
                 </div>
               </div>
@@ -305,7 +349,9 @@ export function SalesRepCommissionDetail({ open, onClose }: SalesRepCommissionDe
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-sm">Recent Commission Records</CardTitle>
+                <CardTitle className="text-sm">
+                  Recent Commission Records
+                </CardTitle>
                 <Button variant="outline" size="sm">
                   <Download className="mr-1 h-4 w-4" />
                   Export
@@ -343,7 +389,9 @@ export function SalesRepCommissionDetail({ open, onClose }: SalesRepCommissionDe
                     commissions.map((commission) => (
                       <TableRow key={commission.id}>
                         <TableCell className="text-sm">
-                          {formatDistanceToNow(new Date(commission.createdAt), { addSuffix: true })}
+                          {formatDistanceToNow(new Date(commission.createdAt), {
+                            addSuffix: true,
+                          })}
                         </TableCell>
                         <TableCell className="font-medium">
                           {commission.customerName}
@@ -357,9 +405,7 @@ export function SalesRepCommissionDetail({ open, onClose }: SalesRepCommissionDe
                         <TableCell className="font-bold text-green-600">
                           ${commission.commissionAmount.toFixed(2)}
                         </TableCell>
-                        <TableCell>
-                          {commission.commissionRate}%
-                        </TableCell>
+                        <TableCell>{commission.commissionRate}%</TableCell>
                         <TableCell>
                           <Badge className={getTierColor(commission.tier)}>
                             {commission.tier}
@@ -367,8 +413,12 @@ export function SalesRepCommissionDetail({ open, onClose }: SalesRepCommissionDe
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center">
-                            <div className={`w-2 h-2 rounded-full mr-2 ${getStatusColor(commission.status)}`}></div>
-                            <span className="capitalize text-sm">{commission.status}</span>
+                            <div
+                              className={`w-2 h-2 rounded-full mr-2 ${getStatusColor(commission.status)}`}
+                            ></div>
+                            <span className="capitalize text-sm">
+                              {commission.status}
+                            </span>
                           </div>
                         </TableCell>
                       </TableRow>

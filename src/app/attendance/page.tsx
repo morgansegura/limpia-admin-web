@@ -1,6 +1,6 @@
 "use client";
 
-import { TimeAttendance } from '@/components/attendance/time-attendance';
+import { TimeAttendance } from "@/components/attendance/time-attendance";
 
 export default function AttendancePage() {
   return (

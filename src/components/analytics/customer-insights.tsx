@@ -3,8 +3,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
-  BarChart,
-  Bar,
   PieChart,
   Pie,
   Cell,
@@ -88,14 +86,16 @@ const satisfactionData = [
   { rating: "1 Star", count: 0, percentage: 0 },
 ];
 
-export function CustomerInsights({ dateRange }: CustomerInsightsProps) {
+export function CustomerInsights({}: CustomerInsightsProps) {
   return (
     <div className="space-y-6">
       {/* Customer KPIs */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Customers</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Customers
+            </CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -127,7 +127,9 @@ export function CustomerInsights({ dateRange }: CustomerInsightsProps) {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Retention Rate</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Retention Rate
+            </CardTitle>
             <Repeat className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -174,7 +176,9 @@ export function CustomerInsights({ dateRange }: CustomerInsightsProps) {
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="count"
-                  label={({ segment, percentage }) => `${segment}: ${percentage}%`}
+                  label={({ segment, percentage }) =>
+                    `${segment}: ${percentage}%`
+                  }
                 >
                   {customerSegments.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
@@ -245,10 +249,14 @@ export function CustomerInsights({ dateRange }: CustomerInsightsProps) {
                       </div>
                     </TableCell>
                     <TableCell>{customer.bookings}</TableCell>
-                    <TableCell>${customer.totalSpent.toLocaleString()}</TableCell>
+                    <TableCell>
+                      ${customer.totalSpent.toLocaleString()}
+                    </TableCell>
                     <TableCell>
                       <Badge
-                        variant={customer.status === "VIP" ? "default" : "secondary"}
+                        variant={
+                          customer.status === "VIP" ? "default" : "secondary"
+                        }
                       >
                         {customer.status}
                       </Badge>
@@ -268,7 +276,10 @@ export function CustomerInsights({ dateRange }: CustomerInsightsProps) {
           <CardContent>
             <div className="space-y-3">
               {satisfactionData.map((rating) => (
-                <div key={rating.rating} className="flex items-center justify-between">
+                <div
+                  key={rating.rating}
+                  className="flex items-center justify-between"
+                >
                   <div className="flex items-center space-x-2">
                     <span className="text-sm font-medium">{rating.rating}</span>
                     <div className="flex">
@@ -276,8 +287,8 @@ export function CustomerInsights({ dateRange }: CustomerInsightsProps) {
                         <span
                           key={i}
                           className={`text-xs ${
-                            i < parseInt(rating.rating[0]) 
-                              ? "text-yellow-500" 
+                            i < parseInt(rating.rating[0])
+                              ? "text-yellow-500"
                               : "text-gray-300"
                           }`}
                         >

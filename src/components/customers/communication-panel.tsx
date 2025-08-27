@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,19 +41,19 @@ import {
 } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 
-interface Customer {
+interface CommunicationCustomer {
   id: string;
   firstName: string;
   lastName: string;
   email?: string;
   phone?: string;
   preferences?: {
-    communicationMethod?: "email" | "sms" | "phone";
+    communicationMethod?: "email" | "sms" | "phone" | "app";
   };
 }
 
 interface CommunicationPanelProps {
-  customer: Customer;
+  customer: CommunicationCustomer;
   onSendCommunication?: (data: SendCommunicationRequest) => Promise<void>;
 }
 
@@ -97,12 +97,7 @@ export function CommunicationPanel({
   });
   const { toast } = useToast();
 
-  // Load communications on component mount
-  useEffect(() => {
-    loadCommunications();
-  }, [customer.id]);
-
-  const loadCommunications = async () => {
+  const loadCommunications = useCallback(async () => {
     try {
       setLoading(true);
       const data = await communicationsApi.getCustomerCommunications(
@@ -119,7 +114,12 @@ export function CommunicationPanel({
     } finally {
       setLoading(false);
     }
-  };
+  }, [customer.id, toast]);
+
+  // Load communications on component mount
+  useEffect(() => {
+    loadCommunications();
+  }, [customer.id, loadCommunications]);
 
   const handleSendMessage = async () => {
     if (!newMessage.message.trim() || !newMessage.subject.trim()) {
@@ -190,8 +190,10 @@ export function CommunicationPanel({
     return statusInfo || STATUS_ICONS.sent;
   };
 
-  const getMethodFromMetadata = (metadata: any) => {
-    return metadata?.method || "email";
+  const getMethodFromMetadata = (
+    metadata: Record<string, unknown> | null | undefined,
+  ) => {
+    return (metadata?.method as string) || "email";
   };
 
   const getStatusFromCommunication = (communication: CustomerCommunication) => {
@@ -233,7 +235,10 @@ export function CommunicationPanel({
                   <Select
                     value={newMessage.method}
                     onValueChange={(value) =>
-                      setNewMessage({ ...newMessage, method: value as any })
+                      setNewMessage({
+                        ...newMessage,
+                        method: value as "email" | "sms" | "phone" | "app",
+                      })
                     }
                   >
                     <SelectTrigger>

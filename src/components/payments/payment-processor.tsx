@@ -112,7 +112,7 @@ interface Invoice {
   dueDate: Date;
   createdAt: Date;
   paidAt?: Date;
-  items: Array<{
+  items?: Array<{
     description: string;
     quantity: number;
     rate: number;
@@ -263,49 +263,53 @@ export function PaymentProcessor() {
   const [filterDateRange, setFilterDateRange] = useState<string>("7days");
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [isInvoiceFormOpen, setIsInvoiceFormOpen] = useState(false);
-  const [processingActions, setProcessingActions] = useState<Set<string>>(new Set());
+  const [processingActions, setProcessingActions] = useState<Set<string>>(
+    new Set(),
+  );
   const { toast } = useToast();
 
-  // Load payment data from API
-  useEffect(() => {
-    loadPaymentData();
-  }, []);
+  // Load payment data from API (moved after loadPaymentData declaration)
 
   // Helper function for safe API calls with fallback
-  const fetchWithFallback = async (fetchFn: () => Promise<any>, fallbackData: any) => {
+  const fetchWithFallback = async <T,>(
+    fetchFn: () => Promise<T>,
+    fallbackData: T,
+  ): Promise<T> => {
     try {
       return await fetchFn();
-    } catch (error) {
-      console.warn('API endpoint failed, using fallback data:', error);
+    } catch (error: unknown) {
+      console.warn("API endpoint failed, using fallback data:", error);
       return fallbackData;
     }
   };
 
-  const loadPaymentData = async () => {
+  const loadPaymentData = useCallback(async () => {
     try {
       setIsLoading(true);
-      setError(null);
 
       // Use individual fallbacks for each API call to prevent one failure from breaking everything
-      const [paymentsData, subscriptionsData, invoicesData] = await Promise.all([
-        fetchWithFallback(() => paymentsApi.getAll(), mockPayments),
-        fetchWithFallback(() => paymentsApi.getSubscriptions(), mockSubscriptions),
-        fetchWithFallback(() => paymentsApi.getInvoices(), mockInvoices),
-      ]);
-
-      setPayments(paymentsData);
-      setSubscriptions(subscriptionsData);
-      setInvoices(invoicesData);
-      
-      // Only show success if we got real data
-      const hasRealData = (
-        paymentsData !== mockPayments || 
-        subscriptionsData !== mockSubscriptions || 
-        invoicesData !== mockInvoices
+      const [paymentsData, subscriptionsData, invoicesData] = await Promise.all(
+        [
+          fetchWithFallback(() => paymentsApi.getAll(), mockPayments),
+          fetchWithFallback(
+            () => paymentsApi.getSubscriptions(),
+            mockSubscriptions,
+          ),
+          fetchWithFallback(() => paymentsApi.getInvoices(), mockInvoices),
+        ],
       );
-      
+
+      setPayments(paymentsData as Payment[]);
+      setSubscriptions(subscriptionsData as Subscription[]);
+      setInvoices(invoicesData as Invoice[]);
+
+      // Only show success if we got real data
+      const hasRealData =
+        paymentsData !== mockPayments ||
+        subscriptionsData !== mockSubscriptions ||
+        invoicesData !== mockInvoices;
+
       if (!hasRealData) {
         console.log("Using demo data - API endpoints not available");
         toast({
@@ -313,24 +317,28 @@ export function PaymentProcessor() {
           description: "API not available. Showing demo data for development.",
         });
       }
-      
     } catch (error) {
       console.error("Error loading payment data:", error);
-      setError("Failed to load payment data");
       // Use mock data as final fallback
       setPayments(mockPayments);
       setSubscriptions(mockSubscriptions);
       setInvoices(mockInvoices);
-      
+
       toast({
         title: "Connection Issue",
-        description: "Using demo data. Check your connection and refresh to load live data.",
+        description:
+          "Using demo data. Check your connection and refresh to load live data.",
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [toast]);
+
+  // Load payment data from API
+  useEffect(() => {
+    loadPaymentData();
+  }, [loadPaymentData]);
 
   // Filter payments based on current filters
   const filteredPayments = useMemo(() => {
@@ -456,21 +464,17 @@ export function PaymentProcessor() {
   const handleRefund = useCallback(
     async (paymentId: string, amount?: number, reason?: string) => {
       if (processingActions.has(paymentId)) return;
-      
+
       try {
-        setProcessingActions(prev => new Set([...prev, paymentId]));
-        
+        setProcessingActions((prev) => new Set([...prev, paymentId]));
+
         const refundReason = reason || "Customer request";
-        const payment = payments.find(p => p.id === paymentId);
+        const payment = payments.find((p) => p.id === paymentId);
         if (!payment) return;
-        
+
         const refundAmount = amount || payment.amount;
-        
-        const result = await paymentsApi.processRefund(
-          paymentId,
-          refundAmount,
-          refundReason,
-        );
+
+        await paymentsApi.processRefund(paymentId, refundAmount, refundReason);
 
         // Update local state to reflect the refund
         setPayments((prev) =>
@@ -489,17 +493,18 @@ export function PaymentProcessor() {
           title: "Refund Processed",
           description: `Refund of $${refundAmount.toFixed(2)} processed successfully`,
         });
-        
+
         setSelectedPayment(null);
       } catch (error) {
         console.error("Error processing refund:", error);
         toast({
           title: "Refund Failed",
-          description: "Failed to process refund. Please try again or contact support.",
+          description:
+            "Failed to process refund. Please try again or contact support.",
           variant: "destructive",
         });
       } finally {
-        setProcessingActions(prev => {
+        setProcessingActions((prev) => {
           const newSet = new Set(prev);
           newSet.delete(paymentId);
           return newSet;
@@ -509,55 +514,64 @@ export function PaymentProcessor() {
     [payments, processingActions, toast],
   );
 
-  const handleRetryPayment = useCallback(async (paymentId: string) => {
-    if (processingActions.has(paymentId)) return;
-    
-    try {
-      setProcessingActions(prev => new Set([...prev, paymentId]));
-      
-      const result = await paymentsApi.retryPayment(paymentId);
+  const handleRetryPayment = useCallback(
+    async (paymentId: string) => {
+      if (processingActions.has(paymentId)) return;
 
-      // Update local state to reflect retry
-      setPayments((prev) =>
-        prev.map((payment) =>
-          payment.id === paymentId
-            ? { ...payment, status: "processing" }
-            : payment,
-        ),
-      );
+      try {
+        setProcessingActions((prev) => new Set([...prev, paymentId]));
 
-      toast({
-        title: "Payment Retry Initiated",
-        description: `Payment retry successful! New payment ID: ${result.newPaymentId}`,
-      });
-      
-      setSelectedPayment(null);
-    } catch (error) {
-      console.error("Error retrying payment:", error);
-      toast({
-        title: "Payment Retry Failed",
-        description: "Failed to retry payment. Please check the payment method or try again later.",
-        variant: "destructive",
-      });
-    } finally {
-      setProcessingActions(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(paymentId);
-        return newSet;
-      });
-    }
-  }, [processingActions, toast]);
+        const result = (await paymentsApi.retryPayment(paymentId)) as {
+          newPaymentId?: string;
+        };
+
+        // Update local state to reflect retry
+        setPayments((prev) =>
+          prev.map((payment) =>
+            payment.id === paymentId
+              ? { ...payment, status: "processing" }
+              : payment,
+          ),
+        );
+
+        toast({
+          title: "Payment Retry Initiated",
+          description: `Payment retry successful! New payment ID: ${result?.newPaymentId || "pending"}`,
+        });
+
+        setSelectedPayment(null);
+      } catch (error) {
+        console.error("Error retrying payment:", error);
+        toast({
+          title: "Payment Retry Failed",
+          description:
+            "Failed to retry payment. Please check the payment method or try again later.",
+          variant: "destructive",
+        });
+      } finally {
+        setProcessingActions((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(paymentId);
+          return newSet;
+        });
+      }
+    },
+    [processingActions, toast],
+  );
 
   // Subscription management handlers
   const handleCancelSubscription = useCallback(
     async (subscriptionId: string, reason?: string) => {
       if (processingActions.has(subscriptionId)) return;
-      
+
       try {
-        setProcessingActions(prev => new Set([...prev, subscriptionId]));
-        
+        setProcessingActions((prev) => new Set([...prev, subscriptionId]));
+
         const cancellationReason = reason || "Customer request";
-        await paymentsApi.cancelSubscription(subscriptionId, cancellationReason);
+        await paymentsApi.cancelSubscription(
+          subscriptionId,
+          cancellationReason,
+        );
 
         // Update local state
         setSubscriptions((prev) =>
@@ -572,7 +586,7 @@ export function PaymentProcessor() {
           title: "Subscription Cancelled",
           description: "Subscription cancelled successfully",
         });
-        
+
         setSelectedSubscription(null);
       } catch (error) {
         console.error("Error cancelling subscription:", error);
@@ -582,7 +596,7 @@ export function PaymentProcessor() {
           variant: "destructive",
         });
       } finally {
-        setProcessingActions(prev => {
+        setProcessingActions((prev) => {
           const newSet = new Set(prev);
           newSet.delete(subscriptionId);
           return newSet;
@@ -595,10 +609,10 @@ export function PaymentProcessor() {
   const handlePauseSubscription = useCallback(
     async (subscriptionId: string) => {
       if (processingActions.has(subscriptionId)) return;
-      
+
       try {
-        setProcessingActions(prev => new Set([...prev, subscriptionId]));
-        
+        setProcessingActions((prev) => new Set([...prev, subscriptionId]));
+
         await paymentsApi.pauseSubscription(subscriptionId);
 
         setSubscriptions((prev) =>
@@ -611,7 +625,7 @@ export function PaymentProcessor() {
           title: "Subscription Paused",
           description: "Subscription paused successfully",
         });
-        
+
         setSelectedSubscription(null);
       } catch (error) {
         console.error("Error pausing subscription:", error);
@@ -621,7 +635,7 @@ export function PaymentProcessor() {
           variant: "destructive",
         });
       } finally {
-        setProcessingActions(prev => {
+        setProcessingActions((prev) => {
           const newSet = new Set(prev);
           newSet.delete(subscriptionId);
           return newSet;
@@ -634,10 +648,10 @@ export function PaymentProcessor() {
   const handleResumeSubscription = useCallback(
     async (subscriptionId: string) => {
       if (processingActions.has(subscriptionId)) return;
-      
+
       try {
-        setProcessingActions(prev => new Set([...prev, subscriptionId]));
-        
+        setProcessingActions((prev) => new Set([...prev, subscriptionId]));
+
         await paymentsApi.resumeSubscription(subscriptionId);
 
         setSubscriptions((prev) =>
@@ -650,7 +664,7 @@ export function PaymentProcessor() {
           title: "Subscription Resumed",
           description: "Subscription resumed successfully",
         });
-        
+
         setSelectedSubscription(null);
       } catch (error) {
         console.error("Error resuming subscription:", error);
@@ -660,7 +674,7 @@ export function PaymentProcessor() {
           variant: "destructive",
         });
       } finally {
-        setProcessingActions(prev => {
+        setProcessingActions((prev) => {
           const newSet = new Set(prev);
           newSet.delete(subscriptionId);
           return newSet;
@@ -670,27 +684,31 @@ export function PaymentProcessor() {
     [processingActions, toast],
   );
 
-  const handleInvoiceCreated = (newInvoice: any) => {
+  const handleInvoiceCreated = (newInvoice: Invoice) => {
     setInvoices((prev) => [newInvoice, ...prev]);
   };
 
   const [partialRefundAmount, setPartialRefundAmount] = useState("");
-  const [isPartialRefundDialogOpen, setIsPartialRefundDialogOpen] = useState(false);
-  const [refundingPayment, setRefundingPayment] = useState<Payment | null>(null);
+  const [isPartialRefundDialogOpen, setIsPartialRefundDialogOpen] =
+    useState(false);
+  const [refundingPayment, setRefundingPayment] = useState<Payment | null>(
+    null,
+  );
 
   const handlePartialRefund = () => {
     if (!selectedPayment || !partialRefundAmount) return;
-    
+
     const amount = parseFloat(partialRefundAmount);
     if (amount <= 0 || amount > selectedPayment.amount) {
       toast({
         title: "Invalid Amount",
-        description: "Refund amount must be between $0.01 and the payment amount",
+        description:
+          "Refund amount must be between $0.01 and the payment amount",
         variant: "destructive",
       });
       return;
     }
-    
+
     setRefundingPayment(selectedPayment);
     handleRefund(selectedPayment.id, amount);
     setPartialRefundAmount("");
@@ -1026,8 +1044,8 @@ export function PaymentProcessor() {
                 <CreditCard className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
                 <p className="text-lg font-medium mb-2">No payments found</p>
                 <p className="text-muted-foreground">
-                  {payments.length === 0 
-                    ? "No payments have been processed yet" 
+                  {payments.length === 0
+                    ? "No payments have been processed yet"
                     : "Try adjusting your filters to see more results"}
                 </p>
               </CardContent>
@@ -1063,7 +1081,9 @@ export function PaymentProcessor() {
             <Card>
               <CardContent className="text-center py-8">
                 <RefreshCcw className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-lg font-medium mb-2">No subscriptions found</p>
+                <p className="text-lg font-medium mb-2">
+                  No subscriptions found
+                </p>
                 <p className="text-muted-foreground">
                   No recurring payment subscriptions have been set up yet
                 </p>
@@ -1099,19 +1119,33 @@ export function PaymentProcessor() {
                   {isLoading ? (
                     [...Array(5)].map((_, i) => (
                       <TableRow key={i}>
-                        <TableCell><div className="h-4 bg-muted rounded w-20 animate-pulse"></div></TableCell>
-                        <TableCell><div className="h-4 bg-muted rounded w-32 animate-pulse"></div></TableCell>
-                        <TableCell><div className="h-4 bg-muted rounded w-16 animate-pulse"></div></TableCell>
-                        <TableCell><div className="h-6 bg-muted rounded w-16 animate-pulse"></div></TableCell>
-                        <TableCell><div className="h-4 bg-muted rounded w-24 animate-pulse"></div></TableCell>
-                        <TableCell><div className="h-8 bg-muted rounded w-20 animate-pulse"></div></TableCell>
+                        <TableCell>
+                          <div className="h-4 bg-muted rounded w-20 animate-pulse"></div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="h-4 bg-muted rounded w-32 animate-pulse"></div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="h-4 bg-muted rounded w-16 animate-pulse"></div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="h-6 bg-muted rounded w-16 animate-pulse"></div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="h-4 bg-muted rounded w-24 animate-pulse"></div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="h-8 bg-muted rounded w-20 animate-pulse"></div>
+                        </TableCell>
                       </TableRow>
                     ))
                   ) : invoices.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={6} className="text-center py-8">
                         <Receipt className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                        <p className="text-lg font-medium mb-2">No invoices found</p>
+                        <p className="text-lg font-medium mb-2">
+                          No invoices found
+                        </p>
                         <p className="text-muted-foreground">
                           Create your first invoice to get started
                         </p>
@@ -1120,7 +1154,9 @@ export function PaymentProcessor() {
                   ) : (
                     invoices.map((invoice) => (
                       <TableRow key={invoice.id}>
-                        <TableCell className="font-mono">{invoice.id}</TableCell>
+                        <TableCell className="font-mono">
+                          {invoice.id}
+                        </TableCell>
                         <TableCell>{invoice.customerName}</TableCell>
                         <TableCell>${invoice.amount.toFixed(2)}</TableCell>
                         <TableCell>
@@ -1246,7 +1282,7 @@ export function PaymentProcessor() {
                       )}
                       Full Refund
                     </Button>
-                    <Button 
+                    <Button
                       variant="outline"
                       onClick={() => openPartialRefundDialog(selectedPayment)}
                       disabled={processingActions.has(selectedPayment.id)}
@@ -1445,7 +1481,10 @@ export function PaymentProcessor() {
       </Dialog>
 
       {/* Partial Refund Dialog */}
-      <Dialog open={isPartialRefundDialogOpen} onOpenChange={setIsPartialRefundDialogOpen}>
+      <Dialog
+        open={isPartialRefundDialogOpen}
+        onOpenChange={setIsPartialRefundDialogOpen}
+      >
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Partial Refund</DialogTitle>
@@ -1473,15 +1512,17 @@ export function PaymentProcessor() {
               )}
             </div>
             <div className="flex justify-end gap-2">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => setIsPartialRefundDialogOpen(false)}
               >
                 Cancel
               </Button>
-              <Button 
+              <Button
                 onClick={handlePartialRefund}
-                disabled={!partialRefundAmount || parseFloat(partialRefundAmount) <= 0}
+                disabled={
+                  !partialRefundAmount || parseFloat(partialRefundAmount) <= 0
+                }
               >
                 Process Refund
               </Button>

@@ -13,12 +13,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
   Receipt,
   User,
-  CalendarDays,
   DollarSign,
   Plus,
   Minus,
@@ -27,9 +25,27 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+interface Invoice {
+  id: string;
+  customerId: string;
+  customerName: string;
+  amount: number;
+  status: "draft" | "sent" | "paid" | "overdue" | "cancelled";
+  dueDate: Date;
+  createdAt: Date;
+  paidAt?: Date;
+  description?: string;
+  items?: Array<{
+    description: string;
+    quantity: number;
+    rate: number;
+    amount: number;
+  }>;
+}
+
 interface InvoiceCreationFormProps {
   onClose: () => void;
-  onInvoiceCreated?: (invoice: any) => void;
+  onInvoiceCreated?: (invoice: Invoice) => void;
 }
 
 interface LineItem {
@@ -174,30 +190,21 @@ export function InvoiceCreationForm({
           .split("T")[0];
 
       // Create invoice object
-      const newInvoice = {
+      const newInvoice: Invoice = {
         id: invoiceNumber,
-        invoiceNumber,
+        customerId: "", // Would be set from selected customer in real app
         customerName: formData.customerName,
-        customerEmail: formData.customerEmail,
-        customerPhone: formData.customerPhone,
-        billingAddress: formData.billingAddress,
-        template: formData.invoiceTemplate,
-        issueDate: new Date().toISOString().split("T")[0],
-        dueDate,
-        paymentTerms: selectedTerm?.name || "Net 30",
-        referenceNumber: formData.referenceNumber,
-        lineItems,
-        subtotal: calculateSubtotal(),
-        taxRate: formData.taxRate,
-        taxAmount: calculateTax(),
-        discountPercentage: formData.discountPercentage,
-        discountAmount:
-          formData.discountAmount ||
-          (calculateSubtotal() * formData.discountPercentage) / 100,
-        totalAmount: calculateTotal(),
-        notes: formData.notes,
-        status: "draft",
+        amount: calculateTotal(),
+        status: "draft" as const,
+        dueDate: new Date(dueDate),
         createdAt: new Date(),
+        description: formData.notes,
+        items: lineItems.map((item) => ({
+          description: item.description,
+          quantity: item.quantity,
+          rate: item.rate,
+          amount: item.amount,
+        })),
       };
 
       // In a real app, this would save to the backend
@@ -413,7 +420,7 @@ export function InvoiceCreationForm({
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {lineItems.map((item, index) => (
+          {lineItems.map((item) => (
             <div key={item.id} className="grid grid-cols-12 gap-2 items-end">
               <div className="col-span-12 md:col-span-5">
                 <Label htmlFor={`description-${item.id}`}>Description</Label>

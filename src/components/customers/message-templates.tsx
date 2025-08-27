@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -94,12 +94,7 @@ export function MessageTemplates({
   });
   const { toast } = useToast();
 
-  // Load templates from API
-  useEffect(() => {
-    loadTemplates();
-  }, []);
-
-  const loadTemplates = async () => {
+  const loadTemplates = useCallback(async () => {
     try {
       setLoading(true);
       const apiTemplates = await templatesApi.getAll();
@@ -114,7 +109,12 @@ export function MessageTemplates({
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
+
+  // Load templates from API
+  useEffect(() => {
+    loadTemplates();
+  }, [loadTemplates]);
 
   const filteredTemplates = templates.filter((template) => {
     const matchesType =

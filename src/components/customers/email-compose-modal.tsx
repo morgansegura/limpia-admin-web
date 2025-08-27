@@ -1,17 +1,27 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Mail, Send, Save, Eye, FileText, Clock, User, Paperclip } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useToast } from '@/hooks/use-toast';
+import { useState } from "react";
+import { Mail, Send, Save, Eye, FileText, Clock } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
 
 interface EmailComposeModalProps {
   isOpen: boolean;
@@ -22,12 +32,17 @@ interface EmailComposeModalProps {
     email: string;
     phone?: string;
   };
-  onEmailSent: (emailData: any) => void;
+  onEmailSent: (emailData: {
+    to: string;
+    subject: string;
+    content: string;
+    attachments?: string[];
+  }) => void;
 }
 
 const EMAIL_TEMPLATES = {
   service_inquiry_response: {
-    subject: 'Thank you for your service inquiry - {{customerName}}',
+    subject: "Thank you for your service inquiry - {{customerName}}",
     body: `Dear {{customerName}},
 
 Thank you for your inquiry about our cleaning services. We're excited to help you maintain a clean and healthy environment.
@@ -51,7 +66,7 @@ Best regards,
 Limpia Cleaning Services`,
   },
   estimate_follow_up: {
-    subject: 'Following up on your cleaning service estimate',
+    subject: "Following up on your cleaning service estimate",
     body: `Hi {{customerName}},
 
 I hope this email finds you well. I wanted to follow up on the cleaning service estimate we provided for your {{propertyType}}.
@@ -71,7 +86,7 @@ Best regards,
 Limpia Cleaning Services`,
   },
   appointment_confirmation: {
-    subject: 'Appointment Confirmation - {{appointmentDate}}',
+    subject: "Appointment Confirmation - {{appointmentDate}}",
     body: `Dear {{customerName}},
 
 This email confirms your cleaning appointment scheduled for:
@@ -97,7 +112,7 @@ Best regards,
 Limpia Cleaning Services`,
   },
   service_feedback: {
-    subject: 'How was your recent cleaning service?',
+    subject: "How was your recent cleaning service?",
     body: `Hello {{customerName}},
 
 We hope you're satisfied with the cleaning service we provided on {{serviceDate}}. Your feedback is incredibly valuable to us as we strive to provide the best possible service.
@@ -120,55 +135,68 @@ Limpia Cleaning Services`,
 };
 
 const EMAIL_PRIORITIES = [
-  { value: 'low', label: 'Low', color: 'bg-gray-500' },
-  { value: 'normal', label: 'Normal', color: 'bg-blue-500' },
-  { value: 'high', label: 'High', color: 'bg-orange-500' },
-  { value: 'urgent', label: 'Urgent', color: 'bg-red-500' },
+  { value: "low", label: "Low", color: "bg-gray-500" },
+  { value: "normal", label: "Normal", color: "bg-blue-500" },
+  { value: "high", label: "High", color: "bg-orange-500" },
+  { value: "urgent", label: "Urgent", color: "bg-red-500" },
 ];
 
-export function EmailComposeModal({ isOpen, onClose, customer, onEmailSent }: EmailComposeModalProps) {
+export function EmailComposeModal({
+  isOpen,
+  onClose,
+  customer,
+  onEmailSent,
+}: EmailComposeModalProps) {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     to: customer.email,
-    cc: '',
-    bcc: '',
-    subject: '',
-    body: '',
-    priority: 'normal',
-    template: '',
+    cc: "",
+    bcc: "",
+    subject: "",
+    body: "",
+    priority: "normal",
+    template: "",
     scheduledSend: false,
-    scheduledTime: '',
+    scheduledTime: "",
     trackOpens: true,
     trackClicks: true,
   });
   const [previewMode, setPreviewMode] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [attachments] = useState<string[]>([]);
 
   const applyTemplate = (templateKey: string) => {
-    const template = EMAIL_TEMPLATES[templateKey as keyof typeof EMAIL_TEMPLATES];
+    const template =
+      EMAIL_TEMPLATES[templateKey as keyof typeof EMAIL_TEMPLATES];
     if (!template) return;
 
     // Replace template variables
     const variables = {
       customerName: customer.name,
-      senderName: 'Sales Team', // This should come from current user
-      propertyType: 'property',
+      senderName: "Sales Team", // This should come from current user
+      propertyType: "property",
       appointmentDate: new Date().toLocaleDateString(),
-      appointmentTime: '10:00 AM',
-      serviceAddress: 'Customer Address',
-      serviceType: 'Regular Cleaning',
+      appointmentTime: "10:00 AM",
+      serviceAddress: "Customer Address",
+      serviceType: "Regular Cleaning",
       serviceDate: new Date().toLocaleDateString(),
     };
 
-    const processedSubject = template.subject.replace(/\{\{(\w+)\}\}/g, (match, key) => {
-      return variables[key as keyof typeof variables] || match;
-    });
+    const processedSubject = template.subject.replace(
+      /\{\{(\w+)\}\}/g,
+      (match, key) => {
+        return variables[key as keyof typeof variables] || match;
+      },
+    );
 
-    const processedBody = template.body.replace(/\{\{(\w+)\}\}/g, (match, key) => {
-      return variables[key as keyof typeof variables] || match;
-    });
+    const processedBody = template.body.replace(
+      /\{\{(\w+)\}\}/g,
+      (match, key) => {
+        return variables[key as keyof typeof variables] || match;
+      },
+    );
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       subject: processedSubject,
       body: processedBody,
@@ -178,41 +206,30 @@ export function EmailComposeModal({ isOpen, onClose, customer, onEmailSent }: Em
 
   const sendEmail = async () => {
     setIsSending(true);
-    
+
     try {
       const emailData = {
-        customerId: customer.id,
-        customerName: customer.name,
         to: formData.to,
-        cc: formData.cc || undefined,
-        bcc: formData.bcc || undefined,
         subject: formData.subject,
-        body: formData.body,
-        priority: formData.priority,
-        template: formData.template || undefined,
-        scheduledSend: formData.scheduledSend,
-        scheduledTime: formData.scheduledTime || undefined,
-        trackOpens: formData.trackOpens,
-        trackClicks: formData.trackClicks,
-        sentAt: formData.scheduledSend ? formData.scheduledTime : new Date().toISOString(),
-        createdAt: new Date().toISOString(),
+        content: formData.body,
+        attachments: attachments.length > 0 ? attachments : undefined,
       };
 
       await onEmailSent(emailData);
-      
+
       toast({
         title: formData.scheduledSend ? "Email Scheduled" : "Email Sent",
-        description: formData.scheduledSend 
+        description: formData.scheduledSend
           ? `Email scheduled for ${new Date(formData.scheduledTime).toLocaleString()}`
           : `Email sent to ${customer.name} successfully`,
       });
-      
+
       onClose();
-      
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Email Error",
-        description: error.message || "Failed to send email",
+        description:
+          error instanceof Error ? error.message : "Failed to send email",
         variant: "destructive",
       });
     } finally {
@@ -222,23 +239,24 @@ export function EmailComposeModal({ isOpen, onClose, customer, onEmailSent }: Em
 
   const saveDraft = async () => {
     try {
-      const draftData = {
-        ...formData,
-        customerId: customer.id,
-        isDraft: true,
-        createdAt: new Date().toISOString(),
-      };
+      // Draft data would be:
+      // {
+      //   ...formData,
+      //   customerId: customer.id,
+      //   isDraft: true,
+      //   createdAt: new Date().toISOString(),
+      // };
 
       // Save draft logic would go here
       toast({
         title: "Draft Saved",
         description: "Email draft saved successfully",
       });
-      
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Save Error",
-        description: error.message || "Failed to save draft",
+        description:
+          error instanceof Error ? error.message : "Failed to save draft",
         variant: "destructive",
       });
     }
@@ -254,18 +272,18 @@ export function EmailComposeModal({ isOpen, onClose, customer, onEmailSent }: Em
           </DialogTitle>
         </DialogHeader>
 
-        <Tabs value={previewMode ? 'preview' : 'compose'} className="w-full">
+        <Tabs value={previewMode ? "preview" : "compose"} className="w-full">
           <TabsList>
-            <TabsTrigger 
-              value="compose" 
+            <TabsTrigger
+              value="compose"
               onClick={() => setPreviewMode(false)}
               className="flex items-center gap-2"
             >
               <FileText className="w-4 h-4" />
               Compose
             </TabsTrigger>
-            <TabsTrigger 
-              value="preview" 
+            <TabsTrigger
+              value="preview"
               onClick={() => setPreviewMode(true)}
               className="flex items-center gap-2"
             >
@@ -281,18 +299,23 @@ export function EmailComposeModal({ isOpen, onClose, customer, onEmailSent }: Em
                 <CardTitle className="text-lg">Email Templates</CardTitle>
               </CardHeader>
               <CardContent>
-                <Select
-                  value={formData.template}
-                  onValueChange={applyTemplate}
-                >
+                <Select value={formData.template} onValueChange={applyTemplate}>
                   <SelectTrigger>
                     <SelectValue placeholder="Choose a template (optional)" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="service_inquiry_response">Service Inquiry Response</SelectItem>
-                    <SelectItem value="estimate_follow_up">Estimate Follow-up</SelectItem>
-                    <SelectItem value="appointment_confirmation">Appointment Confirmation</SelectItem>
-                    <SelectItem value="service_feedback">Service Feedback Request</SelectItem>
+                    <SelectItem value="service_inquiry_response">
+                      Service Inquiry Response
+                    </SelectItem>
+                    <SelectItem value="estimate_follow_up">
+                      Estimate Follow-up
+                    </SelectItem>
+                    <SelectItem value="appointment_confirmation">
+                      Appointment Confirmation
+                    </SelectItem>
+                    <SelectItem value="service_feedback">
+                      Service Feedback Request
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </CardContent>
@@ -307,7 +330,9 @@ export function EmailComposeModal({ isOpen, onClose, customer, onEmailSent }: Em
                     <Input
                       id="to"
                       value={formData.to}
-                      onChange={(e) => setFormData(prev => ({ ...prev, to: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({ ...prev, to: e.target.value }))
+                      }
                       placeholder="customer@email.com"
                       required
                     />
@@ -316,16 +341,23 @@ export function EmailComposeModal({ isOpen, onClose, customer, onEmailSent }: Em
                     <Label htmlFor="priority">Priority</Label>
                     <Select
                       value={formData.priority}
-                      onValueChange={(value) => setFormData(prev => ({ ...prev, priority: value }))}
+                      onValueChange={(value) =>
+                        setFormData((prev) => ({ ...prev, priority: value }))
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
                         {EMAIL_PRIORITIES.map((priority) => (
-                          <SelectItem key={priority.value} value={priority.value}>
+                          <SelectItem
+                            key={priority.value}
+                            value={priority.value}
+                          >
                             <div className="flex items-center gap-2">
-                              <div className={`w-2 h-2 rounded-full ${priority.color}`} />
+                              <div
+                                className={`w-2 h-2 rounded-full ${priority.color}`}
+                              />
                               <span>{priority.label}</span>
                             </div>
                           </SelectItem>
@@ -341,7 +373,9 @@ export function EmailComposeModal({ isOpen, onClose, customer, onEmailSent }: Em
                     <Input
                       id="cc"
                       value={formData.cc}
-                      onChange={(e) => setFormData(prev => ({ ...prev, cc: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({ ...prev, cc: e.target.value }))
+                      }
                       placeholder="cc@email.com"
                     />
                   </div>
@@ -350,7 +384,12 @@ export function EmailComposeModal({ isOpen, onClose, customer, onEmailSent }: Em
                     <Input
                       id="bcc"
                       value={formData.bcc}
-                      onChange={(e) => setFormData(prev => ({ ...prev, bcc: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          bcc: e.target.value,
+                        }))
+                      }
                       placeholder="bcc@email.com"
                     />
                   </div>
@@ -361,7 +400,12 @@ export function EmailComposeModal({ isOpen, onClose, customer, onEmailSent }: Em
                   <Input
                     id="subject"
                     value={formData.subject}
-                    onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        subject: e.target.value,
+                      }))
+                    }
                     placeholder="Email subject"
                     required
                   />
@@ -372,7 +416,9 @@ export function EmailComposeModal({ isOpen, onClose, customer, onEmailSent }: Em
                   <Textarea
                     id="body"
                     value={formData.body}
-                    onChange={(e) => setFormData(prev => ({ ...prev, body: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, body: e.target.value }))
+                    }
                     placeholder="Compose your email message..."
                     rows={12}
                     required
@@ -386,7 +432,12 @@ export function EmailComposeModal({ isOpen, onClose, customer, onEmailSent }: Em
                       type="checkbox"
                       id="scheduledSend"
                       checked={formData.scheduledSend}
-                      onChange={(e) => setFormData(prev => ({ ...prev, scheduledSend: e.target.checked }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          scheduledSend: e.target.checked,
+                        }))
+                      }
                       className="rounded"
                     />
                     <Label htmlFor="scheduledSend">Schedule for later</Label>
@@ -399,7 +450,12 @@ export function EmailComposeModal({ isOpen, onClose, customer, onEmailSent }: Em
                         id="scheduledTime"
                         type="datetime-local"
                         value={formData.scheduledTime}
-                        onChange={(e) => setFormData(prev => ({ ...prev, scheduledTime: e.target.value }))}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            scheduledTime: e.target.value,
+                          }))
+                        }
                         min={new Date().toISOString().slice(0, 16)}
                       />
                     </div>
@@ -411,7 +467,12 @@ export function EmailComposeModal({ isOpen, onClose, customer, onEmailSent }: Em
                         type="checkbox"
                         id="trackOpens"
                         checked={formData.trackOpens}
-                        onChange={(e) => setFormData(prev => ({ ...prev, trackOpens: e.target.checked }))}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            trackOpens: e.target.checked,
+                          }))
+                        }
                         className="rounded"
                       />
                       <Label htmlFor="trackOpens">Track opens</Label>
@@ -422,7 +483,12 @@ export function EmailComposeModal({ isOpen, onClose, customer, onEmailSent }: Em
                         type="checkbox"
                         id="trackClicks"
                         checked={formData.trackClicks}
-                        onChange={(e) => setFormData(prev => ({ ...prev, trackClicks: e.target.checked }))}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            trackClicks: e.target.checked,
+                          }))
+                        }
                         className="rounded"
                       />
                       <Label htmlFor="trackClicks">Track clicks</Label>
@@ -442,8 +508,12 @@ export function EmailComposeModal({ isOpen, onClose, customer, onEmailSent }: Em
                 <div className="border rounded-lg p-4 bg-gray-50">
                   <div className="border-b pb-4 mb-4">
                     <div className="flex justify-between text-sm text-gray-600 mb-2">
-                      <span><strong>From:</strong> noreply@limpia.com</span>
-                      <span><strong>Priority:</strong> {formData.priority}</span>
+                      <span>
+                        <strong>From:</strong> noreply@limpia.com
+                      </span>
+                      <span>
+                        <strong>Priority:</strong> {formData.priority}
+                      </span>
                     </div>
                     <div className="text-sm text-gray-600 mb-2">
                       <strong>To:</strong> {formData.to}
@@ -473,14 +543,16 @@ export function EmailComposeModal({ isOpen, onClose, customer, onEmailSent }: Em
               Save Draft
             </Button>
           </div>
-          
+
           <div className="flex gap-2">
             <Button variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button 
-              onClick={sendEmail} 
-              disabled={isSending || !formData.to || !formData.subject || !formData.body}
+            <Button
+              onClick={sendEmail}
+              disabled={
+                isSending || !formData.to || !formData.subject || !formData.body
+              }
             >
               {isSending ? (
                 <>
@@ -490,7 +562,7 @@ export function EmailComposeModal({ isOpen, onClose, customer, onEmailSent }: Em
               ) : (
                 <>
                   <Send className="w-4 h-4 mr-2" />
-                  {formData.scheduledSend ? 'Schedule Email' : 'Send Email'}
+                  {formData.scheduledSend ? "Schedule Email" : "Send Email"}
                 </>
               )}
             </Button>

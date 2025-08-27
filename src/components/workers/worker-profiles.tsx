@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -25,39 +26,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   User,
   Star,
-  Award,
   Target,
-  TrendingUp,
-  TrendingDown,
-  Calendar,
-  Clock,
   MapPin,
   Phone,
   Mail,
   Users,
   BookOpen,
-  CheckCircle,
-  AlertTriangle,
   Edit,
-  Settings,
   Download,
   Upload,
-  Eye,
   MessageSquare,
   FileText,
   BarChart3,
-  PieChart,
-  Activity,
-  Zap,
-  Gift,
   Shield,
-  Briefcase,
   GraduationCap,
-  Camera,
   Search,
-  Filter,
 } from "lucide-react";
-import { format, subDays, differenceInDays } from "date-fns";
+import { format, subDays } from "date-fns";
 
 interface WorkerProfile {
   id: string;
@@ -507,9 +492,11 @@ export function WorkerProfiles() {
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center">
               {profile.personalInfo.profileImage ? (
-                <img
+                <Image
                   src={profile.personalInfo.profileImage}
                   alt={profile.personalInfo.name}
+                  width={48}
+                  height={48}
                   className="w-12 h-12 rounded-full object-cover"
                 />
               ) : (
@@ -801,9 +788,11 @@ export function WorkerProfiles() {
                       <div className="flex items-center gap-3">
                         <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center">
                           {selectedProfile.personalInfo.profileImage ? (
-                            <img
+                            <Image
                               src={selectedProfile.personalInfo.profileImage}
                               alt={selectedProfile.personalInfo.name}
+                              width={64}
+                              height={64}
                               className="w-16 h-16 rounded-full object-cover"
                             />
                           ) : (
@@ -1210,11 +1199,14 @@ export function WorkerProfiles() {
               <TabsContent value="skills" className="space-y-6">
                 <div className="grid gap-4">
                   {Object.entries(
-                    selectedProfile.skills.reduce((acc, skill) => {
-                      if (!acc[skill.category]) acc[skill.category] = [];
-                      acc[skill.category].push(skill);
-                      return acc;
-                    }, {} as Record<string, typeof selectedProfile.skills>),
+                    selectedProfile.skills.reduce(
+                      (acc, skill) => {
+                        if (!acc[skill.category]) acc[skill.category] = [];
+                        acc[skill.category].push(skill);
+                        return acc;
+                      },
+                      {} as Record<string, typeof selectedProfile.skills>,
+                    ),
                   ).map(([category, skills]) => (
                     <Card key={category}>
                       <CardHeader>

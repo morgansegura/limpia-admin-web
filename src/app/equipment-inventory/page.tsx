@@ -1,6 +1,6 @@
 "use client";
 
-import { EquipmentInventory } from '@/components/business/equipment-inventory';
+import { EquipmentInventory } from "@/components/business/equipment-inventory";
 
 export default function EquipmentInventoryPage() {
   return (

@@ -27,13 +27,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Plus,
-  Search,
-  Users,
-  AlertCircle,
-  MoreHorizontal,
-} from "lucide-react";
+import { Plus, Search, Users, AlertCircle, MoreHorizontal } from "lucide-react";
 import { CrewCard } from "@/components/crews/crew-card";
 import { CrewForm } from "@/components/crews/crew-form";
 import { LiveTimeTracking } from "@/components/crews/live-time-tracking";
@@ -91,22 +85,38 @@ export default function CrewsPage() {
     setError(null);
     try {
       const data = await crewsApi.getAll();
-      setCrews(Array.isArray(data) ? data as Crew[] : []);
+      setCrews(Array.isArray(data) ? (data as Crew[]) : []);
     } catch (error: unknown) {
-      if ((error && typeof error === 'object' && 'response' in error && (error.response as { status?: number })?.status === 401) || (error instanceof Error && error.message.includes('jwt expired'))) {
+      if (
+        (error &&
+          typeof error === "object" &&
+          "response" in error &&
+          (error.response as { status?: number })?.status === 401) ||
+        (error instanceof Error && error.message.includes("jwt expired"))
+      ) {
         console.warn("🔐 Authentication expired, using fallback crew data");
       } else {
         console.error("Failed to load crews:", error);
       }
-      
+
       // Use fallback mock data for development
       const mockCrews: Crew[] = [
         {
           id: "crew-001",
           name: "Alpha Team",
           members: [
-            { id: "m1", name: "Maria Rodriguez", role: "Team Lead", status: "active" },
-            { id: "m2", name: "James Wilson", role: "Cleaner", status: "active" },
+            {
+              id: "m1",
+              name: "Maria Rodriguez",
+              role: "Team Lead",
+              status: "active",
+            },
+            {
+              id: "m2",
+              name: "James Wilson",
+              role: "Cleaner",
+              status: "active",
+            },
           ],
           currentJob: {
             id: "job-123",
@@ -115,33 +125,48 @@ export default function CrewsPage() {
             type: "commercial",
             startTime: "2025-08-20T09:00:00Z",
             estimatedEnd: "2025-08-20T12:00:00Z",
-            status: "in_progress"
+            status: "in_progress",
           },
           specializations: ["Commercial", "Deep Clean"],
           performance: {
             completionRate: 98,
             efficiency: 95,
-            customerRating: 4.8
+            customerRating: 4.8,
           },
-          status: "on_job"
+          status: "on_job",
         },
         {
-          id: "crew-002", 
+          id: "crew-002",
           name: "Beta Squad",
           members: [
-            { id: "m3", name: "David Chen", role: "Team Lead", status: "active" },
-            { id: "m4", name: "Sarah Johnson", role: "Cleaner", status: "active" },
-            { id: "m5", name: "Mike Torres", role: "Cleaner", status: "active" },
+            {
+              id: "m3",
+              name: "David Chen",
+              role: "Team Lead",
+              status: "active",
+            },
+            {
+              id: "m4",
+              name: "Sarah Johnson",
+              role: "Cleaner",
+              status: "active",
+            },
+            {
+              id: "m5",
+              name: "Mike Torres",
+              role: "Cleaner",
+              status: "active",
+            },
           ],
           currentJob: null,
           specializations: ["Residential", "Move-in/Move-out"],
           performance: {
             completionRate: 92,
             efficiency: 88,
-            customerRating: 4.6
+            customerRating: 4.6,
           },
-          status: "available"
-        }
+          status: "available",
+        },
       ];
       setCrews(mockCrews);
     } finally {
@@ -293,8 +318,8 @@ export default function CrewsPage() {
               <p className="text-muted-foreground mb-4">
                 Try adjusting your search terms or filters
               </p>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => {
                   setSearchTerm("");
                   setStatusFilter("all");

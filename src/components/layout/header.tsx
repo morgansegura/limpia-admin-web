@@ -3,8 +3,6 @@
 import Link from "next/link";
 import {
   Bell,
-  Search,
-  Menu,
   LogOut,
   User,
   Settings,
@@ -14,7 +12,6 @@ import {
   Monitor,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
@@ -26,7 +23,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/contexts/auth-context";
 import { useTheme } from "@/contexts/theme-context";
-import { useSidebar } from "@/contexts/sidebar-context";
 import { useState, useEffect } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { Separator } from "../ui/separator";
@@ -50,7 +46,6 @@ interface Notification {
 export function Header() {
   const { user, tenant, logout } = useAuth();
   const { theme, setTheme } = useTheme();
-  const { toggle } = useSidebar();
 
   const [dashboardStats, setDashboardStats] = useState<DashboardStats>({
     activeJobs: 0,
@@ -97,15 +92,20 @@ export function Header() {
         ]);
 
         setDashboardStats({
-          activeJobs: jobStats?.activeJobs || 0,
+          activeJobs: (jobStats as { activeJobs?: number })?.activeJobs || 0,
           availableCrews: Array.isArray(crewStats)
-            ? crewStats.filter((crew: unknown) => crew && typeof crew === 'object' && 'status' in crew && (crew as { status: unknown }).status === "available")
-                .length
+            ? crewStats.filter(
+                (crew: unknown) =>
+                  crew &&
+                  typeof crew === "object" &&
+                  "status" in crew &&
+                  (crew as { status: unknown }).status === "available",
+              ).length
             : 0,
         });
 
         console.log("📊 Header stats loaded:", {
-          activeJobs: jobStats?.activeJobs || 0,
+          activeJobs: (jobStats as { activeJobs?: number })?.activeJobs || 0,
           availableCrews: Array.isArray(crewStats) ? crewStats.length : 0,
         });
       } catch (error) {

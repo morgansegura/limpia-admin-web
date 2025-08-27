@@ -1,6 +1,6 @@
 "use client";
 
-import { PredictiveAnalytics } from '@/components/analytics/predictive-analytics';
+import { PredictiveAnalytics } from "@/components/analytics/predictive-analytics";
 
 export default function PredictiveAnalyticsPage() {
   return (

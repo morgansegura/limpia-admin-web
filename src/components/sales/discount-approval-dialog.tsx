@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -74,11 +73,18 @@ export function DiscountApprovalDialog({
       onApprovalRequested();
       onClose();
       setJustification("");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("❌ Failed to request discount approval:", error);
-      
+
       // Handle authentication errors specifically
-      if (error?.response?.status === 401 || error?.message?.includes('jwt expired')) {
+      const errorObj = error as unknown as {
+        response?: { message?: string; status?: number };
+        message?: string;
+      };
+      if (
+        errorObj?.response?.status === 401 ||
+        errorObj?.message?.includes("jwt expired")
+      ) {
         console.error("Session expired - user needs to refresh");
         // TODO: Replace with proper toast notification
       } else {
@@ -93,7 +99,7 @@ export function DiscountApprovalDialog({
   const reasons = [];
   if (discountData.exceedsThreshold) {
     reasons.push(
-      `Discount exceeds ${discountData.discountPercentage > 20 ? "20%" : "$50"} threshold`
+      `Discount exceeds ${discountData.discountPercentage > 20 ? "20%" : "$50"} threshold`,
     );
   }
   if (discountData.exceedsBudget) {
@@ -117,11 +123,15 @@ export function DiscountApprovalDialog({
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="flex justify-between">
                 <span>Base Price:</span>
-                <span className="font-medium">${discountData.basePrice.toFixed(2)}</span>
+                <span className="font-medium">
+                  ${discountData.basePrice.toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span>Final Price:</span>
-                <span className="font-medium">${discountData.finalPrice.toFixed(2)}</span>
+                <span className="font-medium">
+                  ${discountData.finalPrice.toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between text-orange-600">
                 <span className="flex items-center">
@@ -129,7 +139,8 @@ export function DiscountApprovalDialog({
                   Discount:
                 </span>
                 <span className="font-medium">
-                  {discountData.discountPercentage}% (${discountData.discountAmount.toFixed(2)})
+                  {discountData.discountPercentage}% ($
+                  {discountData.discountAmount.toFixed(2)})
                 </span>
               </div>
               <div className="flex justify-between">
@@ -138,7 +149,11 @@ export function DiscountApprovalDialog({
                   Budget Impact:
                 </span>
                 <span className="font-medium">
-                  ${(discountData.budgetUsed + discountData.discountAmount).toFixed(2)} / ${discountData.budgetLimit.toFixed(2)}
+                  $
+                  {(
+                    discountData.budgetUsed + discountData.discountAmount
+                  ).toFixed(2)}{" "}
+                  / ${discountData.budgetLimit.toFixed(2)}
                 </span>
               </div>
             </div>
@@ -147,7 +162,9 @@ export function DiscountApprovalDialog({
           {/* Customer Information */}
           {customerInfo && (
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2">
-              <h3 className="font-medium text-blue-800">Customer Information</h3>
+              <h3 className="font-medium text-blue-800">
+                Customer Information
+              </h3>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 {customerInfo.name && (
                   <div>
@@ -164,13 +181,17 @@ export function DiscountApprovalDialog({
                 {customerInfo.serviceType && (
                   <div>
                     <span className="text-gray-600">Service:</span>
-                    <div className="font-medium capitalize">{customerInfo.serviceType.replace(/_/g, " ")}</div>
+                    <div className="font-medium capitalize">
+                      {customerInfo.serviceType.replace(/_/g, " ")}
+                    </div>
                   </div>
                 )}
                 {customerInfo.squareFootage && (
                   <div>
                     <span className="text-gray-600">Size:</span>
-                    <div className="font-medium">{customerInfo.squareFootage} sq ft</div>
+                    <div className="font-medium">
+                      {customerInfo.squareFootage} sq ft
+                    </div>
                   </div>
                 )}
               </div>
@@ -179,7 +200,9 @@ export function DiscountApprovalDialog({
 
           {/* Approval Reasons */}
           <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <h3 className="font-medium text-red-800 mb-2">Approval Required Because:</h3>
+            <h3 className="font-medium text-red-800 mb-2">
+              Approval Required Because:
+            </h3>
             <ul className="space-y-1 text-sm text-red-700">
               {reasons.map((reason, index) => (
                 <li key={index} className="flex items-start">
@@ -204,7 +227,8 @@ export function DiscountApprovalDialog({
               className="resize-none"
             />
             <div className="text-xs text-gray-500">
-              Provide a clear business justification for your sales manager to review.
+              Provide a clear business justification for your sales manager to
+              review.
             </div>
           </div>
 
@@ -213,8 +237,8 @@ export function DiscountApprovalDialog({
             <Button variant="outline" onClick={onClose} disabled={isSubmitting}>
               Cancel
             </Button>
-            <Button 
-              onClick={handleSubmitApproval} 
+            <Button
+              onClick={handleSubmitApproval}
               disabled={!justification.trim() || isSubmitting}
               className="bg-yellow-600 hover:bg-yellow-700"
             >

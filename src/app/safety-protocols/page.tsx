@@ -1,6 +1,6 @@
 "use client";
 
-import { SafetyProtocols } from '@/components/business/safety-protocols';
+import { SafetyProtocols } from "@/components/business/safety-protocols";
 
 export default function SafetyProtocolsPage() {
   return (

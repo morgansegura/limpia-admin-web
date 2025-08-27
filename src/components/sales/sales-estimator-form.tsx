@@ -176,7 +176,6 @@ export function SalesEstimatorForm({ onClose }: SalesEstimatorFormProps) {
     formData.serviceType,
     formData.squareFootage,
     formData.frequency,
-    formData.propertyType,
     formData.isRealtor,
     formData.isRushJob,
     formData.discountPercentage,
@@ -224,17 +223,17 @@ export function SalesEstimatorForm({ onClose }: SalesEstimatorFormProps) {
         const result = await salesApi.createEstimate(estimateData);
         console.log("Estimate created:", result);
         alert(
-          `Estimate created successfully! Estimate #${result.estimateNumber}`,
+          `Estimate created successfully! Estimate #${(result as { estimateNumber?: string }).estimateNumber}`,
         );
       } else {
         const result = await salesApi.getQuickPrice(quickPriceData);
         console.log("Quick price calculated:", result);
         alert(
-          `Quick price: $${result.finalPrice.toFixed(
-            2,
-          )} (Commission: $${result.commissionBreakdown.commissionAmount.toFixed(
-            2,
-          )})`,
+          `Quick price: $${(
+            result as { finalPrice: number }
+          ).finalPrice.toFixed(2)} (Commission: $${(
+            result as { commissionBreakdown: { commissionAmount: number } }
+          ).commissionBreakdown.commissionAmount.toFixed(2)})`,
         );
       }
 
@@ -591,8 +590,8 @@ export function SalesEstimatorForm({ onClose }: SalesEstimatorFormProps) {
           {isLoading
             ? "Processing..."
             : formData.customerName && formData.customerEmail
-            ? "Create Full Estimate"
-            : "Get Quick Price"}
+              ? "Create Full Estimate"
+              : "Get Quick Price"}
         </Button>
       </div>
     </form>

@@ -41,26 +41,32 @@ export function DashboardOverview() {
     try {
       setIsLoading(true);
       setError(null);
-      
+
       try {
         const rawData = await dashboardApi.getOverviewStats();
-        
+
         // Type guard to ensure data has the expected structure
-        const data = rawData && typeof rawData === 'object' ? rawData as {
-          bookings?: { todayRevenue?: number; revenueChange?: number };
-          jobs?: { 
-            completedToday?: number; 
-            activeCrews?: number; 
-            availableCrews?: number; 
-            inProgress?: number; 
-            avgJobTime?: number; 
-            jobsChange?: number; 
-            timeChange?: number; 
-          };
-          analytics?: { efficiencyScore?: number; efficiencyChange?: number };
-          inventory?: { lowStockCount?: number };
-        } : {};
-        
+        const data =
+          rawData && typeof rawData === "object"
+            ? (rawData as {
+                bookings?: { todayRevenue?: number; revenueChange?: number };
+                jobs?: {
+                  completedToday?: number;
+                  activeCrews?: number;
+                  availableCrews?: number;
+                  inProgress?: number;
+                  avgJobTime?: number;
+                  jobsChange?: number;
+                  timeChange?: number;
+                };
+                analytics?: {
+                  efficiencyScore?: number;
+                  efficiencyChange?: number;
+                };
+                inventory?: { lowStockCount?: number };
+              })
+            : {};
+
         // Process the combined data into dashboard stats
         const processedStats: DashboardStats = {
           todayRevenue: data.bookings?.todayRevenue || 0,
@@ -79,8 +85,8 @@ export function DashboardOverview() {
 
         setStats(processedStats);
       } catch (apiError) {
-        console.warn('API not available, using fallback data:', apiError);
-        
+        console.warn("API not available, using fallback data:", apiError);
+
         // Use fallback mock data when API is not available
         setStats({
           todayRevenue: 2847,
@@ -98,17 +104,17 @@ export function DashboardOverview() {
         });
       }
     } catch (error) {
-      console.error('Unexpected error in dashboard stats:', error);
-      setError('Failed to load dashboard data');
+      console.error("Unexpected error in dashboard stats:", error);
+      setError("Failed to load dashboard data");
     } finally {
       setIsLoading(false);
     }
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
@@ -153,9 +159,9 @@ export function DashboardOverview() {
             <div className="text-center">
               <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
               <p className="text-lg font-semibold text-red-600">
-                {error || 'Failed to load dashboard data'}
+                {error || "Failed to load dashboard data"}
               </p>
-              <button 
+              <button
                 onClick={fetchDashboardStats}
                 className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
               >
@@ -172,8 +178,13 @@ export function DashboardOverview() {
     {
       title: "Today's Revenue",
       value: formatCurrency(stats.todayRevenue),
-      change: `${stats.revenueChange > 0 ? '+' : ''}${stats.revenueChange.toFixed(1)}%`,
-      changeType: stats.revenueChange > 0 ? "positive" : stats.revenueChange < 0 ? "negative" : "neutral",
+      change: `${stats.revenueChange > 0 ? "+" : ""}${stats.revenueChange.toFixed(1)}%`,
+      changeType:
+        stats.revenueChange > 0
+          ? "positive"
+          : stats.revenueChange < 0
+            ? "negative"
+            : "neutral",
       icon: DollarSign,
       description: `From ${stats.completedJobs} completed jobs`,
     },
@@ -188,24 +199,40 @@ export function DashboardOverview() {
     {
       title: "Jobs Completed",
       value: stats.completedJobs.toString(),
-      change: `${stats.jobsChange > 0 ? '+' : ''}${stats.jobsChange} from yesterday`,
-      changeType: stats.jobsChange > 0 ? "positive" : stats.jobsChange < 0 ? "negative" : "neutral",
+      change: `${stats.jobsChange > 0 ? "+" : ""}${stats.jobsChange} from yesterday`,
+      changeType:
+        stats.jobsChange > 0
+          ? "positive"
+          : stats.jobsChange < 0
+            ? "negative"
+            : "neutral",
       icon: ClipboardCheck,
       description: `${stats.jobsInProgress} jobs in progress`,
     },
     {
       title: "Efficiency Score",
       value: `${stats.efficiencyScore}%`,
-      change: `${stats.efficiencyChange > 0 ? '+' : ''}${stats.efficiencyChange.toFixed(1)}%`,
-      changeType: stats.efficiencyChange > 0 ? "positive" : stats.efficiencyChange < 0 ? "negative" : "neutral",
+      change: `${stats.efficiencyChange > 0 ? "+" : ""}${stats.efficiencyChange.toFixed(1)}%`,
+      changeType:
+        stats.efficiencyChange > 0
+          ? "positive"
+          : stats.efficiencyChange < 0
+            ? "negative"
+            : "neutral",
       icon: TrendingUp,
-      description: stats.efficiencyScore >= 90 ? "Above 90% target" : "Below 90% target",
+      description:
+        stats.efficiencyScore >= 90 ? "Above 90% target" : "Below 90% target",
     },
     {
       title: "Avg Job Time",
       value: formatTime(stats.avgJobTime),
-      change: `${stats.timeChange > 0 ? '+' : ''}${Math.abs(stats.timeChange)} min`,
-      changeType: stats.timeChange < 0 ? "positive" : stats.timeChange > 0 ? "negative" : "neutral",
+      change: `${stats.timeChange > 0 ? "+" : ""}${Math.abs(stats.timeChange)} min`,
+      changeType:
+        stats.timeChange < 0
+          ? "positive"
+          : stats.timeChange > 0
+            ? "negative"
+            : "neutral",
       icon: Clock,
       description: "Within estimated time",
     },
@@ -232,8 +259,11 @@ export function DashboardOverview() {
             <div className="flex items-center space-x-2 text-xs text-muted-foreground">
               <Badge
                 variant={getChangeVariant(
-                  stat.changeType === "positive" ? 1 : 
-                  stat.changeType === "negative" ? -1 : 0
+                  stat.changeType === "positive"
+                    ? 1
+                    : stat.changeType === "negative"
+                      ? -1
+                      : 0,
                 )}
                 className="text-xs"
               >

@@ -1,6 +1,6 @@
 "use client";
 
-import { InvoiceGenerator } from '@/components/invoicing/invoice-generator';
+import { InvoiceGenerator } from "@/components/invoicing/invoice-generator";
 
 export default function InvoicesPage() {
   return (

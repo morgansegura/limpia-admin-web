@@ -359,25 +359,25 @@ export const useJobTimerStore = create<JobTimerState>()(
         if (state) {
           state.jobTimers = state.jobTimers.map(timer => ({
             ...timer,
-            startTime: timer.startTime ? new Date(timer.startTime as any) : undefined,
-            endTime: timer.endTime ? new Date(timer.endTime as any) : undefined,
+            startTime: timer.startTime ? new Date(timer.startTime as string | Date) : undefined,
+            endTime: timer.endTime ? new Date(timer.endTime as string | Date) : undefined,
             tasks: timer.tasks.map(task => ({
               ...task,
-              startTime: task.startTime ? new Date(task.startTime as any) : undefined,
-              endTime: task.endTime ? new Date(task.endTime as any) : undefined,
+              startTime: task.startTime ? new Date(task.startTime as string | Date) : undefined,
+              endTime: task.endTime ? new Date(task.endTime as string | Date) : undefined,
             })),
             breaks: timer.breaks.map(breakItem => ({
               ...breakItem,
-              start: new Date(breakItem.start as any),
-              end: breakItem.end ? new Date(breakItem.end as any) : undefined,
+              start: new Date(breakItem.start as string | Date),
+              end: breakItem.end ? new Date(breakItem.end as string | Date) : undefined,
             })),
             photos: timer.photos.map(photo => ({
               ...photo,
-              timestamp: new Date(photo.timestamp as any),
+              timestamp: new Date(photo.timestamp as string | Date),
             })),
             completionChecklist: timer.completionChecklist.map(item => ({
               ...item,
-              timestamp: item.timestamp ? new Date(item.timestamp as any) : undefined,
+              timestamp: item.timestamp ? new Date(item.timestamp as string | Date) : undefined,
             })),
           }));
           state.currentTime = new Date();

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import type { Job } from "@/types/app.types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -138,7 +139,7 @@ export default function JobsPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
   const [isJobFormOpen, setIsJobFormOpen] = useState(false);
-  const [jobsList, setJobsList] = useState<any[]>([]);
+  const [jobsList, setJobsList] = useState<Job[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -152,21 +153,25 @@ export default function JobsPage() {
     setError(null);
     try {
       const data = await jobsApi.getAll();
-      setJobsList(Array.isArray(data) ? data : []);
-    } catch (error: any) {
-      if (error?.response?.status === 401 || error?.message?.includes('jwt expired')) {
+      setJobsList(Array.isArray(data) ? (data as Job[]) : []);
+    } catch (error: unknown) {
+      if (
+        (error as { response?: { status?: number } })?.response?.status ===
+          401 ||
+        (error as Error)?.message?.includes("jwt expired")
+      ) {
         console.warn("🔐 Authentication expired, using fallback jobs data");
       } else {
         console.error("Failed to load jobs:", error);
       }
       // Use fallback data when API is not available
-      setJobsList(fallbackJobs);
+      setJobsList(fallbackJobs as Job[]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleJobCreated = (newJob: any) => {
+  const handleJobCreated = (newJob: Job) => {
     setJobsList((prev) => [newJob, ...prev]);
   };
 
@@ -317,15 +322,33 @@ export default function JobsPage() {
               {isLoading ? (
                 [...Array(5)].map((_, i) => (
                   <TableRow key={i}>
-                    <TableCell><div className="h-4 w-24 bg-gray-200 rounded animate-pulse"></div></TableCell>
-                    <TableCell><div className="h-4 w-32 bg-gray-200 rounded animate-pulse"></div></TableCell>
-                    <TableCell><div className="h-4 w-28 bg-gray-200 rounded animate-pulse"></div></TableCell>
-                    <TableCell><div className="h-4 w-20 bg-gray-200 rounded animate-pulse"></div></TableCell>
-                    <TableCell><div className="h-4 w-16 bg-gray-200 rounded animate-pulse"></div></TableCell>
-                    <TableCell><div className="h-4 w-16 bg-gray-200 rounded animate-pulse"></div></TableCell>
-                    <TableCell><div className="h-4 w-24 bg-gray-200 rounded animate-pulse"></div></TableCell>
-                    <TableCell><div className="h-4 w-16 bg-gray-200 rounded animate-pulse"></div></TableCell>
-                    <TableCell><div className="h-8 w-16 bg-gray-200 rounded animate-pulse"></div></TableCell>
+                    <TableCell>
+                      <div className="h-4 w-24 bg-gray-200 rounded animate-pulse"></div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-4 w-32 bg-gray-200 rounded animate-pulse"></div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-4 w-28 bg-gray-200 rounded animate-pulse"></div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-4 w-20 bg-gray-200 rounded animate-pulse"></div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-4 w-24 bg-gray-200 rounded animate-pulse"></div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-8 w-16 bg-gray-200 rounded animate-pulse"></div>
+                    </TableCell>
                   </TableRow>
                 ))
               ) : error ? (
@@ -333,8 +356,12 @@ export default function JobsPage() {
                   <TableCell colSpan={9} className="text-center py-8">
                     <div className="flex flex-col items-center">
                       <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
-                      <p className="text-lg font-semibold text-red-600">{error}</p>
-                      <Button onClick={loadJobs} className="mt-2">Try Again</Button>
+                      <p className="text-lg font-semibold text-red-600">
+                        {error}
+                      </p>
+                      <Button onClick={loadJobs} className="mt-2">
+                        Try Again
+                      </Button>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -343,8 +370,12 @@ export default function JobsPage() {
                   <TableCell colSpan={9} className="text-center py-8">
                     <div className="flex flex-col items-center">
                       <Calendar className="h-12 w-12 text-gray-400 mb-4" />
-                      <h3 className="text-lg font-semibold mb-2">No jobs found</h3>
-                      <p className="text-muted-foreground mb-4">Get started by creating your first job</p>
+                      <h3 className="text-lg font-semibold mb-2">
+                        No jobs found
+                      </h3>
+                      <p className="text-muted-foreground mb-4">
+                        Get started by creating your first job
+                      </p>
                       <Button onClick={() => setIsJobFormOpen(true)}>
                         <Plus className="mr-2 h-4 w-4" />
                         Create First Job
@@ -357,10 +388,14 @@ export default function JobsPage() {
                   <TableCell colSpan={9} className="text-center py-8">
                     <div className="flex flex-col items-center">
                       <Search className="h-12 w-12 text-gray-400 mb-4" />
-                      <h3 className="text-lg font-semibold mb-2">No jobs match your filters</h3>
-                      <p className="text-muted-foreground mb-4">Try adjusting your search or filters</p>
-                      <Button 
-                        variant="outline" 
+                      <h3 className="text-lg font-semibold mb-2">
+                        No jobs match your filters
+                      </h3>
+                      <p className="text-muted-foreground mb-4">
+                        Try adjusting your search or filters
+                      </p>
+                      <Button
+                        variant="outline"
                         onClick={() => {
                           setSearchTerm("");
                           setStatusFilter("all");
@@ -374,112 +409,119 @@ export default function JobsPage() {
                 </TableRow>
               ) : (
                 filteredJobs.map((job) => (
-                <TableRow key={job.id}>
-                  <TableCell className="font-mono text-sm">{job.id}</TableCell>
-                  <TableCell>
-                    <div>
-                      <div className="font-medium">{job.customer}</div>
-                      <div className="text-sm text-muted-foreground flex items-center">
-                        <MapPin className="h-3 w-3 mr-1" />
-                        {job.address.split(",")[0]}
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>{job.service}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{job.crew}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-2">
-                      <div
-                        className={`w-2 h-2 rounded-full ${getStatusColor(
-                          job.status,
-                        )}`}
-                      />
-                      <span className="text-sm">
-                        {getStatusLabel(job.status)}
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        getPriorityColor(job.priority) as
-                          | "default"
-                          | "secondary"
-                          | "outline"
-                          | "destructive"
-                          | null
-                          | undefined
-                      }
-                    >
-                      {job.priority}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="text-sm">
+                  <TableRow key={job.id}>
+                    <TableCell className="font-mono text-sm">
+                      {job.id}
+                    </TableCell>
+                    <TableCell>
                       <div>
-                        {job.scheduledStart.toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                        <div className="font-medium">{job.customer}</div>
+                        <div className="text-sm text-muted-foreground flex items-center">
+                          <MapPin className="h-3 w-3 mr-1" />
+                          {job.address.split(",")[0]}
+                        </div>
                       </div>
-                      <div className="text-muted-foreground">
-                        {job.actualStart
-                          ? `Started ${formatDistanceToNow(
-                              job.actualStart,
-                            )} ago`
-                          : `Starts ${formatDistanceToNow(job.scheduledStart, {
-                              addSuffix: true,
-                            })}`}
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-16 bg-stone-200 rounded-full h-2">
+                    </TableCell>
+                    <TableCell>{job.service}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline">{job.crew}</Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center space-x-2">
                         <div
-                          className="bg-stone-600 h-2 rounded-full"
-                          style={{ width: `${job.progress}%` }}
+                          className={`w-2 h-2 rounded-full ${getStatusColor(
+                            job.status,
+                          )}`}
                         />
+                        <span className="text-sm">
+                          {getStatusLabel(job.status)}
+                        </span>
                       </div>
-                      <span className="text-sm w-12">{job.progress}%</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() =>
-                          console.log(`Initiating call for job ${job.id}`)
-                        }
-                        title="Call customer"
-                      >
-                        <Phone className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() =>
-                          console.log(`Opening navigation to ${job.address}`)
-                        }
-                        title="Get directions"
-                      >
-                        <Navigation className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          console.log(`Opening job details for ${job.id}`)
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          getPriorityColor(job.priority) as
+                            | "default"
+                            | "secondary"
+                            | "outline"
+                            | "destructive"
+                            | null
+                            | undefined
                         }
                       >
-                        View
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
+                        {job.priority}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-sm">
+                        <div>
+                          {job.scheduledStart?.toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          }) || "Not scheduled"}
+                        </div>
+                        <div className="text-muted-foreground">
+                          {job.actualStart
+                            ? `Started ${formatDistanceToNow(
+                                job.actualStart,
+                              )} ago`
+                            : job.scheduledStart
+                              ? `Starts ${formatDistanceToNow(
+                                  job.scheduledStart,
+                                  {
+                                    addSuffix: true,
+                                  },
+                                )}`
+                              : "Not scheduled"}
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center space-x-2">
+                        <div className="w-16 bg-stone-200 rounded-full h-2">
+                          <div
+                            className="bg-stone-600 h-2 rounded-full"
+                            style={{ width: `${job.progress}%` }}
+                          />
+                        </div>
+                        <span className="text-sm w-12">{job.progress}%</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center space-x-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() =>
+                            console.log(`Initiating call for job ${job.id}`)
+                          }
+                          title="Call customer"
+                        >
+                          <Phone className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() =>
+                            console.log(`Opening navigation to ${job.address}`)
+                          }
+                          title="Get directions"
+                        >
+                          <Navigation className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            console.log(`Opening job details for ${job.id}`)
+                          }
+                        >
+                          View
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
                 ))
               )}
             </TableBody>

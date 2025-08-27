@@ -6,25 +6,31 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/auth-context";
-import { 
-  HelpCircle, 
-  MessageCircle, 
-  Phone, 
-  Mail, 
-  FileText, 
+import {
+  HelpCircle,
+  MessageCircle,
+  Phone,
+  Mail,
+  FileText,
   ExternalLink,
   Clock,
   CheckCircle,
   AlertCircle,
   Send,
-  Search
+  Search,
 } from "lucide-react";
 
 export default function SupportPage() {
-  const { user } = useAuth();
+  const {} = useAuth();
   const [ticketForm, setTicketForm] = useState({
     subject: "",
     category: "",
@@ -67,25 +73,30 @@ export default function SupportPage() {
   const faqItems = [
     {
       question: "How do I reset my password?",
-      answer: "You can reset your password from the login page by clicking 'Forgot Password' or contact your administrator.",
+      answer:
+        "You can reset your password from the login page by clicking &apos;Forgot Password&apos; or contact your administrator.",
     },
     {
       question: "How do I schedule a new job?",
-      answer: "Navigate to the Jobs section and click 'Schedule New Job'. Fill in the required details and assign a crew.",
+      answer:
+        "Navigate to the Jobs section and click &apos;Schedule New Job&apos;. Fill in the required details and assign a crew.",
     },
     {
-      question: "Why can't I see certain menu items?",
-      answer: "Menu items are based on your role permissions. Contact your administrator if you need access to additional features.",
+      question: "Why can&apos;t I see certain menu items?",
+      answer:
+        "Menu items are based on your role permissions. Contact your administrator if you need access to additional features.",
     },
     {
       question: "How do I update customer information?",
-      answer: "Go to the Customers section, find the customer, and click on their profile to edit their information.",
+      answer:
+        "Go to the Customers section, find the customer, and click on their profile to edit their information.",
     },
   ];
 
-  const filteredFAQ = faqItems.filter(item =>
-    item.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.answer.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredFAQ = faqItems.filter(
+    (item) =>
+      item.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.answer.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const getStatusIcon = (status: string) => {
@@ -164,7 +175,8 @@ export default function SupportPage() {
           <CardHeader>
             <CardTitle>Submit Support Ticket</CardTitle>
             <p className="text-sm text-muted-foreground">
-              Describe your issue and we'll get back to you as soon as possible
+              Describe your issue and we&apos;ll get back to you as soon as
+              possible
             </p>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -174,7 +186,9 @@ export default function SupportPage() {
                 <Input
                   id="subject"
                   value={ticketForm.subject}
-                  onChange={(e) => setTicketForm({ ...ticketForm, subject: e.target.value })}
+                  onChange={(e) =>
+                    setTicketForm({ ...ticketForm, subject: e.target.value })
+                  }
                   placeholder="Brief description of your issue"
                 />
               </div>
@@ -182,7 +196,9 @@ export default function SupportPage() {
                 <Label htmlFor="category">Category</Label>
                 <Select
                   value={ticketForm.category}
-                  onValueChange={(value) => setTicketForm({ ...ticketForm, category: value })}
+                  onValueChange={(value) =>
+                    setTicketForm({ ...ticketForm, category: value })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select category" />
@@ -202,16 +218,22 @@ export default function SupportPage() {
               <Label htmlFor="priority">Priority</Label>
               <Select
                 value={ticketForm.priority}
-                onValueChange={(value) => setTicketForm({ ...ticketForm, priority: value })}
+                onValueChange={(value) =>
+                  setTicketForm({ ...ticketForm, priority: value })
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="low">Low - General question</SelectItem>
-                  <SelectItem value="medium">Medium - Non-urgent issue</SelectItem>
+                  <SelectItem value="medium">
+                    Medium - Non-urgent issue
+                  </SelectItem>
                   <SelectItem value="high">High - Urgent issue</SelectItem>
-                  <SelectItem value="critical">Critical - System down</SelectItem>
+                  <SelectItem value="critical">
+                    Critical - System down
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -221,7 +243,9 @@ export default function SupportPage() {
               <Textarea
                 id="description"
                 value={ticketForm.description}
-                onChange={(e) => setTicketForm({ ...ticketForm, description: e.target.value })}
+                onChange={(e) =>
+                  setTicketForm({ ...ticketForm, description: e.target.value })
+                }
                 placeholder="Please provide detailed information about your issue..."
                 rows={4}
               />
@@ -255,7 +279,8 @@ export default function SupportPage() {
                       <div>
                         <h4 className="font-medium">{ticket.subject}</h4>
                         <p className="text-sm text-muted-foreground">
-                          {ticket.id} • Created {ticket.createdAt} • {ticket.responses} responses
+                          {ticket.id} • Created {ticket.createdAt} •{" "}
+                          {ticket.responses} responses
                         </p>
                       </div>
                     </div>
@@ -264,7 +289,7 @@ export default function SupportPage() {
                         {ticket.priority}
                       </Badge>
                       <Badge className={getStatusColor(ticket.status)}>
-                        {ticket.status.replace('_', ' ')}
+                        {ticket.status.replace("_", " ")}
                       </Badge>
                       <Button variant="outline" size="sm">
                         View
@@ -277,7 +302,9 @@ export default function SupportPage() {
               <div className="text-center py-8 text-muted-foreground">
                 <HelpCircle className="w-12 h-12 mx-auto mb-4 opacity-50" />
                 <p>No support tickets yet</p>
-                <p className="text-sm">Submit a ticket above if you need assistance</p>
+                <p className="text-sm">
+                  Submit a ticket above if you need assistance
+                </p>
               </div>
             )}
           </CardContent>
@@ -307,7 +334,7 @@ export default function SupportPage() {
               ))}
               {filteredFAQ.length === 0 && searchQuery && (
                 <p className="text-center text-muted-foreground py-4">
-                  No FAQ items found matching "{searchQuery}"
+                  No FAQ items found matching &quot;{searchQuery}&quot;
                 </p>
               )}
             </div>

@@ -161,7 +161,7 @@ export function LiveTimeTracking() {
                   </Avatar>
                   <div
                     className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${getStatusColor(
-                      entry.status
+                      entry.status,
                     )}`}
                     title={getStatusLabel(entry.status)}
                   />

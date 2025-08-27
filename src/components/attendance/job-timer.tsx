@@ -40,7 +40,11 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { FormItem } from "../ui/form";
-import { useJobTimerStore, type JobTimer, type JobTask } from "@/stores/job-timer-store";
+import {
+  useJobTimerStore,
+  type JobTimer,
+  type JobTask,
+} from "@/stores/job-timer-store";
 
 // Types are now imported from the store
 
@@ -269,7 +273,7 @@ export function JobTimer() {
     getCurrentTaskDuration,
     getTimerStats,
   } = useJobTimerStore();
-  
+
   // Local component state
   const [selectedTimer, setSelectedTimer] = useState<JobTimer | null>(null);
   const [isTimerDetailOpen, setIsTimerDetailOpen] = useState(false);
@@ -282,16 +286,16 @@ export function JobTimer() {
   const [taskNotes, setTaskNotes] = useState("");
   const [taskIssues, setTaskIssues] = useState("");
   const { toast } = useToast();
-  
+
   // Hydration guard and initialization
   const [mounted, setMounted] = useState(false);
-  
+
   // Update current time every second - always call hooks before any early returns
   useEffect(() => {
     const timer = setInterval(() => updateCurrentTime(), 1000);
     return () => clearInterval(timer);
   }, [updateCurrentTime]);
-  
+
   // Filter job timers - must be called before early return
   const filteredTimers = useMemo(() => {
     let filtered = jobTimers;
@@ -322,7 +326,7 @@ export function JobTimer() {
       setJobTimers(mockJobTimers);
     }
   }, [jobTimers.length, setJobTimers]);
-  
+
   if (!mounted) {
     return (
       <div className="space-y-6">
@@ -424,7 +428,7 @@ export function JobTimer() {
   const handleCompleteTimer = (timerId: string) => {
     const timer = jobTimers.find((t) => t.id === timerId);
     if (!timer) return;
-    
+
     const actualDuration = timer.actualDuration || getTotalElapsedTime(timer);
     completeTimer(timerId);
     toast({
@@ -445,7 +449,7 @@ export function JobTimer() {
     const timer = jobTimers.find((t) => t.id === timerId);
     const task = timer?.tasks.find((t) => t.id === taskId);
     if (!timer || !task) return;
-    
+
     const actualTime = task.actualTime || getCurrentTaskDuration(timer);
     completeTask(timerId, taskId);
     toast({
@@ -503,7 +507,7 @@ export function JobTimer() {
         title: "Export Complete",
         description: "Job timer data exported successfully.",
       });
-    } catch (error) {
+    } catch {
       toast({
         title: "Export Failed",
         description: "Failed to export data. Please try again.",
@@ -517,7 +521,9 @@ export function JobTimer() {
 
     updateTask(selectedTimer.id, selectedTask.id, {
       notes: taskNotes,
-      issues: taskIssues ? taskIssues.split(",").map((i) => i.trim()) : undefined,
+      issues: taskIssues
+        ? taskIssues.split(",").map((i) => i.trim())
+        : undefined,
     });
 
     setIsTaskEditOpen(false);
@@ -719,8 +725,8 @@ export function JobTimer() {
                 {task.actualTime
                   ? formatDuration(task.actualTime)
                   : task.status === "in_progress"
-                  ? formatDuration(duration)
-                  : "--"}
+                    ? formatDuration(duration)
+                    : "--"}
               </div>
             </div>
           </div>

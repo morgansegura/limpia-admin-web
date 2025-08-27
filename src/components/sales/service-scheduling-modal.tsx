@@ -1,18 +1,29 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Calendar as CalendarIcon, Clock, Users, MapPin, AlertCircle } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useState, useEffect, useCallback } from "react";
+import { Calendar as CalendarIcon, Clock, AlertCircle } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 // Note: Using HTML date input instead of calendar component
-import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/use-toast';
-import { useWorkflow } from '@/hooks/useWorkflow';
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { useWorkflow } from "@/hooks/useWorkflow";
 
 interface ServiceSchedulingModalProps {
   isOpen: boolean;
@@ -21,7 +32,7 @@ interface ServiceSchedulingModalProps {
   customerName: string;
   serviceType: string;
   estimatedDuration: number;
-  onServiceScheduled: (scheduleData: any) => void;
+  onServiceScheduled: (scheduleData: unknown) => void;
 }
 
 interface TimeSlot {
@@ -34,17 +45,17 @@ interface TimeSlot {
 }
 
 const SERVICE_DURATIONS = {
-  'deep_cleaning': 240, // 4 hours
-  'recurring_cleaning': 120, // 2 hours
-  'one_time_cleaning': 180, // 3 hours
-  'move_in_out': 360, // 6 hours
-  'post_construction': 480, // 8 hours
+  deep_cleaning: 240, // 4 hours
+  recurring_cleaning: 120, // 2 hours
+  one_time_cleaning: 180, // 3 hours
+  move_in_out: 360, // 6 hours
+  post_construction: 480, // 8 hours
 };
 
 const TIME_PREFERENCES = [
-  { value: 'morning', label: 'Morning (8am - 12pm)', icon: '🌅' },
-  { value: 'afternoon', label: 'Afternoon (12pm - 5pm)', icon: '☀️' },
-  { value: 'evening', label: 'Evening (5pm - 8pm)', icon: '🌆' },
+  { value: "morning", label: "Morning (8am - 12pm)", icon: "🌅" },
+  { value: "afternoon", label: "Afternoon (12pm - 5pm)", icon: "☀️" },
+  { value: "evening", label: "Evening (5pm - 8pm)", icon: "🌆" },
 ];
 
 export function ServiceSchedulingModal({
@@ -54,52 +65,66 @@ export function ServiceSchedulingModal({
   customerName,
   serviceType,
   estimatedDuration,
-  onServiceScheduled
+  onServiceScheduled,
 }: ServiceSchedulingModalProps) {
   const { toast } = useToast();
   const { getAvailableSlots, loading } = useWorkflow();
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [availableSlots, setAvailableSlots] = useState<TimeSlot[]>([]);
-  const [selectedSlot, setSelectedSlot] = useState<string>('');
+  const [selectedSlot, setSelectedSlot] = useState<string>("");
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
   const [formData, setFormData] = useState({
-    preferredTime: '',
-    specialInstructions: '',
-    accessInstructions: '',
-    petInstructions: '',
-    preferredCrew: '',
-    frequencyType: 'one_time',
+    preferredTime: "",
+    specialInstructions: "",
+    accessInstructions: "",
+    petInstructions: "",
+    preferredCrew: "",
+    frequencyType: "one_time",
     recurringDays: [] as string[],
   });
 
-  const duration = SERVICE_DURATIONS[serviceType as keyof typeof SERVICE_DURATIONS] || estimatedDuration;
+  const duration =
+    SERVICE_DURATIONS[serviceType as keyof typeof SERVICE_DURATIONS] ||
+    estimatedDuration;
+
+  // Load available slots (moved after loadAvailableSlots declaration)
+
+  const loadAvailableSlots = useCallback(async () => {
+    if (!selectedDate) return;
+
+    setIsLoadingSlots(true);
+    try {
+      const dateStr = selectedDate.toISOString().split("T")[0];
+      const slots = await getAvailableSlots(dateStr, serviceType);
+      setAvailableSlots((slots as TimeSlot[]) || generateMockSlots());
+    } catch (error) {
+      console.warn("Failed to load slots, using mock data:", error);
+      setAvailableSlots(generateMockSlots());
+    } finally {
+      setIsLoadingSlots(false);
+    }
+  }, [selectedDate, serviceType, getAvailableSlots]);
 
   useEffect(() => {
     if (selectedDate) {
       loadAvailableSlots();
     }
-  }, [selectedDate, serviceType]);
-
-  const loadAvailableSlots = async () => {
-    if (!selectedDate) return;
-
-    setIsLoadingSlots(true);
-    try {
-      const dateStr = selectedDate.toISOString().split('T')[0];
-      const slots = await getAvailableSlots(dateStr, serviceType);
-      setAvailableSlots(slots || generateMockSlots());
-    } catch (error) {
-      console.warn('Failed to load slots, using mock data:', error);
-      setAvailableSlots(generateMockSlots());
-    } finally {
-      setIsLoadingSlots(false);
-    }
-  };
+  }, [selectedDate, serviceType, loadAvailableSlots]);
 
   const generateMockSlots = (): TimeSlot[] => {
     const slots: TimeSlot[] = [];
-    const times = ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00'];
-    
+    const times = [
+      "08:00",
+      "09:00",
+      "10:00",
+      "11:00",
+      "13:00",
+      "14:00",
+      "15:00",
+      "16:00",
+      "17:00",
+    ];
+
     times.forEach((time, index) => {
       slots.push({
         id: `slot-${index}`,
@@ -110,18 +135,18 @@ export function ServiceSchedulingModal({
         isPreferred: index < 3, // Morning slots preferred
       });
     });
-    
+
     return slots;
   };
 
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
-    setSelectedSlot('');
+    setSelectedSlot("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!selectedDate || !selectedSlot) {
       toast({
         title: "Missing Information",
@@ -131,8 +156,10 @@ export function ServiceSchedulingModal({
       return;
     }
 
-    const selectedSlotData = availableSlots.find(slot => slot.id === selectedSlot);
-    
+    const selectedSlotData = availableSlots.find(
+      (slot) => slot.id === selectedSlot,
+    );
+
     try {
       const scheduleData = {
         estimateId,
@@ -146,21 +173,23 @@ export function ServiceSchedulingModal({
           customerName,
           estimatedDuration: duration,
           createdAt: new Date().toISOString(),
-        }
+        },
       };
 
       await onServiceScheduled(scheduleData);
-      
+
       toast({
         title: "Service Scheduled",
         description: `Service scheduled for ${selectedDate.toLocaleDateString()} at ${selectedSlotData?.time}`,
       });
-      
+
       onClose();
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to schedule service";
       toast({
         title: "Scheduling Error",
-        description: error.message || "Failed to schedule service",
+        description: errorMessage,
         variant: "destructive",
       });
     }
@@ -190,12 +219,18 @@ export function ServiceSchedulingModal({
                   <div className="mt-2">
                     <Input
                       type="date"
-                      value={selectedDate ? selectedDate.toISOString().split('T')[0] : ''}
+                      value={
+                        selectedDate
+                          ? selectedDate.toISOString().split("T")[0]
+                          : ""
+                      }
                       onChange={(e) => {
-                        const date = e.target.value ? new Date(e.target.value) : undefined;
+                        const date = e.target.value
+                          ? new Date(e.target.value)
+                          : undefined;
                         handleDateSelect(date);
                       }}
-                      min={new Date().toISOString().split('T')[0]}
+                      min={new Date().toISOString().split("T")[0]}
                       className="w-full"
                     />
                   </div>
@@ -215,28 +250,38 @@ export function ServiceSchedulingModal({
                           <div
                             key={slot.id}
                             className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${
-                              !slot.available 
-                                ? 'bg-gray-50 border-gray-200 cursor-not-allowed opacity-50'
+                              !slot.available
+                                ? "bg-gray-50 border-gray-200 cursor-not-allowed opacity-50"
                                 : selectedSlot === slot.id
-                                ? 'bg-blue-50 border-blue-300'
-                                : 'hover:bg-gray-50'
+                                  ? "bg-blue-50 border-blue-300"
+                                  : "hover:bg-gray-50"
                             }`}
-                            onClick={() => slot.available && setSelectedSlot(slot.id)}
+                            onClick={() =>
+                              slot.available && setSelectedSlot(slot.id)
+                            }
                           >
                             <div className="flex items-center gap-3">
                               <Clock className="w-4 h-4" />
                               <div>
                                 <div className="font-medium">{slot.time}</div>
                                 {slot.crewName && (
-                                  <div className="text-sm text-gray-600">{slot.crewName}</div>
+                                  <div className="text-sm text-gray-600">
+                                    {slot.crewName}
+                                  </div>
                                 )}
                               </div>
                             </div>
                             <div className="flex items-center gap-2">
                               {slot.isPreferred && (
-                                <Badge variant="secondary" className="text-xs">Preferred</Badge>
+                                <Badge variant="secondary" className="text-xs">
+                                  Preferred
+                                </Badge>
                               )}
-                              <Badge variant={slot.available ? "default" : "secondary"}>
+                              <Badge
+                                variant={
+                                  slot.available ? "default" : "secondary"
+                                }
+                              >
                                 {slot.available ? "Available" : "Booked"}
                               </Badge>
                             </div>
@@ -263,19 +308,32 @@ export function ServiceSchedulingModal({
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label>Service Type</Label>
-                      <Input value={serviceType.replace('_', ' ')} disabled className="bg-gray-50" />
+                      <Input
+                        value={serviceType.replace("_", " ")}
+                        disabled
+                        className="bg-gray-50"
+                      />
                     </div>
                     <div>
                       <Label>Estimated Duration</Label>
-                      <Input value={`${Math.floor(duration / 60)}h ${duration % 60}m`} disabled className="bg-gray-50" />
+                      <Input
+                        value={`${Math.floor(duration / 60)}h ${duration % 60}m`}
+                        disabled
+                        className="bg-gray-50"
+                      />
                     </div>
                   </div>
 
                   <div>
                     <Label htmlFor="preferredTime">Time Preference</Label>
-                    <Select 
-                      value={formData.preferredTime} 
-                      onValueChange={(value) => setFormData(prev => ({ ...prev, preferredTime: value }))}
+                    <Select
+                      value={formData.preferredTime}
+                      onValueChange={(value) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          preferredTime: value,
+                        }))
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select preferred time of day" />
@@ -295,15 +353,22 @@ export function ServiceSchedulingModal({
 
                   <div>
                     <Label htmlFor="frequencyType">Service Frequency</Label>
-                    <Select 
-                      value={formData.frequencyType} 
-                      onValueChange={(value) => setFormData(prev => ({ ...prev, frequencyType: value }))}
+                    <Select
+                      value={formData.frequencyType}
+                      onValueChange={(value) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          frequencyType: value,
+                        }))
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="one_time">One-Time Service</SelectItem>
+                        <SelectItem value="one_time">
+                          One-Time Service
+                        </SelectItem>
                         <SelectItem value="weekly">Weekly</SelectItem>
                         <SelectItem value="bi_weekly">Bi-Weekly</SelectItem>
                         <SelectItem value="monthly">Monthly</SelectItem>
@@ -316,15 +381,24 @@ export function ServiceSchedulingModal({
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Service Instructions</CardTitle>
+                  <CardTitle className="text-lg">
+                    Service Instructions
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <Label htmlFor="accessInstructions">Access Instructions</Label>
+                    <Label htmlFor="accessInstructions">
+                      Access Instructions
+                    </Label>
                     <Textarea
                       id="accessInstructions"
                       value={formData.accessInstructions}
-                      onChange={(e) => setFormData(prev => ({ ...prev, accessInstructions: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          accessInstructions: e.target.value,
+                        }))
+                      }
                       placeholder="How should the crew access the property? (keys, codes, etc.)"
                       rows={2}
                     />
@@ -335,18 +409,30 @@ export function ServiceSchedulingModal({
                     <Textarea
                       id="petInstructions"
                       value={formData.petInstructions}
-                      onChange={(e) => setFormData(prev => ({ ...prev, petInstructions: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          petInstructions: e.target.value,
+                        }))
+                      }
                       placeholder="Any pets at the property? Special considerations?"
                       rows={2}
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="specialInstructions">Special Instructions</Label>
+                    <Label htmlFor="specialInstructions">
+                      Special Instructions
+                    </Label>
                     <Textarea
                       id="specialInstructions"
                       value={formData.specialInstructions}
-                      onChange={(e) => setFormData(prev => ({ ...prev, specialInstructions: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          specialInstructions: e.target.value,
+                        }))
+                      }
                       placeholder="Any specific cleaning requests or areas to focus on?"
                       rows={3}
                     />
@@ -362,8 +448,8 @@ export function ServiceSchedulingModal({
                 <div className="flex items-center gap-2">
                   <CalendarIcon className="w-4 h-4" />
                   <span>
-                    Scheduled for {selectedDate.toLocaleDateString()} at{' '}
-                    {availableSlots.find(s => s.id === selectedSlot)?.time}
+                    Scheduled for {selectedDate.toLocaleDateString()} at{" "}
+                    {availableSlots.find((s) => s.id === selectedSlot)?.time}
                   </span>
                 </div>
               )}

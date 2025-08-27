@@ -1,7 +1,7 @@
 "use client";
 
-import { AdvancedScheduler } from '@/components/scheduling/advanced-scheduler';
-import '@/components/scheduling/calendar.css';
+import { AdvancedScheduler } from "@/components/scheduling/advanced-scheduler";
+import "@/components/scheduling/calendar.css";
 
 export default function SchedulePage() {
   return (

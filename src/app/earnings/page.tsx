@@ -1,6 +1,6 @@
 "use client";
 
-import { WorkerEarnings } from '@/components/workers/worker-earnings';
+import { WorkerEarnings } from "@/components/workers/worker-earnings";
 
 export default function EarningsPage() {
   return (

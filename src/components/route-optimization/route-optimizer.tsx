@@ -303,10 +303,10 @@ export function RouteOptimizer() {
               job.priority === "urgent"
                 ? 0.5
                 : job.priority === "high"
-                ? 0.7
-                : job.priority === "normal"
-                ? 0.9
-                : 1.0;
+                  ? 0.7
+                  : job.priority === "normal"
+                    ? 0.9
+                    : 1.0;
             const weighted_distance = distance * priority_weight;
 
             if (weighted_distance < bestDistance) {

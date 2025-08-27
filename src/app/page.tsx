@@ -17,7 +17,10 @@ export default function Home() {
   console.log("🔍 [page.tsx] User role value:", user?.role);
   console.log("🔍 [page.tsx] User role type:", typeof user?.role);
   console.log("🔍 [page.tsx] UserRole.SALES_REP:", UserRole.SALES_REP);
-  console.log("🔍 [page.tsx] Role comparison:", user?.role === UserRole.SALES_REP);
+  console.log(
+    "🔍 [page.tsx] Role comparison:",
+    user?.role === UserRole.SALES_REP,
+  );
 
   const isSalesRole =
     user?.role === UserRole.SALES_REP || user?.role === UserRole.SALES_MANAGER;

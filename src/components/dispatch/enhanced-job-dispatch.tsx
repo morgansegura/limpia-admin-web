@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import {
   Select,
@@ -27,33 +26,19 @@ import {
   MapPin,
   Clock,
   AlertTriangle,
-  CheckCircle,
   Phone,
   MessageSquare,
-  Navigation,
   Zap,
-  Calendar,
   DollarSign,
   Settings,
   Search,
-  Filter,
   Send,
-  Eye,
-  RotateCcw,
   PlayCircle,
-  PauseCircle,
-  Flag,
   User,
-  Truck,
-  Route,
-  Timer,
   Star,
-  Award,
-  Edit,
   Save,
-  X,
 } from "lucide-react";
-import { format, addHours, differenceInMinutes } from "date-fns";
+import { format } from "date-fns";
 import { api, crewsApi } from "@/lib/api";
 import { useAuth } from "@/contexts/auth-context";
 
@@ -99,6 +84,48 @@ interface Job {
   };
   supplies?: string[];
   customerRating?: number;
+}
+
+// API response interfaces
+interface BookingData {
+  customer?: {
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+    rating?: number;
+  };
+  address?: string;
+  services?: Array<{ name?: string }>;
+  scheduledDate?: string;
+  totalAmount?: number;
+}
+
+interface JobApiResponse {
+  id: string;
+  booking?: BookingData;
+  estimatedDuration?: number;
+  priority?: Job["priority"];
+  status: Job["status"];
+  crewAssignments?: Array<{ crewId: string }>;
+  notes?: string;
+  createdAt?: string | number;
+  specialRequirements?: string[];
+  accessInstructions?: string;
+  requiredSupplies?: string[];
+}
+
+interface CrewApiResponse {
+  id: string;
+  name: string;
+  status?: CrewMember["status"];
+  contactInfo?: {
+    phone?: string;
+  };
+  specializations?: string[];
+  averageRating?: number;
+  completedJobs?: number;
+  certifications?: string[];
+  activeJobId?: string;
 }
 
 interface DispatchSettings {
@@ -194,10 +221,10 @@ export function EnhancedJobDispatch() {
   const [crewMembers, setCrewMembers] = useState<CrewMember[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-  const [selectedCrew, setSelectedCrew] = useState<CrewMember | null>(null);
+  const [,] = useState<CrewMember | null>(null);
   const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
-  const [isJobDetailOpen, setIsJobDetailOpen] = useState(false);
-  const [isCrewDetailOpen, setIsCrewDetailOpen] = useState(false);
+  const [,] = useState(false);
+  const [,] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [filterPriority, setFilterPriority] = useState<string>("all");
@@ -282,32 +309,35 @@ export function EnhancedJobDispatch() {
   const loadJobs = async () => {
     try {
       const response = await api.get("/jobs");
-      const transformedJobs = response.data.map((job: any) => ({
-        id: job.id,
-        customerName:
-          `${job.booking?.customer?.firstName || ""} ${
-            job.booking?.customer?.lastName || ""
-          }`.trim() || "Unknown Customer",
-        customerPhone: job.booking?.customer?.phone || "",
-        address: job.booking?.address || "",
-        serviceType: job.booking?.services?.[0]?.name || "Service",
-        scheduledTime: new Date(job.booking?.scheduledDate || new Date()),
-        estimatedDuration: job.estimatedDuration || 120,
-        priority: job.priority || "medium",
-        status: job.status,
-        assignedCrew: job.crewAssignments?.map((ca: any) => ca.crewId) || [],
-        estimatedValue: job.booking?.totalAmount || 0,
-        notes: job.notes || "",
-        createdAt: new Date(job.createdAt),
-        coordinates: {
-          lat: 25.7617 + (Math.random() - 0.5) * 0.1,
-          lng: -80.1918 + (Math.random() - 0.5) * 0.1,
-        },
-        specialRequirements: job.specialRequirements || [],
-        accessInstructions: job.accessInstructions,
-        supplies: job.requiredSupplies || [],
-        customerRating: job.booking?.customer?.rating,
-      }));
+      const transformedJobs = response.data.map((job: unknown) => {
+        const jobData = job as JobApiResponse;
+        return {
+          id: jobData.id,
+          customerName:
+            `${jobData.booking?.customer?.firstName || ""} ${
+              jobData.booking?.customer?.lastName || ""
+            }`.trim() || "Unknown Customer",
+          customerPhone: jobData.booking?.customer?.phone || "",
+          address: jobData.booking?.address || "",
+          serviceType: jobData.booking?.services?.[0]?.name || "Service",
+          scheduledTime: new Date(jobData.booking?.scheduledDate || new Date()),
+          estimatedDuration: jobData.estimatedDuration || 120,
+          priority: jobData.priority || "medium",
+          status: jobData.status,
+          assignedCrew: jobData.crewAssignments?.map((ca) => ca.crewId) || [],
+          estimatedValue: jobData.booking?.totalAmount || 0,
+          notes: jobData.notes || "",
+          createdAt: new Date(jobData.createdAt || new Date()),
+          coordinates: {
+            lat: 25.7617 + (Math.random() - 0.5) * 0.1,
+            lng: -80.1918 + (Math.random() - 0.5) * 0.1,
+          },
+          specialRequirements: jobData.specialRequirements || [],
+          accessInstructions: jobData.accessInstructions || "",
+          supplies: jobData.requiredSupplies || [],
+          customerRating: jobData.booking?.customer?.rating || 0,
+        };
+      });
       setJobs(transformedJobs);
     } catch (error) {
       console.error("Failed to load jobs:", error);
@@ -318,24 +348,27 @@ export function EnhancedJobDispatch() {
   const loadCrews = async () => {
     try {
       const response = await api.get("/crews");
-      const transformedCrews = response.data.map((crew: any) => ({
-        id: crew.id,
-        name: crew.name,
-        role: "lead" as const,
-        status: crew.status || "available",
-        phone: crew.contactInfo?.phone || "",
-        location: {
-          lat: 25.7617 + (Math.random() - 0.5) * 0.1,
-          lng: -80.1918 + (Math.random() - 0.5) * 0.1,
-          address: "Miami Area",
-          lastUpdate: new Date(),
-        },
-        skills: crew.specializations || ["general_cleaning"],
-        rating: crew.averageRating || 4.5,
-        completedJobs: crew.completedJobs || 0,
-        certifications: crew.certifications || [],
-        currentJob: crew.activeJobId,
-      }));
+      const transformedCrews = response.data.map((crew: unknown) => {
+        const crewData = crew as CrewApiResponse;
+        return {
+          id: crewData.id,
+          name: crewData.name,
+          role: "lead" as const,
+          status: crewData.status || "available",
+          phone: crewData.contactInfo?.phone || "",
+          location: {
+            lat: 25.7617 + (Math.random() - 0.5) * 0.1,
+            lng: -80.1918 + (Math.random() - 0.5) * 0.1,
+            address: "Miami Area",
+            lastUpdate: new Date(),
+          },
+          skills: crewData.specializations || ["general_cleaning"],
+          rating: crewData.averageRating || 4.5,
+          completedJobs: crewData.completedJobs || 0,
+          certifications: crewData.certifications || [],
+          currentJob: crewData.activeJobId,
+        };
+      });
       setCrewMembers(transformedCrews);
     } catch (error) {
       console.error("Failed to load crews:", error);
@@ -363,15 +396,6 @@ export function EnhancedJobDispatch() {
       alert("Failed to assign job. Please try again.");
     } finally {
       setAssigning(false);
-    }
-  };
-
-  const handleUpdateJobStatus = async (jobId: string, status: string) => {
-    try {
-      await api.put(`/jobs/${jobId}/status`, { status });
-      await loadJobs();
-    } catch (error) {
-      console.error("Failed to update job status:", error);
     }
   };
 

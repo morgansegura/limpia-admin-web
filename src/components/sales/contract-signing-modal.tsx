@@ -1,16 +1,26 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { FileText, Send, Eye, Download, Clock } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useToast } from '@/hooks/use-toast';
+import { useState } from "react";
+import { FileText, Send, Eye, Clock } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 
 interface ContractSigningModalProps {
   isOpen: boolean;
@@ -19,20 +29,36 @@ interface ContractSigningModalProps {
   customerName: string;
   customerEmail?: string;
   estimateAmount: number;
-  onContractInitiated: (contractData: any) => void;
+  onContractInitiated: (contractData: unknown) => void;
 }
 
 const CONTRACT_TEMPLATES = [
-  { id: 'recurring_service', name: 'Recurring Service Agreement', description: 'Standard monthly service contract' },
-  { id: 'one_time_service', name: 'One-Time Service Agreement', description: 'Single service contract' },
-  { id: 'deep_cleaning', name: 'Deep Cleaning Contract', description: 'Comprehensive cleaning service' },
-  { id: 'commercial', name: 'Commercial Service Agreement', description: 'Business cleaning contract' },
+  {
+    id: "recurring_service",
+    name: "Recurring Service Agreement",
+    description: "Standard monthly service contract",
+  },
+  {
+    id: "one_time_service",
+    name: "One-Time Service Agreement",
+    description: "Single service contract",
+  },
+  {
+    id: "deep_cleaning",
+    name: "Deep Cleaning Contract",
+    description: "Comprehensive cleaning service",
+  },
+  {
+    id: "commercial",
+    name: "Commercial Service Agreement",
+    description: "Business cleaning contract",
+  },
 ];
 
 const SIGNATURE_PROVIDERS = [
-  { id: 'docusign', name: 'DocuSign', icon: '📝' },
-  { id: 'hellosign', name: 'HelloSign', icon: '✍️' },
-  { id: 'adobe_sign', name: 'Adobe Sign', icon: '📄' },
+  { id: "docusign", name: "DocuSign", icon: "📝" },
+  { id: "hellosign", name: "HelloSign", icon: "✍️" },
+  { id: "adobe_sign", name: "Adobe Sign", icon: "📄" },
 ];
 
 export function ContractSigningModal({
@@ -42,20 +68,20 @@ export function ContractSigningModal({
   customerName,
   customerEmail,
   estimateAmount,
-  onContractInitiated
+  onContractInitiated,
 }: ContractSigningModalProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    templateId: '',
-    signatureProvider: 'docusign',
-    customerEmail: customerEmail || '',
-    customerPhone: '',
-    contractTerms: '',
-    serviceStartDate: '',
-    paymentTerms: 'net_30',
+    templateId: "",
+    signatureProvider: "docusign",
+    customerEmail: customerEmail || "",
+    customerPhone: "",
+    contractTerms: "",
+    serviceStartDate: "",
+    paymentTerms: "net_30",
     autoRenewal: true,
-    specialInstructions: '',
+    specialInstructions: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -73,21 +99,25 @@ export function ContractSigningModal({
           createdAt: new Date().toISOString(),
           estimateAmount,
           customerName,
-        }
+        },
       };
 
       await onContractInitiated(contractData);
-      
+
       toast({
         title: "Contract Initiated",
-        description: `Contract sent to ${customerName} for signature via ${SIGNATURE_PROVIDERS.find(p => p.id === formData.signatureProvider)?.name}`,
+        description: `Contract sent to ${customerName} for signature via ${SIGNATURE_PROVIDERS.find((p) => p.id === formData.signatureProvider)?.name}`,
       });
-      
+
       onClose();
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to initiate contract signing";
       toast({
         title: "Contract Error",
-        description: error.message || "Failed to initiate contract signing",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -100,9 +130,9 @@ export function ContractSigningModal({
       title: "Contract Preview",
       description: "Opening contract preview in new window...",
     });
-    
+
     const previewUrl = `/contracts/preview?template=${formData.templateId}&estimate=${estimateId}`;
-    window.open(previewUrl, '_blank');
+    window.open(previewUrl, "_blank");
   };
 
   return (
@@ -124,27 +154,25 @@ export function ContractSigningModal({
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label>Estimate Amount</Label>
-                  <Input 
-                    value={`$${estimateAmount.toFixed(2)}`} 
-                    disabled 
+                  <Input
+                    value={`$${estimateAmount.toFixed(2)}`}
+                    disabled
                     className="bg-gray-50"
                   />
                 </div>
                 <div>
                   <Label>Customer</Label>
-                  <Input 
-                    value={customerName} 
-                    disabled 
-                    className="bg-gray-50"
-                  />
+                  <Input value={customerName} disabled className="bg-gray-50" />
                 </div>
               </div>
 
               <div>
                 <Label htmlFor="templateId">Contract Template *</Label>
-                <Select 
-                  value={formData.templateId} 
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, templateId: value }))}
+                <Select
+                  value={formData.templateId}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, templateId: value }))
+                  }
                   required
                 >
                   <SelectTrigger>
@@ -155,7 +183,9 @@ export function ContractSigningModal({
                       <SelectItem key={template.id} value={template.id}>
                         <div>
                           <div className="font-medium">{template.name}</div>
-                          <div className="text-sm text-gray-500">{template.description}</div>
+                          <div className="text-sm text-gray-500">
+                            {template.description}
+                          </div>
                         </div>
                       </SelectItem>
                     ))}
@@ -165,9 +195,14 @@ export function ContractSigningModal({
 
               <div>
                 <Label htmlFor="signatureProvider">Signature Provider</Label>
-                <Select 
-                  value={formData.signatureProvider} 
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, signatureProvider: value }))}
+                <Select
+                  value={formData.signatureProvider}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      signatureProvider: value,
+                    }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -199,7 +234,12 @@ export function ContractSigningModal({
                     id="customerEmail"
                     type="email"
                     value={formData.customerEmail}
-                    onChange={(e) => setFormData(prev => ({ ...prev, customerEmail: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        customerEmail: e.target.value,
+                      }))
+                    }
                     placeholder="customer@email.com"
                     required
                   />
@@ -210,7 +250,12 @@ export function ContractSigningModal({
                     id="customerPhone"
                     type="tel"
                     value={formData.customerPhone}
-                    onChange={(e) => setFormData(prev => ({ ...prev, customerPhone: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        customerPhone: e.target.value,
+                      }))
+                    }
                     placeholder="(555) 123-4567"
                   />
                 </div>
@@ -230,24 +275,35 @@ export function ContractSigningModal({
                     id="serviceStartDate"
                     type="date"
                     value={formData.serviceStartDate}
-                    onChange={(e) => setFormData(prev => ({ ...prev, serviceStartDate: e.target.value }))}
-                    min={new Date().toISOString().split('T')[0]}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        serviceStartDate: e.target.value,
+                      }))
+                    }
+                    min={new Date().toISOString().split("T")[0]}
                   />
                 </div>
                 <div>
                   <Label htmlFor="paymentTerms">Payment Terms</Label>
-                  <Select 
-                    value={formData.paymentTerms} 
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, paymentTerms: value }))}
+                  <Select
+                    value={formData.paymentTerms}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({ ...prev, paymentTerms: value }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="due_on_service">Due on Service</SelectItem>
+                      <SelectItem value="due_on_service">
+                        Due on Service
+                      </SelectItem>
                       <SelectItem value="net_15">Net 15 Days</SelectItem>
                       <SelectItem value="net_30">Net 30 Days</SelectItem>
-                      <SelectItem value="monthly_auto">Monthly Auto-Pay</SelectItem>
+                      <SelectItem value="monthly_auto">
+                        Monthly Auto-Pay
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -258,18 +314,30 @@ export function ContractSigningModal({
                 <Textarea
                   id="contractTerms"
                   value={formData.contractTerms}
-                  onChange={(e) => setFormData(prev => ({ ...prev, contractTerms: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      contractTerms: e.target.value,
+                    }))
+                  }
                   placeholder="Enter any additional terms or conditions..."
                   rows={3}
                 />
               </div>
 
               <div>
-                <Label htmlFor="specialInstructions">Special Instructions</Label>
+                <Label htmlFor="specialInstructions">
+                  Special Instructions
+                </Label>
                 <Textarea
                   id="specialInstructions"
                   value={formData.specialInstructions}
-                  onChange={(e) => setFormData(prev => ({ ...prev, specialInstructions: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      specialInstructions: e.target.value,
+                    }))
+                  }
                   placeholder="Any special cleaning instructions or notes for the crew..."
                   rows={2}
                 />
@@ -302,7 +370,9 @@ export function ContractSigningModal({
               </Button>
               <Button
                 type="submit"
-                disabled={isLoading || !formData.templateId || !formData.customerEmail}
+                disabled={
+                  isLoading || !formData.templateId || !formData.customerEmail
+                }
                 className="flex items-center gap-2"
               >
                 {isLoading ? (

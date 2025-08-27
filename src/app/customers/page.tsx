@@ -1,6 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import type {
+  Customer,
+  CallData,
+  EmailData,
+  MessageData,
+} from "@/types/app.types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -157,11 +163,13 @@ export default function CustomersPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedCustomer, setSelectedCustomer] = useState<any | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
+    null,
+  );
   const [isCrmDialogOpen, setIsCrmDialogOpen] = useState(false);
   const [isCustomerFormOpen, setIsCustomerFormOpen] = useState(false);
-  const [customersList, setCustomersList] = useState<any[]>([]);
-  
+  const [customersList, setCustomersList] = useState<Customer[]>([]);
+
   // CRM Modal states
   const [phoneCallModalOpen, setPhoneCallModalOpen] = useState(false);
   const [emailModalOpen, setEmailModalOpen] = useState(false);
@@ -174,11 +182,11 @@ export default function CustomersPage() {
       try {
         setIsLoading(true);
         const customersData = await customersApi.getAll();
-        setCustomersList(customersData);
+        setCustomersList(customersData as Customer[]);
       } catch (error) {
         console.error("Error loading customers:", error);
         // Use fallback data if API fails
-        setCustomersList(fallbackCustomers);
+        setCustomersList(fallbackCustomers as Customer[]);
       } finally {
         setIsLoading(false);
       }
@@ -201,72 +209,125 @@ export default function CustomersPage() {
   };
 
   // CRM Handler Functions
-  const handlePhoneCall = (customer: any) => {
+  const handlePhoneCall = (customer: Customer) => {
     setSelectedCustomer(customer);
     setPhoneCallModalOpen(true);
   };
 
-  const handleEmail = (customer: any) => {
+  const handleEmail = (customer: Customer) => {
     setSelectedCustomer(customer);
     setEmailModalOpen(true);
   };
 
-  const handleMessage = (customer: any) => {
+  const handleMessage = (customer: Customer) => {
     setSelectedCustomer(customer);
     setMessageModalOpen(true);
   };
 
-  const handleViewCustomer = (customer: any) => {
+  const handleViewCustomer = (customer: Customer) => {
     setSelectedCustomer(customer);
     setCustomerDetailModalOpen(true);
   };
 
-  const handleCallLogged = async (callData: any) => {
+  const handleCallLogged = async (callData: {
+    duration: number;
+    notes: string;
+    outcome: string;
+    followUpRequired: boolean;
+  }) => {
     try {
+      // Construct the full CallData object with customer info
+      if (!selectedCustomer) return;
+      const fullCallData: CallData = {
+        customerId: selectedCustomer.id,
+        customerName: `${selectedCustomer.firstName} ${selectedCustomer.lastName}`,
+        duration: callData.duration,
+        notes: callData.notes,
+        outcome: callData.outcome as
+          | "answered"
+          | "voicemail"
+          | "no_answer"
+          | "busy",
+        followUpRequired: callData.followUpRequired,
+      };
+
       // This would normally call the API to log the call
-      console.log('Call logged:', callData);
+      console.log("Call logged:", fullCallData);
       toast({
         title: "Call Logged",
-        description: `Call with ${callData.customerName} has been logged`,
+        description: `Call with ${fullCallData.customerName} has been logged`,
       });
     } catch (error: unknown) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to log call",
+        description:
+          error instanceof Error ? error.message : "Failed to log call",
         variant: "destructive",
       });
     }
   };
 
-  const handleEmailSent = async (emailData: any) => {
+  const handleEmailSent = async (emailData: {
+    to: string;
+    subject: string;
+    content: string;
+    attachments?: string[];
+  }) => {
     try {
+      // Construct the full EmailData object with customer info
+      if (!selectedCustomer) return;
+      const fullEmailData: EmailData = {
+        customerId: selectedCustomer.id,
+        customerName: `${selectedCustomer.firstName} ${selectedCustomer.lastName}`,
+        to: emailData.to,
+        subject: emailData.subject,
+        content: emailData.content,
+        attachments: emailData.attachments,
+      };
+
       // This would normally call the API to send the email
-      console.log('Email sent:', emailData);
+      console.log("Email sent:", fullEmailData);
       toast({
         title: "Email Sent",
-        description: `Email sent to ${emailData.customerName}`,
+        description: `Email sent to ${fullEmailData.customerName}`,
       });
     } catch (error: unknown) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to send email",
+        description:
+          error instanceof Error ? error.message : "Failed to send email",
         variant: "destructive",
       });
     }
   };
 
-  const handleMessageSent = async (messageData: any) => {
+  const handleMessageSent = async (messageData: {
+    message: string;
+    type: string;
+    urgent: boolean;
+  }) => {
     try {
+      // Construct the full MessageData object with customer info
+      if (!selectedCustomer) return;
+      const fullMessageData: MessageData = {
+        customerId: selectedCustomer.id,
+        customerName: `${selectedCustomer.firstName} ${selectedCustomer.lastName}`,
+        message: messageData.message,
+        type: messageData.type as "sms" | "app_notification" | "internal_note",
+        urgent: messageData.urgent,
+      };
+
       // This would normally call the API to log the message
-      console.log('Message sent:', messageData);
+      console.log("Message sent:", fullMessageData);
       toast({
         title: "Message Sent",
-        description: `Message sent to ${messageData.customerName}`,
+        description: `Message sent to ${fullMessageData.customerName}`,
       });
     } catch (error: unknown) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to send message",
+        description:
+          error instanceof Error ? error.message : "Failed to send message",
         variant: "destructive",
       });
     }
@@ -297,7 +358,7 @@ export default function CustomersPage() {
     // Here you would save the template to your backend
   };
 
-  const handleCustomerCreated = (newCustomer: any) => {
+  const handleCustomerCreated = (newCustomer: Customer) => {
     setCustomersList((prev) => [newCustomer, ...prev]);
   };
 
@@ -318,7 +379,8 @@ export default function CustomersPage() {
   const vipCustomers = customersList.filter((c) => c.status === "VIP").length;
   const newCustomers = customersList.filter((c) => c.status === "New").length;
   const avgCustomerValue =
-    customersList.reduce((sum, c) => sum + c.totalSpent, 0) / totalCustomers;
+    customersList.reduce((sum, c) => sum + (c.totalSpent || 0), 0) /
+    totalCustomers;
 
   return (
     <div className="space-y-6">
@@ -381,7 +443,17 @@ export default function CustomersPage() {
                     className="overflow-y-auto max-h-[70vh]"
                   >
                     <CommunicationPanel
-                      customer={selectedCustomer}
+                      customer={{
+                        id: selectedCustomer.id,
+                        firstName: selectedCustomer.firstName,
+                        lastName: selectedCustomer.lastName,
+                        email: selectedCustomer.email,
+                        phone: selectedCustomer.phone,
+                        preferences: {
+                          communicationMethod:
+                            selectedCustomer.preferredContactMethod || "email",
+                        },
+                      }}
                       onSendCommunication={handleSendCommunication}
                     />
                   </TabsContent>
@@ -546,10 +618,12 @@ export default function CustomersPage() {
                               <div className="font-medium">
                                 {customer.firstName} {customer.lastName}
                               </div>
-                              {customer?.address?.length > 0 ? (
+                              {customer.address &&
+                              typeof customer.address === "string" &&
+                              customer.address.length > 0 ? (
                                 <div className="text-sm text-muted-foreground flex items-center">
                                   <MapPin className="h-3 w-3 mr-1" />
-                                  {customer?.address?.split(",")[0]}
+                                  {customer.address.split(",")[0]}
                                 </div>
                               ) : null}
                             </div>
@@ -590,8 +664,8 @@ export default function CustomersPage() {
                           <div className="text-sm">
                             <div className="flex items-center">
                               <Calendar className="h-3 w-3 mr-1" />
-                              {customer?.lastBooking ? (
-                                formatDistanceToNow(customer?.lastBooking, {
+                              {customer.lastBooking ? (
+                                formatDistanceToNow(customer.lastBooking, {
                                   addSuffix: true,
                                 })
                               ) : (
@@ -603,7 +677,7 @@ export default function CustomersPage() {
                         <TableCell>
                           <div className="flex items-center">
                             <Star className="h-4 w-4 text-yellow-500 mr-1" />
-                            {customer.averageRating}
+                            {customer.averageRating || "N/A"}
                           </div>
                         </TableCell>
                         <TableCell>
@@ -716,19 +790,27 @@ export default function CustomersPage() {
               name: `${selectedCustomer.firstName} ${selectedCustomer.lastName}`,
               email: selectedCustomer.email,
               phone: selectedCustomer.phone,
-              address: selectedCustomer.address,
+              address:
+                typeof selectedCustomer.address === "string"
+                  ? selectedCustomer.address
+                  : "N/A",
               status: selectedCustomer.status,
-              joinDate: selectedCustomer.joinedDate?.toISOString() || new Date().toISOString(),
-              totalSpent: selectedCustomer.totalSpent,
-              totalBookings: selectedCustomer.totalBookings,
-              rating: selectedCustomer.averageRating,
+              joinDate:
+                selectedCustomer.joinedDate?.toISOString() ||
+                new Date().toISOString(),
+              totalSpent: selectedCustomer.totalSpent || 0,
+              totalBookings: selectedCustomer.totalBookings || 0,
+              rating: selectedCustomer.averageRating || 0,
               lastService: selectedCustomer.lastBooking?.toISOString(),
               nextService: undefined,
-              serviceType: 'Regular Cleaning',
+              serviceType: "Regular Cleaning",
               preferences: {
-                communicationMethod: selectedCustomer.preferredContactMethod,
-                cleaningProducts: selectedCustomer.preferences?.[0] || 'Standard eco-friendly products',
-                specialRequests: selectedCustomer.preferences?.[1] || 'None',
+                communicationMethod:
+                  selectedCustomer.preferredContactMethod || "email",
+                cleaningProducts:
+                  selectedCustomer.preferences?.[0] ||
+                  "Standard eco-friendly products",
+                specialRequests: selectedCustomer.preferences?.[1] || "None",
               },
             }}
             onEdit={() => {

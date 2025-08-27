@@ -13,7 +13,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DollarSign, Clock, TrendingUp, BarChart3 } from "lucide-react";
@@ -346,7 +345,8 @@ export function EnhancedSalesEstimator({
       console.log("Enhanced estimate created:", result);
       alert(
         `Professional estimate created! Estimate #${
-          result.estimateNumber || result.id
+          (result as { estimateNumber?: string; id?: string }).estimateNumber ||
+          (result as { estimateNumber?: string; id?: string }).id
         }\nFinal Price: $${pricingBreakdown.costBreakdown.price.toFixed(
           2,
         )}\nCommission: $${pricingBreakdown.salesRepCommission.toFixed(2)}`,

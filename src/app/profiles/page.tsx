@@ -1,6 +1,6 @@
 "use client";
 
-import { WorkerProfiles } from '@/components/workers/worker-profiles';
+import { WorkerProfiles } from "@/components/workers/worker-profiles";
 
 export default function ProfilesPage() {
   return (

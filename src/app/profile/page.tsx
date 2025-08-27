@@ -18,7 +18,7 @@ export default function ProfilePage() {
     firstName: user?.firstName || "",
     lastName: user?.lastName || "",
     email: user?.email || "",
-    phone: (user as any)?.phone || "",
+    phone: user?.phone || "",
     bio: "",
   });
 
@@ -33,7 +33,10 @@ export default function ProfilePage() {
   };
 
   const getRoleLabel = (role: string) => {
-    return role.replace('_', ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+    return role
+      .replace("_", " ")
+      .toLowerCase()
+      .replace(/\b\w/g, (l) => l.toUpperCase());
   };
 
   if (!user) return null;
@@ -70,10 +73,10 @@ export default function ProfilePage() {
               <Mail className="w-4 h-4 text-muted-foreground" />
               <span>{user.email}</span>
             </div>
-            {(user as any)?.phone && (
+            {user?.phone && (
               <div className="flex items-center space-x-2 text-sm">
                 <Phone className="w-4 h-4 text-muted-foreground" />
-                <span>{(user as any).phone}</span>
+                <span>{user.phone}</span>
               </div>
             )}
             {tenant && (
@@ -84,7 +87,9 @@ export default function ProfilePage() {
             )}
             <div className="flex items-center space-x-2 text-sm">
               <Calendar className="w-4 h-4 text-muted-foreground" />
-              <span>Member since {new Date(user.createdAt).toLocaleDateString()}</span>
+              <span>
+                Member since {new Date(user.createdAt).toLocaleDateString()}
+              </span>
             </div>
           </CardContent>
         </Card>
@@ -112,7 +117,9 @@ export default function ProfilePage() {
                 <Input
                   id="firstName"
                   value={formData.firstName}
-                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, firstName: e.target.value })
+                  }
                   disabled={!isEditing}
                 />
               </div>
@@ -121,7 +128,9 @@ export default function ProfilePage() {
                 <Input
                   id="lastName"
                   value={formData.lastName}
-                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, lastName: e.target.value })
+                  }
                   disabled={!isEditing}
                 />
               </div>
@@ -133,7 +142,9 @@ export default function ProfilePage() {
                 id="email"
                 type="email"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
                 disabled={!isEditing}
               />
             </div>
@@ -144,7 +155,9 @@ export default function ProfilePage() {
                 id="phone"
                 type="tel"
                 value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, phone: e.target.value })
+                }
                 disabled={!isEditing}
                 placeholder="Enter your phone number"
               />
@@ -155,7 +168,9 @@ export default function ProfilePage() {
               <Textarea
                 id="bio"
                 value={formData.bio}
-                onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, bio: e.target.value })
+                }
                 disabled={!isEditing}
                 placeholder="Tell us about yourself"
                 rows={3}
@@ -167,9 +182,7 @@ export default function ProfilePage() {
                 <Button variant="outline" onClick={() => setIsEditing(false)}>
                   Cancel
                 </Button>
-                <Button onClick={handleSave}>
-                  Save Changes
-                </Button>
+                <Button onClick={handleSave}>Save Changes</Button>
               </div>
             )}
           </CardContent>
@@ -188,11 +201,18 @@ export default function ProfilePage() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {user.permissions && typeof user.permissions === 'object' && !Array.isArray(user.permissions) ? (
+              {user.permissions &&
+              typeof user.permissions === "object" &&
+              !Array.isArray(user.permissions) ? (
                 Object.entries(user.permissions).map(([key, value]) => (
-                  <div key={key} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div
+                    key={key}
+                    className="flex items-center justify-between p-3 border rounded-lg"
+                  >
                     <span className="text-sm font-medium">
-                      {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                      {key
+                        .replace(/([A-Z])/g, " $1")
+                        .replace(/^./, (str) => str.toUpperCase())}
                     </span>
                     <Badge variant={value ? "default" : "secondary"}>
                       {value ? "Enabled" : "Disabled"}

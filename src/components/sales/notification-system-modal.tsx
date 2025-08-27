@@ -1,18 +1,29 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Bell, Mail, MessageSquare, Send, Eye, Edit } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Checkbox } from '@/components/ui/checkbox';
-import { useToast } from '@/hooks/use-toast';
+import { useState } from "react";
+import { Bell, Mail, MessageSquare, Send, Eye } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useToast } from "@/hooks/use-toast";
 
 interface NotificationSystemModalProps {
   isOpen: boolean;
@@ -23,13 +34,13 @@ interface NotificationSystemModalProps {
   customerPhone?: string;
   scheduledDate?: string;
   serviceType?: string;
-  onNotificationsSent: (notificationData: any) => void;
+  onNotificationsSent: (notificationData: unknown) => void;
 }
 
 const NOTIFICATION_TEMPLATES = {
   service_confirmation: {
     email: {
-      subject: 'Service Confirmation - {{customerName}}',
+      subject: "Service Confirmation - {{customerName}}",
       body: `Hi {{customerName}},
 
 Your {{serviceType}} service has been confirmed for {{scheduledDate}} at {{scheduledTime}}.
@@ -45,15 +56,15 @@ We'll send you a reminder 24 hours before your service.
 If you need to reschedule or have any questions, please contact us at {{companyPhone}}.
 
 Best regards,
-{{companyName}} Team`
+{{companyName}} Team`,
     },
     sms: {
-      body: `Hi {{customerName}}! Your {{serviceType}} is confirmed for {{scheduledDate}} at {{scheduledTime}}. Crew: {{crewName}}. Questions? Call {{companyPhone}}`
-    }
+      body: `Hi {{customerName}}! Your {{serviceType}} is confirmed for {{scheduledDate}} at {{scheduledTime}}. Crew: {{crewName}}. Questions? Call {{companyPhone}}`,
+    },
   },
   service_reminder: {
     email: {
-      subject: 'Reminder: Service Tomorrow - {{customerName}}',
+      subject: "Reminder: Service Tomorrow - {{customerName}}",
       body: `Hi {{customerName}},
 
 This is a friendly reminder that your {{serviceType}} service is scheduled for tomorrow.
@@ -70,15 +81,15 @@ Please ensure:
 
 See you tomorrow!
 
-{{companyName}} Team`
+{{companyName}} Team`,
     },
     sms: {
-      body: `Reminder: Your {{serviceType}} is tomorrow {{scheduledDate}} at {{scheduledTime}}. Please ensure access is available. {{companyName}}`
-    }
+      body: `Reminder: Your {{serviceType}} is tomorrow {{scheduledDate}} at {{scheduledTime}}. Please ensure access is available. {{companyName}}`,
+    },
   },
   crew_ontheway: {
     email: {
-      subject: 'Crew On The Way - {{customerName}}',
+      subject: "Crew On The Way - {{customerName}}",
       body: `Hi {{customerName}},
 
 Our crew is on their way to your location and should arrive within the scheduled time window.
@@ -88,15 +99,15 @@ Crew Details:
 - ETA: {{estimatedArrival}}
 - Phone: {{crewPhone}}
 
-They'll call when they arrive. Thank you for choosing {{companyName}}!`
+They'll call when they arrive. Thank you for choosing {{companyName}}!`,
     },
     sms: {
-      body: `Hi {{customerName}}! Our crew is on the way. ETA: {{estimatedArrival}}. Lead: {{crewLeadName}} {{crewPhone}}. {{companyName}}`
-    }
+      body: `Hi {{customerName}}! Our crew is on the way. ETA: {{estimatedArrival}}. Lead: {{crewLeadName}} {{crewPhone}}. {{companyName}}`,
+    },
   },
   service_complete: {
     email: {
-      subject: 'Service Complete - {{customerName}}',
+      subject: "Service Complete - {{customerName}}",
       body: `Hi {{customerName}},
 
 Your {{serviceType}} service has been completed successfully!
@@ -110,18 +121,30 @@ We hope you're satisfied with our service. Please don't hesitate to reach out if
 
 Your next scheduled service: {{nextServiceDate}}
 
-Thank you for choosing {{companyName}}!`
+Thank you for choosing {{companyName}}!`,
     },
     sms: {
-      body: `Service complete! Thanks for choosing {{companyName}}. Next service: {{nextServiceDate}}. Rate us: {{reviewLink}}`
-    }
-  }
+      body: `Service complete! Thanks for choosing {{companyName}}. Next service: {{nextServiceDate}}. Rate us: {{reviewLink}}`,
+    },
+  },
 };
 
 const TEMPLATE_VARIABLES = [
-  'customerName', 'serviceType', 'scheduledDate', 'scheduledTime', 'crewName', 
-  'crewLeadName', 'crewPhone', 'companyName', 'companyPhone', 'estimatedArrival',
-  'completedTime', 'serviceDuration', 'serviceNotes', 'nextServiceDate', 'reviewLink'
+  "customerName",
+  "serviceType",
+  "scheduledDate",
+  "scheduledTime",
+  "crewName",
+  "crewLeadName",
+  "crewPhone",
+  "companyName",
+  "companyPhone",
+  "estimatedArrival",
+  "completedTime",
+  "serviceDuration",
+  "serviceNotes",
+  "nextServiceDate",
+  "reviewLink",
 ];
 
 export function NotificationSystemModal({
@@ -133,44 +156,52 @@ export function NotificationSystemModal({
   customerPhone,
   scheduledDate,
   serviceType,
-  onNotificationsSent
+  onNotificationsSent,
 }: NotificationSystemModalProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState<string>('');
+  const [selectedTemplate, setSelectedTemplate] = useState<string>("");
   const [notificationMethods, setNotificationMethods] = useState({
     email: !!customerEmail,
     sms: !!customerPhone,
   });
   const [customContent, setCustomContent] = useState({
-    email: { subject: '', body: '' },
-    sms: { body: '' }
+    email: { subject: "", body: "" },
+    sms: { body: "" },
   });
   const [previewMode, setPreviewMode] = useState(false);
   const [scheduledSend, setScheduledSend] = useState({
     enabled: false,
-    dateTime: '',
+    dateTime: "",
   });
 
-  const templateData = selectedTemplate ? NOTIFICATION_TEMPLATES[selectedTemplate as keyof typeof NOTIFICATION_TEMPLATES] : null;
+  const templateData = selectedTemplate
+    ? NOTIFICATION_TEMPLATES[
+        selectedTemplate as keyof typeof NOTIFICATION_TEMPLATES
+      ]
+    : null;
 
   const replaceVariables = (text: string) => {
     const variables = {
       customerName,
-      serviceType: serviceType || 'Cleaning Service',
-      scheduledDate: scheduledDate ? new Date(scheduledDate).toLocaleDateString() : 'TBD',
-      scheduledTime: scheduledDate ? new Date(scheduledDate).toLocaleTimeString() : 'TBD',
-      crewName: 'Crew Alpha',
-      crewLeadName: 'John Smith',
-      crewPhone: '(555) 123-4567',
-      companyName: 'Limpia Cleaning Services',
-      companyPhone: '(555) 987-6543',
-      estimatedArrival: '15 minutes',
+      serviceType: serviceType || "Cleaning Service",
+      scheduledDate: scheduledDate
+        ? new Date(scheduledDate).toLocaleDateString()
+        : "TBD",
+      scheduledTime: scheduledDate
+        ? new Date(scheduledDate).toLocaleTimeString()
+        : "TBD",
+      crewName: "Crew Alpha",
+      crewLeadName: "John Smith",
+      crewPhone: "(555) 123-4567",
+      companyName: "Limpia Cleaning Services",
+      companyPhone: "(555) 987-6543",
+      estimatedArrival: "15 minutes",
       completedTime: new Date().toLocaleTimeString(),
-      serviceDuration: '2 hours',
-      serviceNotes: 'Service completed successfully',
-      nextServiceDate: 'Next month',
-      reviewLink: 'https://reviews.limpia.com',
+      serviceDuration: "2 hours",
+      serviceNotes: "Service completed successfully",
+      nextServiceDate: "Next month",
+      reviewLink: "https://reviews.limpia.com",
     };
 
     return text.replace(/\{\{(\w+)\}\}/g, (match, key) => {
@@ -178,26 +209,29 @@ export function NotificationSystemModal({
     });
   };
 
-  const getPreviewContent = (method: 'email' | 'sms') => {
-    if (customContent[method].body || (method === 'email' && customContent.email.subject)) {
-      return method === 'email' 
+  const getPreviewContent = (method: "email" | "sms") => {
+    if (
+      customContent[method].body ||
+      (method === "email" && customContent.email.subject)
+    ) {
+      return method === "email"
         ? {
             subject: replaceVariables(customContent.email.subject),
-            body: replaceVariables(customContent.email.body)
+            body: replaceVariables(customContent.email.body),
           }
         : {
-            body: replaceVariables(customContent.sms.body)
+            body: replaceVariables(customContent.sms.body),
           };
     }
 
     if (templateData) {
-      return method === 'email'
+      return method === "email"
         ? {
             subject: replaceVariables(templateData.email.subject),
-            body: replaceVariables(templateData.email.body)
+            body: replaceVariables(templateData.email.body),
           }
         : {
-            body: replaceVariables(templateData.sms.body)
+            body: replaceVariables(templateData.sms.body),
           };
     }
 
@@ -211,10 +245,10 @@ export function NotificationSystemModal({
       const notifications = [];
 
       if (notificationMethods.email && customerEmail) {
-        const emailContent = getPreviewContent('email');
+        const emailContent = getPreviewContent("email");
         if (emailContent) {
           notifications.push({
-            type: 'email',
+            type: "email",
             recipient: customerEmail,
             subject: emailContent.subject,
             content: emailContent.body,
@@ -224,10 +258,10 @@ export function NotificationSystemModal({
       }
 
       if (notificationMethods.sms && customerPhone) {
-        const smsContent = getPreviewContent('sms');
+        const smsContent = getPreviewContent("sms");
         if (smsContent) {
           notifications.push({
-            type: 'sms',
+            type: "sms",
             recipient: customerPhone,
             content: smsContent.body,
             scheduled: scheduledSend.enabled ? scheduledSend.dateTime : null,
@@ -244,7 +278,7 @@ export function NotificationSystemModal({
           serviceType,
           scheduledDate,
           sentAt: new Date().toISOString(),
-        }
+        },
       };
 
       await onNotificationsSent(notificationData);
@@ -255,10 +289,12 @@ export function NotificationSystemModal({
       });
 
       onClose();
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to send notifications";
       toast({
         title: "Notification Error",
-        description: error.message || "Failed to send notifications",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -268,15 +304,18 @@ export function NotificationSystemModal({
 
   const handleTemplateSelect = (templateKey: string) => {
     setSelectedTemplate(templateKey);
-    const template = NOTIFICATION_TEMPLATES[templateKey as keyof typeof NOTIFICATION_TEMPLATES];
+    const template =
+      NOTIFICATION_TEMPLATES[
+        templateKey as keyof typeof NOTIFICATION_TEMPLATES
+      ];
     setCustomContent({
-      email: { 
-        subject: template.email.subject, 
-        body: template.email.body 
+      email: {
+        subject: template.email.subject,
+        body: template.email.body,
       },
-      sms: { 
-        body: template.sms.body 
-      }
+      sms: {
+        body: template.sms.body,
+      },
     });
   };
 
@@ -298,15 +337,26 @@ export function NotificationSystemModal({
             <CardContent className="space-y-4">
               <div>
                 <Label>Notification Template</Label>
-                <Select value={selectedTemplate} onValueChange={handleTemplateSelect}>
+                <Select
+                  value={selectedTemplate}
+                  onValueChange={handleTemplateSelect}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a notification template" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="service_confirmation">Service Confirmation</SelectItem>
-                    <SelectItem value="service_reminder">Service Reminder (24h)</SelectItem>
-                    <SelectItem value="crew_ontheway">Crew On The Way</SelectItem>
-                    <SelectItem value="service_complete">Service Complete</SelectItem>
+                    <SelectItem value="service_confirmation">
+                      Service Confirmation
+                    </SelectItem>
+                    <SelectItem value="service_reminder">
+                      Service Reminder (24h)
+                    </SelectItem>
+                    <SelectItem value="crew_ontheway">
+                      Crew On The Way
+                    </SelectItem>
+                    <SelectItem value="service_complete">
+                      Service Complete
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -318,27 +368,41 @@ export function NotificationSystemModal({
                     <Checkbox
                       id="email"
                       checked={notificationMethods.email}
-                      onCheckedChange={(checked) => setNotificationMethods(prev => ({ ...prev, email: checked as boolean }))}
+                      onCheckedChange={(checked) =>
+                        setNotificationMethods((prev) => ({
+                          ...prev,
+                          email: checked as boolean,
+                        }))
+                      }
                       disabled={!customerEmail}
                     />
                     <Label htmlFor="email" className="flex items-center gap-2">
                       <Mail className="w-4 h-4" />
                       Email
-                      {!customerEmail && <Badge variant="destructive">No Email</Badge>}
+                      {!customerEmail && (
+                        <Badge variant="destructive">No Email</Badge>
+                      )}
                     </Label>
                   </div>
-                  
+
                   <div className="flex items-center space-x-2">
                     <Checkbox
                       id="sms"
                       checked={notificationMethods.sms}
-                      onCheckedChange={(checked) => setNotificationMethods(prev => ({ ...prev, sms: checked as boolean }))}
+                      onCheckedChange={(checked) =>
+                        setNotificationMethods((prev) => ({
+                          ...prev,
+                          sms: checked as boolean,
+                        }))
+                      }
                       disabled={!customerPhone}
                     />
                     <Label htmlFor="sms" className="flex items-center gap-2">
                       <MessageSquare className="w-4 h-4" />
                       SMS
-                      {!customerPhone && <Badge variant="destructive">No Phone</Badge>}
+                      {!customerPhone && (
+                        <Badge variant="destructive">No Phone</Badge>
+                      )}
                     </Label>
                   </div>
                 </div>
@@ -348,7 +412,12 @@ export function NotificationSystemModal({
                 <Checkbox
                   id="scheduledSend"
                   checked={scheduledSend.enabled}
-                  onCheckedChange={(checked) => setScheduledSend(prev => ({ ...prev, enabled: checked as boolean }))}
+                  onCheckedChange={(checked) =>
+                    setScheduledSend((prev) => ({
+                      ...prev,
+                      enabled: checked as boolean,
+                    }))
+                  }
                 />
                 <Label htmlFor="scheduledSend">Schedule for later</Label>
               </div>
@@ -360,7 +429,12 @@ export function NotificationSystemModal({
                     id="scheduleDateTime"
                     type="datetime-local"
                     value={scheduledSend.dateTime}
-                    onChange={(e) => setScheduledSend(prev => ({ ...prev, dateTime: e.target.value }))}
+                    onChange={(e) =>
+                      setScheduledSend((prev) => ({
+                        ...prev,
+                        dateTime: e.target.value,
+                      }))
+                    }
                     min={new Date().toISOString().slice(0, 16)}
                   />
                 </div>
@@ -381,19 +455,28 @@ export function NotificationSystemModal({
                       className="flex items-center gap-2"
                     >
                       <Eye className="w-4 h-4" />
-                      {previewMode ? 'Edit' : 'Preview'}
+                      {previewMode ? "Edit" : "Preview"}
                     </Button>
                   </div>
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <Tabs value={notificationMethods.email ? 'email' : 'sms'} className="w-full">
+                <Tabs
+                  value={notificationMethods.email ? "email" : "sms"}
+                  className="w-full"
+                >
                   <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="email" disabled={!notificationMethods.email}>
+                    <TabsTrigger
+                      value="email"
+                      disabled={!notificationMethods.email}
+                    >
                       <Mail className="w-4 h-4 mr-2" />
                       Email
                     </TabsTrigger>
-                    <TabsTrigger value="sms" disabled={!notificationMethods.sms}>
+                    <TabsTrigger
+                      value="sms"
+                      disabled={!notificationMethods.sms}
+                    >
                       <MessageSquare className="w-4 h-4 mr-2" />
                       SMS
                     </TabsTrigger>
@@ -405,13 +488,13 @@ export function NotificationSystemModal({
                         <div>
                           <Label>Subject (Preview)</Label>
                           <div className="p-3 bg-gray-50 rounded border">
-                            {getPreviewContent('email')?.subject}
+                            {getPreviewContent("email")?.subject}
                           </div>
                         </div>
                         <div>
                           <Label>Body (Preview)</Label>
                           <div className="p-3 bg-gray-50 rounded border whitespace-pre-wrap">
-                            {getPreviewContent('email')?.body}
+                            {getPreviewContent("email")?.body}
                           </div>
                         </div>
                       </div>
@@ -422,10 +505,15 @@ export function NotificationSystemModal({
                           <Input
                             id="emailSubject"
                             value={customContent.email.subject}
-                            onChange={(e) => setCustomContent(prev => ({
-                              ...prev,
-                              email: { ...prev.email, subject: e.target.value }
-                            }))}
+                            onChange={(e) =>
+                              setCustomContent((prev) => ({
+                                ...prev,
+                                email: {
+                                  ...prev.email,
+                                  subject: e.target.value,
+                                },
+                              }))
+                            }
                             placeholder="Email subject..."
                           />
                         </div>
@@ -434,10 +522,12 @@ export function NotificationSystemModal({
                           <Textarea
                             id="emailBody"
                             value={customContent.email.body}
-                            onChange={(e) => setCustomContent(prev => ({
-                              ...prev,
-                              email: { ...prev.email, body: e.target.value }
-                            }))}
+                            onChange={(e) =>
+                              setCustomContent((prev) => ({
+                                ...prev,
+                                email: { ...prev.email, body: e.target.value },
+                              }))
+                            }
                             placeholder="Email body..."
                             rows={8}
                           />
@@ -451,10 +541,11 @@ export function NotificationSystemModal({
                       <div>
                         <Label>Message (Preview)</Label>
                         <div className="p-3 bg-gray-50 rounded border">
-                          {getPreviewContent('sms')?.body}
+                          {getPreviewContent("sms")?.body}
                         </div>
                         <div className="text-sm text-gray-600 mt-2">
-                          Character count: {getPreviewContent('sms')?.body?.length || 0}/160
+                          Character count:{" "}
+                          {getPreviewContent("sms")?.body?.length || 0}/160
                         </div>
                       </div>
                     ) : (
@@ -463,10 +554,12 @@ export function NotificationSystemModal({
                         <Textarea
                           id="smsBody"
                           value={customContent.sms.body}
-                          onChange={(e) => setCustomContent(prev => ({
-                            ...prev,
-                            sms: { ...prev.sms, body: e.target.value }
-                          }))}
+                          onChange={(e) =>
+                            setCustomContent((prev) => ({
+                              ...prev,
+                              sms: { ...prev.sms, body: e.target.value },
+                            }))
+                          }
                           placeholder="SMS message..."
                           rows={4}
                           maxLength={160}
@@ -483,7 +576,11 @@ export function NotificationSystemModal({
                   <Label>Available Variables</Label>
                   <div className="flex flex-wrap gap-1 mt-2">
                     {TEMPLATE_VARIABLES.map((variable) => (
-                      <Badge key={variable} variant="outline" className="text-xs">
+                      <Badge
+                        key={variable}
+                        variant="outline"
+                        className="text-xs"
+                      >
                         {`{{${variable}}}`}
                       </Badge>
                     ))}
@@ -497,8 +594,13 @@ export function NotificationSystemModal({
             <div className="text-sm text-gray-600">
               {selectedTemplate && (
                 <span>
-                  Will send {notificationMethods.email && notificationMethods.sms ? 'email and SMS' : 
-                           notificationMethods.email ? 'email' : 'SMS'} to {customerName}
+                  Will send{" "}
+                  {notificationMethods.email && notificationMethods.sms
+                    ? "email and SMS"
+                    : notificationMethods.email
+                      ? "email"
+                      : "SMS"}{" "}
+                  to {customerName}
                 </span>
               )}
             </div>
@@ -514,11 +616,17 @@ export function NotificationSystemModal({
               </Button>
               <Button
                 onClick={handleSendNotifications}
-                disabled={isLoading || !selectedTemplate || (!notificationMethods.email && !notificationMethods.sms)}
+                disabled={
+                  isLoading ||
+                  !selectedTemplate ||
+                  (!notificationMethods.email && !notificationMethods.sms)
+                }
                 className="flex items-center gap-2"
               >
                 <Send className="w-4 h-4" />
-                {scheduledSend.enabled ? 'Schedule Notifications' : 'Send Notifications'}
+                {scheduledSend.enabled
+                  ? "Schedule Notifications"
+                  : "Send Notifications"}
               </Button>
             </div>
           </div>

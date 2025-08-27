@@ -196,7 +196,7 @@ export function Sidebar() {
   const { canAccessFeature } = usePermissions();
 
   // Filter navigation based on user permissions
-  const filteredNavigation = navigation.filter(item => {
+  const filteredNavigation = navigation.filter((item) => {
     if (item.requiredFeature === null) return true;
     return canAccessFeature(item.requiredFeature);
   });
@@ -223,13 +223,15 @@ export function Sidebar() {
                   isActive
                     ? "bg-blue-50 border-r-2 border-blue-600 text-blue-700"
                     : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
-                  "group flex items-center px-3 py-2 text-sm font-medium rounded-md"
+                  "group flex items-center px-3 py-2 text-sm font-medium rounded-md",
                 )}
               >
                 <item.icon
                   className={cn(
-                    isActive ? "text-blue-500" : "text-gray-400 group-hover:text-gray-500",
-                    "mr-3 h-5 w-5"
+                    isActive
+                      ? "text-blue-500"
+                      : "text-gray-400 group-hover:text-gray-500",
+                    "mr-3 h-5 w-5",
                   )}
                   aria-hidden="true"
                 />
@@ -239,7 +241,7 @@ export function Sidebar() {
           })}
         </nav>
       </div>
-      
+
       {/* Bottom Section - User Info */}
       <div className="flex flex-shrink-0 border-t border-gray-200 p-4">
         <div className="group block w-full flex-shrink-0">
@@ -248,9 +250,7 @@ export function Sidebar() {
               <p className="text-xs text-gray-500">
                 Limpia Management Platform
               </p>
-              <p className="text-xs text-gray-400">
-                v1.0.0
-              </p>
+              <p className="text-xs text-gray-400">v1.0.0</p>
             </div>
           </div>
         </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect, useCallback } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -46,6 +46,7 @@ import {
 import { format, subDays } from "date-fns";
 import { crewsApi } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { Employee } from "@/types/app.types";
 
 interface Worker {
   id: string;
@@ -333,9 +334,9 @@ export function TimeAttendance() {
   const [attendanceRecords, setAttendanceRecords] = useState<
     AttendanceRecord[]
   >([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [, setIsLoading] = useState(true);
   const [selectedWorker, setSelectedWorker] = useState<Worker | null>(null);
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [,] = useState<Date>(new Date());
   const [isTimeDetailOpen, setIsTimeDetailOpen] = useState(false);
   const [isLocationViewOpen, setIsLocationViewOpen] = useState(false);
   const [isPolicySettingsOpen, setIsPolicySettingsOpen] = useState(false);
@@ -352,7 +353,7 @@ export function TimeAttendance() {
         const crewsData = await crewsApi.getAll();
 
         // Convert crews data to workers format
-        const workersData = crewsData.map((crew: any) => ({
+        const workersData = (crewsData as Employee[]).map((crew) => ({
           id: crew.id,
           employeeId: crew.id,
           name: crew.name || `Crew ${crew.id}`,
@@ -361,46 +362,59 @@ export function TimeAttendance() {
           email: crew.contactEmail || `crew${crew.id}@company.com`,
           shift: {
             start: "08:00",
-            end: "17:00", 
-            timezone: "America/New_York"
+            end: "17:00",
+            timezone: "America/New_York",
           },
-          status: (crew.status === "available" || crew.status === "busy") 
-            ? "clocked_in" as const
-            : "clocked_out" as const,
+          status:
+            crew.status === "available" || crew.status === "busy"
+              ? ("clocked_in" as const)
+              : ("clocked_out" as const),
           clockInTime: crew.lastClockIn ? new Date(crew.lastClockIn) : null,
           hoursWorkedToday: crew.hoursWorkedToday || 0,
           overtime: (crew.hoursWorkedToday || 0) > 8,
-          location: crew.currentLocation || "Office",
+          location: {
+            lat: 0,
+            lng: 0,
+            address: crew.currentLocation || "Office",
+            lastUpdate: new Date(),
+          },
           avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${crew.name}`,
         }));
 
         setWorkers(workersData);
 
-        // Generate time entries based on crew data  
+        // Generate time entries based on crew data
         const entriesData: TimeEntry[] = crewsData.flatMap((crew: unknown) => {
           // Type guard to ensure crew has the expected shape
-          if (!crew || typeof crew !== 'object' || !('id' in crew)) return [];
-          const typedCrew = crew as { id: string; lastClockIn?: string; lastClockOut?: string; currentLocation?: string; members: { name: string }[] };
+          if (!crew || typeof crew !== "object" || !("id" in crew)) return [];
+          const typedCrew = crew as {
+            id: string;
+            lastClockIn?: string;
+            lastClockOut?: string;
+            currentLocation?: string;
+            members: { name: string }[];
+          };
           return [
-          {
-            id: `${typedCrew.id}-in`,
-            workerId: typedCrew.id,
-            type: "clock_in" as const,
-            timestamp: typedCrew.lastClockIn
-              ? new Date(typedCrew.lastClockIn)
-              : new Date(),
-            location: {
-              lat: 25.7617,
-              lng: -80.1918,
-              address: typedCrew.currentLocation || "Office",
-              accuracy: 10,
+            {
+              id: `${typedCrew.id}-in`,
+              workerId: typedCrew.id,
+              type: "clock_in" as const,
+              timestamp: typedCrew.lastClockIn
+                ? new Date(typedCrew.lastClockIn)
+                : new Date(),
+              location: {
+                lat: 25.7617,
+                lng: -80.1918,
+                address: typedCrew.currentLocation || "Office",
+                accuracy: 10,
+              },
+              notes: "Started shift",
+              source: "manual_entry" as const,
+              isValid: true,
+              flags: [],
             },
-            notes: "Started shift",
-            source: "manual_entry" as const,
-            isValid: true,
-            flags: [],
-          },
-        ]});
+          ];
+        });
 
         setTimeEntries(entriesData);
 
@@ -456,7 +470,6 @@ export function TimeAttendance() {
 
     loadAttendanceData();
   }, [toast]);
-
 
   // Filter workers
   const filteredWorkers = useMemo(() => {
@@ -1004,8 +1017,8 @@ export function TimeAttendance() {
                                   violation.severity === "high"
                                     ? "text-red-500"
                                     : violation.severity === "medium"
-                                    ? "text-orange-500"
-                                    : "text-yellow-500"
+                                      ? "text-orange-500"
+                                      : "text-yellow-500"
                                 }`}
                               />
                               <span>{violation.description}</span>
@@ -1135,7 +1148,7 @@ export function TimeAttendance() {
                 </div>
 
                 <div>
-                  <h3 className="font-semibold mb-3">Today's Activity</h3>
+                  <h3 className="font-semibold mb-3">Today&apos;s Activity</h3>
                   <div className="space-y-2 text-sm">
                     {timeEntries
                       .filter((e) => e.workerId === selectedWorker.id)

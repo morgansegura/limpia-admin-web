@@ -1,14 +1,25 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect } from 'react';
-import { MessageSquare, Send, Phone, User, Clock, Check, CheckCheck } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { useToast } from '@/hooks/use-toast';
+import { useState, useRef, useEffect } from "react";
+import {
+  MessageSquare,
+  Send,
+  Phone,
+  User,
+  Check,
+  CheckCheck,
+} from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useToast } from "@/hooks/use-toast";
 
 interface InstantMessageModalProps {
   isOpen: boolean;
@@ -19,7 +30,11 @@ interface InstantMessageModalProps {
     phone: string;
     email?: string;
   };
-  onMessageSent: (messageData: any) => void;
+  onMessageSent: (messageData: {
+    message: string;
+    type: string;
+    urgent: boolean;
+  }) => void;
 }
 
 interface Message {
@@ -29,59 +44,67 @@ interface Message {
   content: string;
   timestamp: string;
   isFromCustomer: boolean;
-  status: 'sent' | 'delivered' | 'read';
-  type: 'text' | 'image' | 'file';
+  status: "sent" | "delivered" | "read";
+  type: "text" | "image" | "file";
 }
 
 const QUICK_RESPONSES = [
-  "Thanks for your message! We'll get back to you shortly.",
+  "Thanks for your message! We&apos;ll get back to you shortly.",
   "We'd be happy to help you with your cleaning needs.",
   "Let me check our availability and get back to you.",
   "Would you like to schedule a free consultation?",
   "Our standard cleaning service includes all basic cleaning tasks.",
   "We use eco-friendly cleaning products by default.",
-  "I'll have our team contact you within 24 hours.",
+  "I&apos;ll have our team contact you within 24 hours.",
   "Thanks for choosing Limpia Cleaning Services!",
 ];
 
-export function InstantMessageModal({ isOpen, onClose, customer, onMessageSent }: InstantMessageModalProps) {
+export function InstantMessageModal({
+  isOpen,
+  onClose,
+  customer,
+  onMessageSent,
+}: InstantMessageModalProps) {
   const { toast } = useToast();
   const [messages, setMessages] = useState<Message[]>([
     // Mock conversation history
     {
-      id: '1',
+      id: "1",
       senderId: customer.id,
       senderName: customer.name,
-      content: 'Hi, I\'m interested in your cleaning services. Do you service the downtown area?',
+      content:
+        "Hi, I'm interested in your cleaning services. Do you service the downtown area?",
       timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
       isFromCustomer: true,
-      status: 'read',
-      type: 'text',
+      status: "read",
+      type: "text",
     },
     {
-      id: '2',
-      senderId: 'agent1',
-      senderName: 'Sales Team',
-      content: 'Hello! Yes, we service the entire downtown area. What type of property are you looking to have cleaned?',
+      id: "2",
+      senderId: "agent1",
+      senderName: "Sales Team",
+      content:
+        "Hello! Yes, we service the entire downtown area. What type of property are you looking to have cleaned?",
       timestamp: new Date(Date.now() - 1.5 * 60 * 60 * 1000).toISOString(),
       isFromCustomer: false,
-      status: 'read',
-      type: 'text',
+      status: "read",
+      type: "text",
     },
     {
-      id: '3',
+      id: "3",
       senderId: customer.id,
       senderName: customer.name,
-      content: 'It\'s a 2-bedroom apartment, about 1000 sq ft. How much would a weekly cleaning cost?',
+      content:
+        "It's a 2-bedroom apartment, about 1000 sq ft. How much would a weekly cleaning cost?",
       timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
       isFromCustomer: true,
-      status: 'read',
-      type: 'text',
+      status: "read",
+      type: "text",
     },
   ]);
-  const [newMessage, setNewMessage] = useState('');
+  const [newMessage, setNewMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [customerOnline, setCustomerOnline] = useState(true);
+  const [customerOnline] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -97,41 +120,42 @@ export function InstantMessageModal({ isOpen, onClose, customer, onMessageSent }
 
     const messageData = {
       id: Date.now().toString(),
-      senderId: 'agent1', // Current user ID
-      senderName: 'Sales Team', // Current user name
+      senderId: "agent1", // Current user ID
+      senderName: "Sales Team", // Current user name
       content: newMessage,
       timestamp: new Date().toISOString(),
       isFromCustomer: false,
-      status: 'sent' as const,
-      type: 'text' as const,
+      status: "sent" as const,
+      type: "text" as const,
     };
 
     // Add message to local state
-    setMessages(prev => [...prev, messageData]);
-    setNewMessage('');
+    setMessages((prev) => [...prev, messageData]);
+    setNewMessage("");
 
     try {
       // Log the message
       await onMessageSent({
-        customerId: customer.id,
-        customerName: customer.name,
-        content: newMessage,
-        direction: 'outbound',
-        channel: 'instant_message',
-        timestamp: new Date().toISOString(),
+        message: newMessage,
+        type: messageData.type,
+        urgent: false, // Default to false for instant messages
       });
 
       // Simulate message delivery status updates
       setTimeout(() => {
-        setMessages(prev => prev.map(msg => 
-          msg.id === messageData.id ? { ...msg, status: 'delivered' } : msg
-        ));
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === messageData.id ? { ...msg, status: "delivered" } : msg,
+          ),
+        );
       }, 1000);
 
       setTimeout(() => {
-        setMessages(prev => prev.map(msg => 
-          msg.id === messageData.id ? { ...msg, status: 'read' } : msg
-        ));
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === messageData.id ? { ...msg, status: "read" } : msg,
+          ),
+        );
       }, 3000);
 
       // Simulate customer typing response
@@ -144,20 +168,21 @@ export function InstantMessageModal({ isOpen, onClose, customer, onMessageSent }
             id: (Date.now() + 1).toString(),
             senderId: customer.id,
             senderName: customer.name,
-            content: 'Thank you! That sounds good. When would be the earliest you could start?',
+            content:
+              "Thank you! That sounds good. When would be the earliest you could start?",
             timestamp: new Date().toISOString(),
             isFromCustomer: true,
-            status: 'read' as const,
-            type: 'text' as const,
+            status: "read" as const,
+            type: "text" as const,
           };
-          setMessages(prev => [...prev, customerResponse]);
+          setMessages((prev) => [...prev, customerResponse]);
         }, 2000);
       }, 5000);
-
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Message Error",
-        description: error.message || "Failed to send message",
+        description:
+          error instanceof Error ? error.message : "Failed to send message",
         variant: "destructive",
       });
     }
@@ -168,19 +193,19 @@ export function InstantMessageModal({ isOpen, onClose, customer, onMessageSent }
   };
 
   const formatTime = (timestamp: string) => {
-    return new Date(timestamp).toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return new Date(timestamp).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'sent':
+      case "sent":
         return <Check className="w-3 h-3" />;
-      case 'delivered':
+      case "delivered":
         return <CheckCheck className="w-3 h-3" />;
-      case 'read':
+      case "read":
         return <CheckCheck className="w-3 h-3 text-blue-500" />;
       default:
         return null;
@@ -205,7 +230,13 @@ export function InstantMessageModal({ isOpen, onClose, customer, onMessageSent }
               <Badge variant={customerOnline ? "default" : "secondary"}>
                 {customerOnline ? "Online" : "Offline"}
               </Badge>
-              <Button variant="ghost" size="sm" onClick={() => {/* Initiate call */}}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  /* Initiate call */
+                }}
+              >
                 <Phone className="w-4 h-4" />
               </Button>
             </div>
@@ -217,13 +248,13 @@ export function InstantMessageModal({ isOpen, onClose, customer, onMessageSent }
           {messages.map((message) => (
             <div
               key={message.id}
-              className={`flex ${message.isFromCustomer ? 'justify-start' : 'justify-end'}`}
+              className={`flex ${message.isFromCustomer ? "justify-start" : "justify-end"}`}
             >
               <div
                 className={`max-w-[80%] rounded-lg p-3 ${
                   message.isFromCustomer
-                    ? 'bg-gray-100 text-gray-800'
-                    : 'bg-blue-600 text-white'
+                    ? "bg-gray-100 text-gray-800"
+                    : "bg-blue-600 text-white"
                 }`}
               >
                 <div className="text-sm font-medium mb-1">
@@ -255,7 +286,7 @@ export function InstantMessageModal({ isOpen, onClose, customer, onMessageSent }
               </div>
             </div>
           ))}
-          
+
           {/* Typing Indicator */}
           {isTyping && (
             <div className="flex justify-start">
@@ -271,14 +302,20 @@ export function InstantMessageModal({ isOpen, onClose, customer, onMessageSent }
                   </span>
                   <div className="flex gap-1">
                     <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                    <div
+                      className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                      style={{ animationDelay: "0.1s" }}
+                    ></div>
+                    <div
+                      className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                      style={{ animationDelay: "0.2s" }}
+                    ></div>
                   </div>
                 </div>
               </div>
             </div>
           )}
-          
+
           <div ref={messagesEndRef} />
         </div>
 
@@ -294,7 +331,9 @@ export function InstantMessageModal({ isOpen, onClose, customer, onMessageSent }
                 onClick={() => sendQuickResponse(response)}
                 className="text-xs h-7"
               >
-                {response.length > 30 ? `${response.substring(0, 30)}...` : response}
+                {response.length > 30
+                  ? `${response.substring(0, 30)}...`
+                  : response}
               </Button>
             ))}
           </div>
@@ -308,7 +347,7 @@ export function InstantMessageModal({ isOpen, onClose, customer, onMessageSent }
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder="Type your message..."
               onKeyPress={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
+                if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
                   sendMessage();
                 }

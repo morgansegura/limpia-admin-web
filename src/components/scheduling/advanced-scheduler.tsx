@@ -35,7 +35,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import {
@@ -418,8 +417,8 @@ export function AdvancedScheduler() {
                   job.crew?.name === "Alpha Team"
                     ? "#3B82F6"
                     : job.crew?.name === "Beta Team"
-                    ? "#10B981"
-                    : "#F59E0B",
+                      ? "#10B981"
+                      : "#F59E0B",
               }}
             >
               {job.crew.name}
